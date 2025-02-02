@@ -1,12 +1,9 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import elfeatures.gradle.model.Mod
 import elfeatures.gradle.tasks.TransformJarContentTask
+import gradle.kotlin.dsl.accessors._523dc74e2e9552463686721a7434f18b.jar
 import gradle.kotlin.dsl.accessors._8c47cae829ea3d03260d5ff13fb2398e.base
 import gradle.kotlin.dsl.accessors._8c47cae829ea3d03260d5ff13fb2398e.ext
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 plugins {
@@ -16,7 +13,6 @@ plugins {
 
 // load properties and Mod info
 val props: Properties = project.extra["props"] as Properties
-val mod: Mod = rootProject.extra["mod"] as Mod
 
 val enableJarJar = props["enable_jarjar"]?.toString()?.toBooleanStrictOrNull()?:false
 if (enableJarJar) {
@@ -62,6 +58,7 @@ if (enableJarJar) {
     tasks.register<TransformJarContentTask>("transformJarContentAfterShadow") {
         from(zipTree(tasks.named<ShadowJar>("shadowPlatformJar").get().archiveFile))
         archiveClassifier = project.extra["moduleName"] as String
+        archiveVersion = ""
         destinationDirectory = rootProject.layout.buildDirectory
         dependsOn("shadowPlatformJar")
 
@@ -74,26 +71,26 @@ if (enableJarJar) {
     }
 }
 
-// configure JAR manifest content
+// configure JAR processing
 tasks.jar {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-
-    manifest {
-        attributes(
-            "Automatic-Module-Name"     to  mod.id,
-            "Specification-Title"       to  mod.name,
-            "Specification-Vendor"      to  mod.authors,
-            "Specification-Version"     to  1, // we're version 1 of ourselves
-            "Implementation-Title"      to  mod.name,
-            "Implementation-Version"    to  mod.version,
-            "Implementation-Vendor"     to  mod.authors,
-            "Implementation-Timestamp"  to  formatter.format(LocalDateTime.now(ZoneOffset.UTC)),
-        )
+    // populate JAR with mod banner
+    from(rootProject.layout.projectDirectory.dir("resources")) {
+        include("elfeatures_banner.png")
     }
 
     if (enableJarJar) {
         finalizedBy("transformJarContentAfterShadow")
     } else if (minecraft.reobf) {
         finalizedBy("reobfJar")
+    }
+}
+
+if (enableJarJar) {
+    // configure Jar-in-Jar processing
+    tasks.jarJar {
+        // populate JAR with mod banner
+        from(rootProject.layout.projectDirectory.dir("resources")) {
+            include("elfeatures_banner.png")
+        }
     }
 }

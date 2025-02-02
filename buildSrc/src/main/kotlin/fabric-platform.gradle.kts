@@ -2,8 +2,10 @@ plugins {
     id("fabric-loom")
 }
 
-// configure resources processing
-tasks.processResources {
-    // not needed for fabric
-    exclude("elfeatures_banner.png")
+// configure JAR processing
+tasks.jar {
+    // populate JAR with mod icon
+    from(rootProject.layout.projectDirectory.dir("resources")) {
+        include("assets/**")
+    }
 }

@@ -12,6 +12,7 @@ ext.set("publishJarTaskName", "jar")
 // configure JAR packaging
 tasks.jar {
     archiveClassifier = project.name
+    archiveVersion = ""
     destinationDirectory = rootProject.layout.buildDirectory
     includeEmptyDirs = false
 

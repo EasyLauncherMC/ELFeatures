@@ -3,11 +3,15 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import elfeatures.gradle.model.Mod
 import elfeatures.gradle.tasks.InjectConstantsTask
+import gradle.kotlin.dsl.accessors._523dc74e2e9552463686721a7434f18b.jar
 import gradle.kotlin.dsl.accessors._8c47cae829ea3d03260d5ff13fb2398e.base
 import gradle.kotlin.dsl.accessors._8c47cae829ea3d03260d5ff13fb2398e.ext
 import org.gradle.kotlin.dsl.*
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 plugins {
@@ -27,12 +31,6 @@ base.archivesName = mod.id
 // publishing properties
 ext.set("publishJarArtifactId", "${base.archivesName.get()}-${project.name}")
 ext.set("publishJarTaskName", "shadowPlatformJar")
-
-// include additional resources
-sourceSets.main {
-    resources.srcDir("src/generated/resources")
-    resources.srcDir(rootProject.layout.projectDirectory.dir("resources"))
-}
 
 // configure Constants class injecting
 tasks.named<InjectConstantsTask>("injectConstants") {
@@ -69,6 +67,7 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
     manifest.inheritFrom(tasks.jar.get().manifest)
 
     archiveClassifier = moduleName
+    archiveVersion = ""
     destinationDirectory = rootProject.layout.buildDirectory
     includeEmptyDirs = false
 
@@ -79,6 +78,23 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
         "net/minecraftforge/**",
         "net/neoforged/**"
     ))
+}
+
+// configure JAR processing
+tasks.jar {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+    manifest {
+        attributes(
+            "Automatic-Module-Name"     to  mod.id,
+            "Specification-Title"       to  mod.name,
+            "Specification-Vendor"      to  mod.authors,
+            "Specification-Version"     to  1, // we're version 1 of ourselves
+            "Implementation-Title"      to  mod.name,
+            "Implementation-Version"    to  mod.version,
+            "Implementation-Vendor"     to  mod.authors,
+            "Implementation-Timestamp"  to  formatter.format(LocalDateTime.now(ZoneOffset.UTC)),
+        )
+    }
 }
 
 // configure resources filtering
