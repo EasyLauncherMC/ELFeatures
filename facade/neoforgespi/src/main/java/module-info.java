@@ -1,0 +1,3 @@
+module net.neoforged.neoforgespi {
+
+}

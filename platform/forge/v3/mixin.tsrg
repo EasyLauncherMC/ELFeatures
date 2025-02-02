@@ -1,0 +1,10 @@
+tsrg2 left right
+com/mojang/authlib/minecraft/MinecraftSessionService com/mojang/authlib/minecraft/MinecraftSessionService
+	getPackedTextures (Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property; getPackedTextures
+	getTextures (Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map; getTextures
+	unpackTextures (Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures; unpackTextures
+net/minecraft/client/resources/SkinManager net/minecraft/client/resources/SkinManager
+	getOrLoad (Lcom/mojang/authlib/GameProfile;)Ljava/util/concurrent/CompletableFuture; m_293351_
+net/minecraft/client/resources/SkinManager$1 net/minecraft/client/resources/SkinManager$1
+	lambda$load$0 (Lcom/mojang/authlib/minecraft/MinecraftSessionService;Lcom/mojang/authlib/GameProfile;)Lnet/minecraft/client/resources/SkinManager$TextureInfo; m_293645_
+	lambda$load$0 (Lnet/minecraft/client/resources/SkinManager$CacheKey;Lcom/mojang/authlib/minecraft/MinecraftSessionService;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures; m_304063_

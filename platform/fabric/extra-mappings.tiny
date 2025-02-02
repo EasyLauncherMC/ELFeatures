@@ -1,0 +1,13 @@
+v1	named	intermediary
+CLASS	net/minecraft/client/texture/PlayerSkinProvider	net/minecraft/class_1071
+METHOD	net/minecraft/client/texture/PlayerSkinProvider	(Lcom/mojang/authlib/GameProfile;)Ljava/util/concurrent/CompletableFuture;	fetchSkinTextures	method_52863
+CLASS	net/minecraft/client/texture/PlayerSkinProvider$Key	net/minecraft/class_1071$class_8686
+CLASS	net/minecraft/client/texture/PlayerSkinProvider$Textures	net/minecraft/class_1071$class_8688
+CLASS	net/minecraft/client/texture/PlayerSkinTexture	net/minecraft/class_1046
+METHOD	net/minecraft/client/texture/PlayerSkinTexture	(Lnet/minecraft/client/texture/NativeImage;)Lnet/minecraft/client/texture/NativeImage;	remapTexture	method_22798
+METHOD	net/minecraft/client/texture/PlayerSkinTexture	(Lnet/minecraft/client/texture/NativeImage;IIII)V	stripAlpha	method_22796
+METHOD	net/minecraft/client/texture/PlayerSkinTexture	(Lnet/minecraft/client/texture/NativeImage;IIII)V	stripColor	method_22794
+CLASS	net/minecraft/client/texture/PlayerSkinTextureDownloader	net/minecraft/class_10538
+METHOD	net/minecraft/client/texture/PlayerSkinTextureDownloader	(Lnet/minecraft/client/texture/NativeImage;Ljava/lang/String;)Lnet/minecraft/client/texture/NativeImage;	remapTexture	method_65863
+METHOD	net/minecraft/client/texture/PlayerSkinTextureDownloader	(Lnet/minecraft/client/texture/NativeImage;IIII)V	stripAlpha	method_65868
+METHOD	net/minecraft/client/texture/PlayerSkinTextureDownloader	(Lnet/minecraft/client/texture/NativeImage;IIII)V	stripColor	method_65862

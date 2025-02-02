@@ -1,0 +1,12 @@
+.idea/
+.gradle/
+build/
+**/build/
+*.iml
+*.jar
+*.class
+.DS_Store
+
+# avoid ignoring Gradle wrapper files
+!gradle-wrapper.jar
+!gradle-wrapper.properties

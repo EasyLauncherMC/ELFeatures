@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "elfeatures",
+	"version": "${mod_version}",
+	"name": "${mod_name}",
+	"description": "${mod_description}",
+	"authors": ["${mod_authors}"],
+	"contact": {
+		"homepage": "${mod_website}",
+		"sources": "${mod_sources}",
+		"issues": "${mod_issues}"
+	},
+	"license": "${mod_license}",
+	"icon": "/assets/elfeatures/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": ["org.easylauncher.mods.elfeatures.ELFeaturesModFabric"]
+	},
+	"mixins": [
+		{
+			"config": "elfeatures.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"java": ">=8"
+	}
+}

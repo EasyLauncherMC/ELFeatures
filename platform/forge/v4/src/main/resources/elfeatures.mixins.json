@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.easylauncher.mods.elfeatures.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "textures.MixinHttpTexture",
+    "textures.MixinSkinManager",
+    "textures.MixinSkinManager1",
+    "textures.MixinSkinTextureDownloader"
+  ],
+  "plugin": "org.easylauncher.mods.elfeatures.ELFeaturesMixinPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

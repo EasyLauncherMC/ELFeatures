@@ -1,0 +1,29 @@
+modLoader = "javafml"
+loaderVersion = "[25,37)"
+license = "${mod_license}"
+issueTrackerURL = "${mod_issues}"
+logoFile = "elfeatures_banner.png"
+
+[[mods]]
+modId = "elfeatures"
+version = "${mod_version}"
+displayName = "${mod_name}"
+description = '''
+${mod_full_description}
+'''
+displayURL = "${mod_website}"
+authors = "${mod_authors}"
+
+[[dependencies.elfeatures]]
+modId = "forge"
+mandatory = true
+versionRange = "[25,37)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.elfeatures]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.13.2,1.17)"
+ordering = "NONE"
+side = "CLIENT"

@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+license = "${mod_license}"
+issueTrackerURL = "${mod_issues}"
+logoFile = "elfeatures_banner.png"
+clientSideOnly = true
+
+[[mods]]
+modId = "elfeatures"
+version = "${mod_version}"
+displayName = "${mod_name}"
+displayTest = "IGNORE_ALL_VERSION"
+description = '''
+${mod_full_description}
+'''
+displayURL = "${mod_website}"
+authors = "${mod_authors}"
+
+[[dependencies.elfeatures]]
+modId = "neoforge"
+type = "required"
+versionRange = "[20.5,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.elfeatures]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.20.5,)"
+ordering = "NONE"
+side = "CLIENT"

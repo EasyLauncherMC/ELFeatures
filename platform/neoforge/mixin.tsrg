@@ -1,0 +1,29 @@
+tsrg2 left right
+com/mojang/authlib/minecraft/MinecraftSessionService com/mojang/authlib/minecraft/MinecraftSessionService
+	getPackedTextures (Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property; getPackedTextures
+	getTextures (Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map; getTextures
+	unpackTextures (Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures; unpackTextures
+com/mojang/blaze3d/platform/NativeImage com/mojang/blaze3d/platform/NativeImage
+	getWidth ()I getWidth
+	getHeight ()I getHeight
+	copyRect (IIIIIIZZ)V copyRect
+	fillRect (IIIII)V fillRect
+net/minecraft/client/renderer/texture/HttpTexture net/minecraft/client/renderer/texture/HttpTexture
+	load (Ljava/io/InputStream;)Lcom/mojang/blaze3d/platform/NativeImage; load
+	processLegacySkin (Lcom/mojang/blaze3d/platform/NativeImage;)Lcom/mojang/blaze3d/platform/NativeImage; processLegacySkin
+	setNoAlpha (Lcom/mojang/blaze3d/platform/NativeImage;IIII)V setNoAlpha
+	doNotchTransparencyHack (Lcom/mojang/blaze3d/platform/NativeImage;IIII)V doNotchTransparencyHack
+net/minecraft/client/renderer/texture/SkinTextureDownloader net/minecraft/client/renderer/texture/SkinTextureDownloader
+	load (Ljava/io/InputStream;)Lcom/mojang/blaze3d/platform/NativeImage; load
+	processLegacySkin (Lcom/mojang/blaze3d/platform/NativeImage;Ljava/lang/String;)Lcom/mojang/blaze3d/platform/NativeImage; processLegacySkin
+	setNoAlpha (Lcom/mojang/blaze3d/platform/NativeImage;IIII)V setNoAlpha
+	doNotchTransparencyHack (Lcom/mojang/blaze3d/platform/NativeImage;IIII)V doNotchTransparencyHack
+net/minecraft/client/resources/SkinManager net/minecraft/client/resources/SkinManager
+	getOrLoad (Lcom/mojang/authlib/GameProfile;)Ljava/util/concurrent/CompletableFuture; getOrLoad
+net/minecraft/client/resources/SkinManager$1 net/minecraft/client/resources/SkinManager$1
+	lambda$load$0 (Lcom/mojang/authlib/minecraft/MinecraftSessionService;Lcom/mojang/authlib/GameProfile;)Lnet/minecraft/client/resources/SkinManager$TextureInfo; lambda$load$0
+	lambda$load$0 (Lnet/minecraft/client/resources/SkinManager$CacheKey;Lcom/mojang/authlib/minecraft/MinecraftSessionService;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures; lambda$load$0
+net/minecraft/client/resources/SkinManager$CacheKey net/minecraft/client/resources/SkinManager$CacheKey
+net/minecraft/client/resources/SkinManager$SkinAvailableCallback net/minecraft/client/resources/SkinManager$SkinTextureCallback
+net/minecraft/client/resources/SkinManager$TextureCache net/minecraft/client/resources/SkinManager$TextureCache
+net/minecraft/client/resources/SkinManager$TextureInfo net/minecraft/client/resources/SkinManager$TextureInfo
