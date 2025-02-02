@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 @Log4j2
 public final class ForgeModLocator implements IModLocator {
 
-    @SuppressWarnings("JavaReflectionMemberAccess")
     private static final Map<String, CompatibilityTester> IMPLEMENTATIONS = Map.of(
             "ModLocatorV3", () -> Class.forName("net.minecraftforge.fml.loading.moddiscovery.AbstractModProvider").getDeclaredMethod("createMod", Path.class),
             "ModLocatorV2", () -> Class.forName("net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileModLocator"),
