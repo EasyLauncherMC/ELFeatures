@@ -23,3 +23,14 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 }
+
+// configure publishing
+publishing {
+    publications {
+        named<MavenPublication>("maven") {
+            artifact(tasks.jar) {
+                classifier = null
+            }
+        }
+    }
+}

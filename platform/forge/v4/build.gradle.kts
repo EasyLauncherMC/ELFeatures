@@ -52,3 +52,14 @@ tasks.jar {
         attributes("MixinConfigs" to "elfeatures.mixins.json")
     }
 }
+
+// configure publishing
+publishing {
+    publications {
+        named<MavenPublication>("maven") {
+            artifact(tasks.transformJarContentAfterShadow) {
+                classifier = null
+            }
+        }
+    }
+}

@@ -34,3 +34,14 @@ tasks.jar {
         )
     }
 }
+
+// configure publishing
+publishing {
+    publications {
+        named<MavenPublication>("maven") {
+            artifact(tasks.shadowPlatformJar) {
+                classifier = null
+            }
+        }
+    }
+}

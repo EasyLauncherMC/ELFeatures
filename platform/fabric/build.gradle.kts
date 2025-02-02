@@ -48,3 +48,14 @@ dependencies {
 tasks.remapJar {
     isPreserveFileTimestamps = true
 }
+
+// configure publishing
+publishing {
+    publications {
+        named<MavenPublication>("maven") {
+            artifact(tasks.remapJar) {
+                classifier = null
+            }
+        }
+    }
+}

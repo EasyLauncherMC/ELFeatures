@@ -6,14 +6,11 @@ plugins {
 base.archivesName = "elfeatures-modlocator"
 
 // publishing properties
-ext.set("publishJarArtifactId", "${base.archivesName.get()}-${project.name}")
 ext.set("publishJarTaskName", "jar")
 
 // configure JAR packaging
 tasks.jar {
-    archiveClassifier = project.name
-    archiveVersion = ""
-    destinationDirectory = rootProject.layout.buildDirectory
+    archiveAppendix = project.name
     includeEmptyDirs = false
 
     exclude(listOf(

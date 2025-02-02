@@ -22,6 +22,7 @@ dependencies {
     implementation("org.spongepowered:mixingradle:0.7-SNAPSHOT")
     implementation("net.fabricmc:fabric-loom:1.7-SNAPSHOT")
     implementation("com.github.johnrengelman:shadow:8.1.1")
+    implementation("tech.yanand.maven-central-publish:tech.yanand.maven-central-publish.gradle.plugin:1.3.0")
 
     implementation("org.apache.commons:commons-compress:1.27.1")
     implementation("org.apache.commons:commons-lang3:3.15.0")

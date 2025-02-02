@@ -1,9 +1,5 @@
-
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import elfeatures.gradle.tasks.TransformJarContentTask
-import gradle.kotlin.dsl.accessors._523dc74e2e9552463686721a7434f18b.jar
-import gradle.kotlin.dsl.accessors._8c47cae829ea3d03260d5ff13fb2398e.base
-import gradle.kotlin.dsl.accessors._8c47cae829ea3d03260d5ff13fb2398e.ext
 import java.util.*
 
 plugins {
@@ -19,9 +15,6 @@ if (enableJarJar) {
     jarJar.enable()
 }
 
-// publishing properties
-ext.set("publishJarArtifactId", "${base.archivesName.get()}-forge-${project.name}")
-
 minecraft {
     mappings(props["mappings_channel"].toString(), props["mappings_version"].toString())
     val enableReobf = props["enable_reobf"]?.toString()?.toBooleanStrictOrNull()?:true
@@ -35,8 +28,9 @@ if (enableJarJar) {
 
     tasks.register<TransformJarContentTask>("transformJarContentBeforeShadow") {
         from(zipTree(tasks.jarJar.get().archiveFile))
-        archiveAppendix = "before-shadow"
+        archiveAppendix = project.extra["moduleName"] as String
         archiveBaseName = tasks.jarJar.get().archiveBaseName
+        archiveClassifier = "before-shadow"
         destinationDirectory = layout.buildDirectory.dir("tmp")
         dependsOn(tasks.jarJar)
 
@@ -49,17 +43,17 @@ if (enableJarJar) {
     }
 
     tasks.named<ShadowJar>("shadowPlatformJar") {
-        archiveAppendix = "after-shadow"
-        archiveClassifier = null
+        archiveAppendix = project.extra["moduleName"] as String
+        archiveClassifier = "after-shadow"
         destinationDirectory = layout.buildDirectory.dir("tmp")
         dependsOn("transformJarContentBeforeShadow")
     }
 
     tasks.register<TransformJarContentTask>("transformJarContentAfterShadow") {
         from(zipTree(tasks.named<ShadowJar>("shadowPlatformJar").get().archiveFile))
-        archiveClassifier = project.extra["moduleName"] as String
-        archiveVersion = ""
-        destinationDirectory = rootProject.layout.buildDirectory
+        archiveAppendix = project.extra["moduleName"] as String
+        archiveClassifier = ""
+        destinationDirectory = tasks.jar.get().destinationDirectory
         dependsOn("shadowPlatformJar")
 
         fileEntryNameTransformer { name ->

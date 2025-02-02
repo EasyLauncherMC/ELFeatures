@@ -37,3 +37,14 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.4:processor")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 }
+
+// configure publishing
+publishing {
+    publications {
+        named<MavenPublication>("maven") {
+            artifact(tasks.shadowPlatformJar) {
+                classifier = null
+            }
+        }
+    }
+}

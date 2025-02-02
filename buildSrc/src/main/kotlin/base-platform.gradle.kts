@@ -3,9 +3,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import elfeatures.gradle.model.Mod
 import elfeatures.gradle.tasks.InjectConstantsTask
-import gradle.kotlin.dsl.accessors._523dc74e2e9552463686721a7434f18b.jar
-import gradle.kotlin.dsl.accessors._8c47cae829ea3d03260d5ff13fb2398e.base
-import gradle.kotlin.dsl.accessors._8c47cae829ea3d03260d5ff13fb2398e.ext
 import org.gradle.kotlin.dsl.*
 import java.nio.file.Files
 import java.nio.file.Path
@@ -29,7 +26,6 @@ val enableJarJar = props["enable_jarjar"]?.toString()?.toBooleanStrictOrNull()?:
 base.archivesName = mod.id
 
 // publishing properties
-ext.set("publishJarArtifactId", "${base.archivesName.get()}-${project.name}")
 ext.set("publishJarTaskName", "shadowPlatformJar")
 
 // configure Constants class injecting
@@ -66,9 +62,7 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
     configurations = listOf(project.configurations.compileClasspath.get())
     manifest.inheritFrom(tasks.jar.get().manifest)
 
-    archiveClassifier = moduleName
-    archiveVersion = ""
-    destinationDirectory = rootProject.layout.buildDirectory
+    archiveAppendix = moduleName
     includeEmptyDirs = false
 
     exclude(listOf(

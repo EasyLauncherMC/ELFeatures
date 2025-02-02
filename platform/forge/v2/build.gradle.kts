@@ -39,6 +39,13 @@ tasks.jar {
     }
 }
 
-tasks.compileJava {
-    options.compilerArgs.add("-Xlint:unchecked")
+// configure publishing
+publishing {
+    publications {
+        named<MavenPublication>("maven") {
+            artifact(tasks.shadowPlatformJar) {
+                classifier = null
+            }
+        }
+    }
 }
