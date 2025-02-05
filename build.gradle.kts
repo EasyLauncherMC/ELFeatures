@@ -1,12 +1,12 @@
 import elfeatures.gradle.model.Mod
+import elfeatures.gradle.model.ModuleSpec
 import java.util.*
 
 plugins {
     base
 }
 
-val props = loadProperties(project)
-val mod by extra(Mod(props))
+val mod by extra(Mod(loadProperties(project)))
 
 group = "org.easylauncher.mods.elfeatures"
 version = mod.version
@@ -16,7 +16,8 @@ subprojects {
     group = rootProject.group
     version = rootProject.version
 
-    val props by extra(loadProperties(project))
+    val props = loadProperties(project)
+    extra["spec"] = ModuleSpec.of(mod, props)
 }
 
 fun loadProperties(project: Project): Properties {
