@@ -2,7 +2,7 @@ package org.easylauncher.mods.elfeatures.mixin.textures;
 
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SkinRemappingImageFilter;
-import org.easylauncher.mods.elfeatures.textures.TexturesInspector;
+import org.easylauncher.mods.elfeatures.texture.TexturesInspector;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;

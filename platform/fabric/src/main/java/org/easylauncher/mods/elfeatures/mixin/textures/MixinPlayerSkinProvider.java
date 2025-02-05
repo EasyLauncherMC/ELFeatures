@@ -31,7 +31,7 @@ public final class MixinPlayerSkinProvider {
                 GameProfile profile,
                 boolean requireSecure
         ) {
-            return ELFeaturesMod.texturesProvider().loadTexturesMap(profile, sessionService.getTextures(profile, requireSecure));
+            return ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesMap(profile, sessionService.getTextures(profile, requireSecure));
         }
 
     }
@@ -48,7 +48,7 @@ public final class MixinPlayerSkinProvider {
                 GameProfile profile,
                 CallbackInfoReturnable<Map<MinecraftProfileTexture.Type, MinecraftProfileTexture>> callbackInfo
         ) {
-            callbackInfo.setReturnValue(ELFeaturesMod.texturesProvider().loadTexturesMap(profile, callbackInfo.getReturnValue()));
+            callbackInfo.setReturnValue(ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesMap(profile, callbackInfo.getReturnValue()));
         }
 
         @Redirect(
@@ -63,7 +63,7 @@ public final class MixinPlayerSkinProvider {
                 GameProfile profile,
                 boolean requireSecure
         ) {
-            return ELFeaturesMod.texturesProvider().loadTexturesMap(profile, sessionService.getTextures(profile, requireSecure));
+            return ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesMap(profile, sessionService.getTextures(profile, requireSecure));
         }
 
     }
@@ -82,7 +82,7 @@ public final class MixinPlayerSkinProvider {
             Property packedTextures = sessionService.getPackedTextures(profile);
 
             if (packedTextures == null)
-                packedTextures = ELFeaturesMod.texturesProvider().loadTexturesProperty(profile);
+                packedTextures = ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesProperty(profile);
 
             return packedTextures;
         }

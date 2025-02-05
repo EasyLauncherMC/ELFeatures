@@ -25,7 +25,7 @@ public final class MixinSkinManager {
             Property packedTextures = sessionService.getPackedTextures(profile);
 
             if (packedTextures == null)
-                packedTextures = ELFeaturesMod.texturesProvider().loadTexturesProperty(profile);
+                packedTextures = ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesProperty(profile);
 
             return packedTextures;
         }

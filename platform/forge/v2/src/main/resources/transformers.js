@@ -90,7 +90,7 @@ function DownloadingTexture_parseUserSkin(methodNode) {
     node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, 'net/minecraft/client/renderer/texture/NativeImage', mapName('func_195702_a'), '()I');
     node.visitVarInsn(Opcodes.ALOAD, 0);
     node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, 'net/minecraft/client/renderer/texture/NativeImage', mapName('func_195714_b'), '()I');
-    node.visitMethodInsn(Opcodes.INVOKESTATIC, 'org/easylauncher/mods/elfeatures/textures/TexturesInspector', 'computeTextureScale', '(II)I', false);
+    node.visitMethodInsn(Opcodes.INVOKESTATIC, 'org/easylauncher/mods/elfeatures/texture/TexturesInspector', 'computeTextureScale', '(II)I', false);
     node.visitVarInsn(Opcodes.ISTORE, 3);
     node.visitVarInsn(Opcodes.ILOAD, 3);
     node.visitJumpInsn(Opcodes.IFEQ, getSkipInsn(entry));
@@ -254,12 +254,12 @@ function SkinManager_loadProfileTextures(methodNode) {
 
     // --- PATCH
 
-    // #2 = ELFeaturesMod.texturesProvider().loadTextures(#1, #2);
+    // #2 = ELFeaturesMod.authlibEasyxTexturesProvider().loadTextures(#1, #2);
     var node = ASMAPI.getMethodNode();
-    node.visitMethodInsn(Opcodes.INVOKESTATIC, "org/easylauncher/mods/elfeatures/ELFeaturesMod", "texturesProvider", "()Lorg/easylauncher/mods/elfeatures/textures/TexturesProvider;");
+    node.visitMethodInsn(Opcodes.INVOKESTATIC, "org/easylauncher/mods/elfeatures/ELFeaturesMod", "authlibEasyxTexturesProvider", "()Lorg/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider;");
     node.visitVarInsn(Opcodes.ALOAD, 1);
     node.visitVarInsn(Opcodes.ALOAD, 4);
-    node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "org/easylauncher/mods/elfeatures/textures/TexturesProvider", "loadTexturesMap", "(Lcom/mojang/authlib/GameProfile;Ljava/util/Map;)Ljava/util/Map;");
+    node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "org/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider", "loadTexturesMap", "(Lcom/mojang/authlib/GameProfile;Ljava/util/Map;)Ljava/util/Map;");
     node.visitVarInsn(Opcodes.ASTORE, 4);
     instructions.insertBefore(entry, node.instructions);
 
@@ -312,9 +312,9 @@ function SkinManager_loadSkinFromCache(methodNode) {
 
         var node = ASMAPI.getMethodNode();
         node.visitLabel(new Label());
-        node.visitMethodInsn(Opcodes.INVOKESTATIC, "org/easylauncher/mods/elfeatures/ELFeaturesMod", "texturesProvider", "()Lorg/easylauncher/mods/elfeatures/textures/TexturesProvider;");
+        node.visitMethodInsn(Opcodes.INVOKESTATIC, "org/easylauncher/mods/elfeatures/ELFeaturesMod", "authlibEasyxTexturesProvider", "()Lorg/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider;");
         node.visitVarInsn(Opcodes.ALOAD, 1);
-        node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "org/easylauncher/mods/elfeatures/textures/TexturesProvider", "loadTexturesProperty", "(Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property;");
+        node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "org/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider", "loadTexturesProperty", "(Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property;");
         node.visitVarInsn(Opcodes.ASTORE, 2);
         node.visitLabel(new Label());
         node.visitVarInsn(Opcodes.ALOAD, 2);
@@ -324,17 +324,17 @@ function SkinManager_loadSkinFromCache(methodNode) {
 
     // --- PATCH #1
 
-    // ELFeaturesMod.texturesProvider() ... .loadTextures(#1, ...);
+    // ELFeaturesMod.authlibEasyxTexturesProvider() ... .loadTextures(#1, ...);
     var node = ASMAPI.getMethodNode();
-    node.visitMethodInsn(Opcodes.INVOKESTATIC, "org/easylauncher/mods/elfeatures/ELFeaturesMod", "texturesProvider", "()Lorg/easylauncher/mods/elfeatures/textures/TexturesProvider;");
+    node.visitMethodInsn(Opcodes.INVOKESTATIC, "org/easylauncher/mods/elfeatures/ELFeaturesMod", "authlibEasyxTexturesProvider", "()Lorg/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider;");
     node.visitVarInsn(Opcodes.ALOAD, 1);
     instructions.insertBefore(entry[0], node.instructions);
 
     // --- PATCH #2
 
-    // ELFeaturesMod.texturesProvider().loadTextures(#1, #2);
+    // ELFeaturesMod.authlibEasyxTexturesProvider().loadTextures(#1, #2);
     node = ASMAPI.getMethodNode();
-    node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "org/easylauncher/mods/elfeatures/textures/TexturesProvider", "loadTexturesMap", "(Lcom/mojang/authlib/GameProfile;Ljava/util/Map;)Ljava/util/Map;");
+    node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "org/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider", "loadTexturesMap", "(Lcom/mojang/authlib/GameProfile;Ljava/util/Map;)Ljava/util/Map;");
     instructions.insert(entry[1], node.instructions);
 
     return true;
@@ -380,7 +380,7 @@ function SkinManager$2_parseUserSkin(methodNode) {
     node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, 'net/minecraft/client/renderer/texture/NativeImage', mapName('func_195702_a'), '()I');
     node.visitVarInsn(Opcodes.ALOAD, 1);
     node.visitMethodInsn(Opcodes.INVOKEVIRTUAL, 'net/minecraft/client/renderer/texture/NativeImage', mapName('func_195714_b'), '()I');
-    node.visitMethodInsn(Opcodes.INVOKESTATIC, 'org/easylauncher/mods/elfeatures/textures/TexturesInspector', 'computeTextureScale', '(II)I', false);
+    node.visitMethodInsn(Opcodes.INVOKESTATIC, 'org/easylauncher/mods/elfeatures/texture/TexturesInspector', 'computeTextureScale', '(II)I', false);
     node.visitFieldInsn(Opcodes.PUTFIELD, ImageBufferDownloadClassName, 'elfeatures$scaleFactor', 'I');
     node.visitVarInsn(Opcodes.ALOAD, 0);
     node.visitFieldInsn(Opcodes.GETFIELD, 'net/minecraft/client/resources/SkinManager$2', 'field_152635_a', 'Lnet/minecraft/client/renderer/IImageBuffer;');

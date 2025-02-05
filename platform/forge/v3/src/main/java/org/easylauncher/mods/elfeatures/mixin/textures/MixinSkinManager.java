@@ -30,7 +30,7 @@ public final class MixinSkinManager {
                 CallbackInfoReturnable<Map<MinecraftProfileTexture.Type, MinecraftProfileTexture>> callbackInfo
         ) {
             Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> texturesMap = callbackInfo.getReturnValue();
-            callbackInfo.setReturnValue(ELFeaturesMod.texturesProvider().loadTexturesMap(profile, texturesMap));
+            callbackInfo.setReturnValue(ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesMap(profile, texturesMap));
         }
 
         @Redirect(
@@ -54,7 +54,7 @@ public final class MixinSkinManager {
             }
 
             if (texturesMap.isEmpty())
-                ELFeaturesMod.texturesProvider().loadTexturesMap(profile, texturesMap);
+                ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesMap(profile, texturesMap);
 
             return texturesMap;
         }
@@ -75,7 +75,7 @@ public final class MixinSkinManager {
             Property packedTextures = sessionService.getPackedTextures(profile);
 
             if (packedTextures == null)
-                packedTextures = ELFeaturesMod.texturesProvider().loadTexturesProperty(profile);
+                packedTextures = ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesProperty(profile);
 
             return packedTextures;
         }

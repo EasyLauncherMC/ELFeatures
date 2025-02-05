@@ -7,8 +7,8 @@ import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
 import org.easylauncher.mods.elfeatures.ELFeaturesMod;
-import org.easylauncher.mods.elfeatures.textures.TexturesInspector;
-import org.easylauncher.mods.elfeatures.textures.TexturesPayload;
+import org.easylauncher.mods.elfeatures.texture.TexturesInspector;
+import org.easylauncher.mods.elfeatures.texture.model.AuthlibTexturesPayload;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -33,7 +33,7 @@ public final class MixinPlayerSkinProvider1 {
                 GameProfile profile,
                 boolean requireSecure
         ) {
-            return ELFeaturesMod.texturesProvider().loadTexturesMap(profile, sessionService.getTextures(profile, requireSecure));
+            return ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesMap(profile, sessionService.getTextures(profile, requireSecure));
         }
 
     }
@@ -53,7 +53,7 @@ public final class MixinPlayerSkinProvider1 {
                 GameProfile profile,
                 boolean requireSecure
         ) {
-            return ELFeaturesMod.texturesProvider().loadTexturesMap(profile, sessionService.getTextures(profile, requireSecure));
+            return ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesMap(profile, sessionService.getTextures(profile, requireSecure));
         }
 
     }
@@ -74,7 +74,7 @@ public final class MixinPlayerSkinProvider1 {
         ) {
             try {
                 byte[] decodedData = Base64.getDecoder().decode(property.value());
-                TexturesPayload payload = ELFeaturesMod.texturesProvider().parseTexturesPayload(decodedData);
+                AuthlibTexturesPayload payload = ELFeaturesMod.authlibEasyxTexturesProvider().parseTexturesPayload(decodedData);
                 Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = payload.getTextures();
 
                 boolean foundEasyX = textures.values().stream()

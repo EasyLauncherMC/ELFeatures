@@ -66,7 +66,7 @@ public final class TransformerImageBufferDownload {
                     // pass only valid texture images
                     insnList.add(new MethodInsnNode(
                             INVOKESTATIC,
-                            "org/easylauncher/mods/elfeatures/textures/TexturesInspector",
+                            "org/easylauncher/mods/elfeatures/texture/TexturesInspector",
                             "passValidTextureImage",
                             "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;",
                             false
@@ -90,7 +90,7 @@ public final class TransformerImageBufferDownload {
                     // compute scale factor
                     insnList.add(new MethodInsnNode(
                             INVOKESTATIC,
-                            "org/easylauncher/mods/elfeatures/textures/TexturesInspector",
+                            "org/easylauncher/mods/elfeatures/texture/TexturesInspector",
                             "computeTextureScale",
                             "(Ljava/awt/image/BufferedImage;)I",
                             false

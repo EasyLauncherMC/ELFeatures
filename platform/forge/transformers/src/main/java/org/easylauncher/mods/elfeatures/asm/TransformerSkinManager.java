@@ -37,8 +37,8 @@ public final class TransformerSkinManager {
                     insnList.add(new MethodInsnNode(
                             INVOKESTATIC,
                             "org/easylauncher/mods/elfeatures/ELFeaturesMod",
-                            "texturesProvider",
-                            "()Lorg/easylauncher/mods/elfeatures/textures/TexturesProvider;",
+                            "authlibEasyxTexturesProvider",
+                            "()Lorg/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider;",
                             false
                     ));
 
@@ -56,7 +56,7 @@ public final class TransformerSkinManager {
                     // load textures via ELTP
                     insnList.add(new MethodInsnNode(
                             INVOKEVIRTUAL,
-                            "org/easylauncher/mods/elfeatures/textures/TexturesProvider",
+                            "org/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider",
                             "loadTexturesMap",
                             "(Lcom/mojang/authlib/GameProfile;Ljava/util/Map;)Ljava/util/Map;",
                             false

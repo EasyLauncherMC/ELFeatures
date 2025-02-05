@@ -2,7 +2,7 @@ package org.easylauncher.mods.elfeatures.mixin.textures;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.HttpTexture;
-import org.easylauncher.mods.elfeatures.textures.TexturesInspector;
+import org.easylauncher.mods.elfeatures.texture.TexturesInspector;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
