@@ -3,7 +3,7 @@ package org.easylauncher.mods.elfeatures;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.logging.log4j.Logger;
-import org.easylauncher.mods.elfeatures.textures.TexturesProvider;
+import org.easylauncher.mods.elfeatures.texture.provider.TexturesProviderService;
 
 @Getter
 abstract class ELFeaturesModBase implements ELFeaturesMod {
@@ -13,11 +13,11 @@ abstract class ELFeaturesModBase implements ELFeaturesMod {
 
     @Getter(AccessLevel.NONE)
     private final Logger logger;
-    private final TexturesProvider texturesProvider;
+    private final TexturesProviderService texturesProviderService;
 
     ELFeaturesModBase(String userAgent, Logger logger) {
         this.logger = logger;
-        this.texturesProvider = new TexturesProvider(userAgent, this);
+        this.texturesProviderService = new TexturesProviderService(userAgent, this);
         ELFeaturesService.initialize(this);
     }
 

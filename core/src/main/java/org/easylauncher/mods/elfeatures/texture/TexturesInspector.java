@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.textures;
+package org.easylauncher.mods.elfeatures.texture;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
