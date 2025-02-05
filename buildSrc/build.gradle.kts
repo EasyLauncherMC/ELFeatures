@@ -1,5 +1,4 @@
 plugins {
-    java
     `kotlin-dsl`
 }
 
@@ -20,7 +19,7 @@ dependencies {
     implementation("net.neoforged.gradle:userdev:7.0.180")
     implementation("net.neoforged.gradle:mixin:7.0.180")
     implementation("org.spongepowered:mixingradle:0.7-SNAPSHOT")
-    implementation("net.fabricmc:fabric-loom:1.7-SNAPSHOT")
+    implementation("net.fabricmc:fabric-loom:1.9-SNAPSHOT")
     implementation("com.github.johnrengelman:shadow:8.1.1")
     implementation("tech.yanand.maven-central-publish:tech.yanand.maven-central-publish.gradle.plugin:1.3.0")
 

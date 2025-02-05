@@ -1,6 +1,4 @@
-import elfeatures.gradle.model.Mod
-import java.nio.file.Path
-import java.util.stream.Collectors
+import elfeatures.gradle.model.ModuleSpec
 
 plugins {
     java
@@ -9,51 +7,44 @@ plugins {
     id("tech.yanand.maven-central-publish")
 }
 
-// load Mod info
-val mod: Mod = rootProject.extra["mod"] as Mod
+val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
-val projectDir: Path = project.layout.projectDirectory.asFile.toPath()
-val rootProjectDir: Path = rootProject.layout.projectDirectory.asFile.toPath()
-
-val artifactIdSuffix: String = rootProjectDir.relativize(projectDir).toString().split(File.separator).stream()
-    .filter { name -> name != "platform" }
-    .collect(Collectors.joining("-"))
-
-
-tasks.register<Jar>("javadocJar") {
-    archiveAppendix = artifactIdSuffix
-    archiveBaseName = mod.id
-    archiveClassifier = "javadoc"
-    destinationDirectory = layout.buildDirectory.dir("libs")
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(spec.javaVersion)
 }
 
-tasks.register<Jar>("sourcesJar") {
-    archiveAppendix = artifactIdSuffix
-    archiveBaseName = mod.id
-    archiveClassifier = "sources"
-    destinationDirectory = layout.buildDirectory.dir("libs")
-}
-
-// configure publishing to Maven Central
 mavenCentral {
     authToken = System.getenv("PUBLISH_AUTH_TOKEN")?:"unknown"
 }
 
-// configure publications
+tasks.register<Jar>("javadocJarStub") {
+    archiveClassifier = "javadoc"
+    destinationDirectory = tasks.jar.get().destinationDirectory
+}
+
+tasks.register<Jar>("sourcesJarStub") {
+    archiveClassifier = "sources"
+    destinationDirectory = tasks.jar.get().destinationDirectory
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = project.group.toString()
-            artifactId = "${mod.id}-$artifactIdSuffix"
+            artifactId = base.archivesName.get()
             version = project.version.toString()
 
-            artifact(tasks.named<Jar>("javadocJar"))
-            artifact(tasks.named<Jar>("sourcesJar"))
+            artifact(spec.publishJarTask) {
+                classifier = null
+            }
+
+            artifact(tasks["javadocJarStub"])
+            artifact(tasks["sourcesJarStub"])
 
             pom {
                 name = rootProject.name
-                description = mod.description
-                url = mod.sources
+                description = spec.mod.description
+                url = spec.mod.sources
 
                 licenses {
                     license {
@@ -81,7 +72,6 @@ publishing {
     }
 }
 
-// configure signing
 signing {
     sign(publishing.publications["maven"])
 }

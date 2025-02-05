@@ -1,23 +1,22 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import elfeatures.gradle.tasks.TransformJarContentTask
-import java.util.*
+import elfeatures.gradle.model.ModuleSpec
+import elfeatures.gradle.task.TransformJarContentTask
 
 plugins {
     java
     id("net.minecraftforge.gradle")
 }
 
-// load properties and Mod info
-val props: Properties = project.extra["props"] as Properties
+val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
-val enableJarJar = props["enable_jarjar"]?.toString()?.toBooleanStrictOrNull()?:false
+val enableJarJar = spec.props["enable_jarjar"]?.toString()?.toBooleanStrictOrNull()?:false
 if (enableJarJar) {
     jarJar.enable()
 }
 
 minecraft {
-    mappings(props["mappings_channel"].toString(), props["mappings_version"].toString())
-    val enableReobf = props["enable_reobf"]?.toString()?.toBooleanStrictOrNull()?:true
+    mappings(spec.props["mappings_channel"].toString(), spec.props["mappings_version"].toString())
+    val enableReobf = spec.props["enable_reobf"]?.toString()?.toBooleanStrictOrNull()?:true
     if (!enableReobf) {
         reobf = false
     }
@@ -28,13 +27,12 @@ if (enableJarJar) {
 
     tasks.register<TransformJarContentTask>("transformJarContentBeforeShadow") {
         from(zipTree(tasks.jarJar.get().archiveFile))
-        archiveAppendix = project.extra["moduleName"] as String
         archiveBaseName = tasks.jarJar.get().archiveBaseName
         archiveClassifier = "before-shadow"
         destinationDirectory = layout.buildDirectory.dir("tmp")
         dependsOn(tasks.jarJar)
 
-        fileEntryNameTransformer { name ->
+        fileEntryNameTransformer { name: String ->
             if (name.endsWith(".jar"))
                 "$name$transformJarSuffix"
             else
@@ -43,7 +41,6 @@ if (enableJarJar) {
     }
 
     tasks.named<ShadowJar>("shadowPlatformJar") {
-        archiveAppendix = project.extra["moduleName"] as String
         archiveClassifier = "after-shadow"
         destinationDirectory = layout.buildDirectory.dir("tmp")
         dependsOn("transformJarContentBeforeShadow")
@@ -51,21 +48,27 @@ if (enableJarJar) {
 
     tasks.register<TransformJarContentTask>("transformJarContentAfterShadow") {
         from(zipTree(tasks.named<ShadowJar>("shadowPlatformJar").get().archiveFile))
-        archiveAppendix = project.extra["moduleName"] as String
-        archiveClassifier = ""
+        archiveClassifier = "all"
         destinationDirectory = tasks.jar.get().destinationDirectory
         dependsOn("shadowPlatformJar")
 
-        fileEntryNameTransformer { name ->
+        fileEntryNameTransformer { name: String ->
             if (name.endsWith(".jar$transformJarSuffix"))
                 name.substring(0, name.length - transformJarSuffix.length)
             else
                 name
         }
+
+        doLast {
+            copy {
+                from(archiveFile)
+                into(rootProject.layout.buildDirectory)
+                rename { name -> name.replace("-${spec.mod.version}", "").replace("-all", "") }
+            }
+        }
     }
 }
 
-// configure JAR processing
 tasks.jar {
     // populate JAR with mod banner
     from(rootProject.layout.projectDirectory.dir("resources")) {
@@ -73,14 +76,13 @@ tasks.jar {
     }
 
     if (enableJarJar) {
-        finalizedBy("transformJarContentAfterShadow")
+        finalizedBy(spec.publishJarTask)
     } else if (minecraft.reobf) {
         finalizedBy("reobfJar")
     }
 }
 
 if (enableJarJar) {
-    // configure Jar-in-Jar processing
     tasks.jarJar {
         // populate JAR with mod banner
         from(rootProject.layout.projectDirectory.dir("resources")) {

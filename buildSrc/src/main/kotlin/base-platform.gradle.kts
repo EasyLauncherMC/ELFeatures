@@ -1,45 +1,35 @@
-@file:Suppress("UNCHECKED_CAST")
-
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import elfeatures.gradle.model.Mod
-import elfeatures.gradle.tasks.InjectConstantsTask
-import org.gradle.kotlin.dsl.*
+import elfeatures.gradle.model.ModuleSpec
+import elfeatures.gradle.task.InjectConstantsTask
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 plugins {
     java
     id("com.github.johnrengelman.shadow")
 }
 
-// load properties and Mod info
-val props: Properties = project.extra["props"] as Properties
-val mod: Mod = rootProject.extra["mod"] as Mod
+val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
-val enableJarJar = props["enable_jarjar"]?.toString()?.toBooleanStrictOrNull()?:false
+base.archivesName = "${spec.mod.id}-${spec.moduleName}"
 
-// change default output JARs name
-base.archivesName = mod.id
-
-// publishing properties
-ext.set("publishJarTaskName", "shadowPlatformJar")
-
-// configure Constants class injecting
 tasks.named<InjectConstantsTask>("injectConstants") {
-    outputClassName.set("${project.group}.Constants")
-    constants.put("MOD_NAME", mod.name)
-    constants.put("MOD_VERSION", mod.version)
+    outputClassName = "${project.group}.Constants"
+    constants = mapOf(
+        "MOD_NAME"      to spec.mod.name,
+        "MOD_VERSION"   to spec.mod.version
+    )
 }
 
-// configure shading
 tasks.register<ShadowJar>("shadowPlatformJar") {
     dependencies {
-        exclude { dep -> dep.moduleGroup != rootProject.group }
-        (project.extra["usedModules"] as List<*>).forEach { include(project(":${it}")) }
+        if (spec.moduleName != "vanilla")
+            exclude { dep -> dep.moduleGroup != rootProject.group }
+
+        spec.usedModules.forEach { include(project(":${it}")) }
     }
 
     exclude(
@@ -50,19 +40,12 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
         "module-info.class"
     )
 
-    val moduleName = project.extra["moduleName"] as String
-    var jarFile = ((if (moduleName == "fabric") tasks.getByName("remapJar") else tasks.jar.get()) as AbstractArchiveTask).archiveFile
-
-    if (enableJarJar) {
-        jarFile = (tasks.getByName("transformJarContentBeforeShadow") as AbstractArchiveTask).archiveFile
-    }
-
     // construct shadow JAR from compiled JAR file instead of source-set output
-    from(zipTree(jarFile))
+    from(zipTree((tasks.getByName(spec.baseJarTask) as AbstractArchiveTask).archiveFile))
     configurations = listOf(project.configurations.compileClasspath.get())
     manifest.inheritFrom(tasks.jar.get().manifest)
 
-    archiveAppendix = moduleName
+    archiveClassifier = "all"
     includeEmptyDirs = false
 
     exclude(listOf(
@@ -72,40 +55,49 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
         "net/minecraftforge/**",
         "net/neoforged/**"
     ))
+
+    if (spec.publishJarTask == "shadowPlatformJar") {
+        doLast {
+            copy {
+                from(archiveFile)
+                into(rootProject.layout.buildDirectory)
+                rename { name -> name.replace("-${spec.mod.version}", "").replace("-all", "") }
+            }
+        }
+    }
 }
 
-// configure JAR processing
 tasks.jar {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     manifest {
         attributes(
-            "Automatic-Module-Name"     to  mod.id,
-            "Specification-Title"       to  mod.name,
-            "Specification-Vendor"      to  mod.authors,
+            "Automatic-Module-Name"     to  spec.mod.id,
+            "Specification-Title"       to  spec.mod.name,
+            "Specification-Vendor"      to  spec.mod.authors,
             "Specification-Version"     to  1, // we're version 1 of ourselves
-            "Implementation-Title"      to  mod.name,
-            "Implementation-Version"    to  mod.version,
-            "Implementation-Vendor"     to  mod.authors,
+            "Implementation-Title"      to  spec.mod.name,
+            "Implementation-Version"    to  spec.mod.version,
+            "Implementation-Vendor"     to  spec.mod.authors,
             "Implementation-Timestamp"  to  formatter.format(LocalDateTime.now(ZoneOffset.UTC)),
         )
     }
 }
 
-// configure resources filtering
 tasks.processResources {
-    val replacements = mod.toReplaceProperties()
+    val replacements = spec.mod.toReplaceProperties()
     inputs.properties(replacements)
 
-    val modFiles: List<String> = project.extra["modFiles"] as List<String>
-    filesMatching(modFiles) {
-        expand(replacements)
+    if (spec.resources.isNotEmpty()) {
+        filesMatching(spec.resources) {
+            expand(replacements)
+        }
     }
 }
 
 // configure mappings extraction
 val mixinMappings: Path = project.layout.projectDirectory.file("mixin.tsrg").asFile.toPath()
 if (Files.isRegularFile(mixinMappings)) {
-    tasks.create("extractTsrgMappings") {
+    tasks.register("extractTsrgMappings") {
         doLast {
             logger.info("Extracting TSRG mixin mappings...")
             copy {
@@ -123,7 +115,6 @@ if (Files.isRegularFile(mixinMappings)) {
     }
 }
 
-// shade after build
 tasks.build {
-    finalizedBy("shadowPlatformJar")
+    finalizedBy(spec.publishJarTask)
 }
