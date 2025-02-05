@@ -4,10 +4,6 @@ plugins {
     publish
 }
 
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(16)
-}
-
 repositories {
     maven("https://maven.minecraftforge.net/")
     mavenCentral()
@@ -20,15 +16,4 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.34")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
-}
-
-// configure publishing
-publishing {
-    publications {
-        named<MavenPublication>("maven") {
-            artifact(tasks.jar) {
-                classifier = null
-            }
-        }
-    }
 }

@@ -1,5 +1,4 @@
-import elfeatures.gradle.model.Mod
-import java.util.*
+import elfeatures.gradle.model.ModuleSpec
 
 plugins {
     java
@@ -10,41 +9,21 @@ plugins {
     publish
 }
 
-val mod: Mod = rootProject.extra["mod"] as Mod
-val props: Properties = project.extra["props"] as Properties
-
-val moduleName  : String        by extra { "forge-v3" }
-val usedModules : List<String>  by extra { listOf("core", "shared:mixin") }
-val modFiles    : List<String>  by extra { listOf("META-INF/mods.toml") }
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(16)
-}
+val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
 mixin {
-    add(sourceSets.main.get(), "${mod.id}.refmap.json")
-    config("${mod.id}.mixins.json")
+    add(sourceSets.main.get(), "${spec.mod.id}.refmap.json")
+    config("${spec.mod.id}.mixins.json")
     extraMappings("build/mappings/mixin.tsrg")
     quiet()
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:${props["minecraft_version"]}-${props["forge_version"]}") { isChanging = false }
+    minecraft("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}") { isChanging = false }
 
-    usedModules.forEach { implementation(project(":${it}")) }
+    spec.addUsedModules(this)
     compileOnly(project(":facade:authlib"))
 
     annotationProcessor("org.spongepowered:mixin:0.8.4:processor")
     annotationProcessor("org.projectlombok:lombok:1.18.34")
-}
-
-// configure publishing
-publishing {
-    publications {
-        named<MavenPublication>("maven") {
-            artifact(tasks.shadowPlatformJar) {
-                classifier = null
-            }
-        }
-    }
 }

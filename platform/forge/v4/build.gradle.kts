@@ -1,5 +1,4 @@
-import elfeatures.gradle.model.Mod
-import java.util.*
+import elfeatures.gradle.model.ModuleSpec
 
 plugins {
     java
@@ -10,22 +9,10 @@ plugins {
     publish
 }
 
-val mod: Mod = rootProject.extra["mod"] as Mod
-val props: Properties = project.extra["props"] as Properties
-
-val moduleName  : String        by extra { "forge-v4" }
-val usedModules : List<String>  by extra { listOf("core", "shared:mixin") }
-val modFiles    : List<String>  by extra { listOf("META-INF/mods.toml") }
-
-// publishing properties
-ext.set("publishJarTaskName", "transformJarContentAfterShadow")
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
-}
+val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
 mixin {
-    config("${mod.id}.mixins.json")
+    config("${spec.mod.id}.mixins.json")
     reobfSrgFile = "build/mappings/mixin.tsrg"
 
     messages["MIXIN_SOFT_TARGET_NOT_RESOLVED"] = "disabled"
@@ -35,9 +22,9 @@ mixin {
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:${props["minecraft_version"]}-${props["forge_version"]}") { isChanging = false }
+    minecraft("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}") { isChanging = false }
 
-    usedModules.forEach { implementation(project(":${it}")) }
+    spec.addUsedModules(this)
     compileOnly(project(":facade:authlib"))
 
     annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1")?.let { compileOnly(it) }
@@ -50,16 +37,5 @@ dependencies {
 tasks.jar {
     manifest {
         attributes("MixinConfigs" to "elfeatures.mixins.json")
-    }
-}
-
-// configure publishing
-publishing {
-    publications {
-        named<MavenPublication>("maven") {
-            artifact(tasks.transformJarContentAfterShadow) {
-                classifier = null
-            }
-        }
     }
 }

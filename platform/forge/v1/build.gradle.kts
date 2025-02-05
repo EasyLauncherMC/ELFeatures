@@ -1,4 +1,4 @@
-import java.util.*
+import elfeatures.gradle.model.ModuleSpec
 
 plugins {
     java
@@ -8,20 +8,12 @@ plugins {
     publish
 }
 
-val props: Properties = project.extra["props"] as Properties
-
-val moduleName  : String        by extra { "forge-v1" }
-val usedModules : List<String>  by extra { listOf("core", ":platform:forge:transformers", "shared:asm") }
-val modFiles    : List<String>  by extra { listOf("mcmod.info") }
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(8)
-}
+val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
 dependencies {
-    minecraft("net.minecraftforge:forge:${props["minecraft_version"]}-${props["forge_version"]}")
+    minecraft("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}")
 
-    usedModules.forEach { implementation(project(":${it}")) }
+    spec.addUsedModules(this)
 
     annotationProcessor("org.projectlombok:lombok:1.18.34")
 }
@@ -32,16 +24,5 @@ tasks.jar {
             "FMLCorePlugin" to "org.easylauncher.mods.elfeatures.ELFeaturesFMLPlugin",
             "FMLCorePluginContainsFMLMod" to "true",
         )
-    }
-}
-
-// configure publishing
-publishing {
-    publications {
-        named<MavenPublication>("maven") {
-            artifact(tasks.shadowPlatformJar) {
-                classifier = null
-            }
-        }
     }
 }

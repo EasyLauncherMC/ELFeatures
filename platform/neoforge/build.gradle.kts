@@ -1,5 +1,4 @@
-import elfeatures.gradle.model.Mod
-import java.util.*
+import elfeatures.gradle.model.ModuleSpec
 
 plugins {
     java
@@ -9,21 +8,12 @@ plugins {
     publish
 }
 
-val mod: Mod = rootProject.extra["mod"] as Mod
-val props: Properties = project.extra["props"] as Properties
-
-val moduleName  : String        by extra { "neoforge" }
-val usedModules : List<String>  by extra { listOf("core", "shared:mixin") }
-val modFiles    : List<String>  by extra { listOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml") }
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(17)
-}
+val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
 dependencies {
-    implementation("net.neoforged:neoforge:${props["neoforge_version"]}")
+    implementation("net.neoforged:neoforge:${spec.props["neoforge_version"]}")
 
-    usedModules.forEach { implementation(project(":${it}")) }
+    spec.addUsedModules(this)
     compileOnly(project(":facade:authlib"))
 
     annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1")?.let { compileOnly(it) }
@@ -49,16 +39,5 @@ tasks.compileJava {
 tasks.jar {
     manifest {
         attributes("MixinConfigs" to "elfeatures.mixins.json")
-    }
-}
-
-// configure publishing
-publishing {
-    publications {
-        named<MavenPublication>("maven") {
-            artifact(tasks.shadowPlatformJar) {
-                classifier = null
-            }
-        }
     }
 }
