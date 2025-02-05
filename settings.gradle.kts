@@ -30,6 +30,7 @@ include(":platform:forge:v2")               // Forge [1.8, 1.16.5]
 include(":platform:forge:v3")               // Forge [1.17, 1.20.4]
 include(":platform:forge:v4")               // Forge [1.20.6,)
 include(":platform:neoforge")               // NeoForge [1.20.2,)
+include(":platform:vanilla:legacy")         // Vanilla [1.7.2, 1.14.4)
 
 // platform cross-module shared code
 include(":shared:asm", ":shared:mixin")

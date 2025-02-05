@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.easylauncher.mods.elfeatures.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+
+  ],
+  "plugin": "org.easylauncher.mods.elfeatures.ELFeaturesMixinPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

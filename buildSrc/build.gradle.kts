@@ -11,6 +11,7 @@ repositories {
     maven("https://maven.neoforged.net/releases/")
     maven("https://repo.spongepowered.org/repository/maven-public/")
     maven("https://maven.fabricmc.net/")
+    maven("https://maven.legacyfabric.net/")
     mavenCentral()
 }
 
@@ -20,6 +21,7 @@ dependencies {
     implementation("net.neoforged.gradle:mixin:7.0.180")
     implementation("org.spongepowered:mixingradle:0.7-SNAPSHOT")
     implementation("net.fabricmc:fabric-loom:1.9-SNAPSHOT")
+    implementation("net.legacyfabric:legacy-looming:1.9-SNAPSHOT")
     implementation("com.github.johnrengelman:shadow:8.1.1")
     implementation("tech.yanand.maven-central-publish:tech.yanand.maven-central-publish.gradle.plugin:1.3.0")
 
