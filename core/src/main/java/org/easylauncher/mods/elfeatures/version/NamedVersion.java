@@ -1,5 +1,6 @@
 package org.easylauncher.mods.elfeatures.version;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NamedVersion implements MinecraftVersion {
 
     private static final Pattern REGEX = Pattern.compile("^(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d))?(?:-(?<suffix>\\D+)(?<number>\\d+))?$");

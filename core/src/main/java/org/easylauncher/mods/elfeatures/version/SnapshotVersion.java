@@ -1,5 +1,6 @@
 package org.easylauncher.mods.elfeatures.version;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 import java.util.Objects;
@@ -7,7 +8,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SnapshotVersion implements MinecraftVersion {
 
     private static final Pattern REGEX = Pattern.compile("^(\\d{2})w(\\d{2})(.+)$");

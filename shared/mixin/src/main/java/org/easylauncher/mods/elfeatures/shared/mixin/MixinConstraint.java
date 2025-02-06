@@ -1,66 +1,96 @@
 package org.easylauncher.mods.elfeatures.shared.mixin;
 
-import java.util.function.IntPredicate;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import org.easylauncher.mods.elfeatures.version.MinecraftVersion;
 
+import java.util.function.Consumer;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MixinConstraint {
 
-    public static final MixinConstraint ALWAYS_TRUE = new MixinConstraint();
+    private final MinecraftVersion expected;
+    private final VersionPredicate predicate;
 
-    private final IntPredicate[] bounds;
-
-    public MixinConstraint(IntPredicate... bounds) {
-        this.bounds = bounds;
+    public boolean isComparableWith(MinecraftVersion actual) {
+        return expected.isComparableWith(actual);
     }
 
-    public boolean pass(int dataVersion) {
-        for (IntPredicate bound : bounds)
-            if (!bound.test(dataVersion))
-                return false;
+    public boolean pass(MinecraftVersion actual) {
+        if (!isComparableWith(actual))
+            throw new IllegalArgumentException(String.format("Value '%s' isn't comparable with '%s'", actual, expected));
 
-        return true;
+        return predicate.test(expected, actual);
     }
 
-    public static MixinConstraint parse(String input) {
+    public static void parse(String input, Consumer<MixinConstraint> consumer) {
         if (input == null || input.isEmpty() || "*".equals(input))
-            return ALWAYS_TRUE;
+            return;
 
         boolean leftStrict = isStrict(input.charAt(0));
         boolean rightStrict = isStrict(input.charAt(input.length() - 1));
-
         String expression = input.substring(1, input.length() - 1);
-        boolean isRange = expression.contains(",");
 
-        if (!isRange) {
-            if (leftStrict || rightStrict)
-                throw new IllegalArgumentException("Certain expression must only be inside []: " + input);
-
-            int expected = Integer.parseInt(expression);
-            return new MixinConstraint(actual -> actual == expected);
-        }
+        if (parseEquationExpression(expression, leftStrict, rightStrict, consumer))
+            return;
 
         if (expression.indexOf(',') == -1 || expression.indexOf(',') != expression.lastIndexOf(','))
             throw new IllegalArgumentException("Range expression must have only 2 bounds: " + input);
 
+        if (parseRangeExpression(expression, leftStrict, rightStrict, consumer))
+            return;
+
+        throw new IllegalArgumentException("Unexpected expression: " + input);
+    }
+
+    private static boolean parseEquationExpression(String expression, boolean leftStrict, boolean rightStrict, Consumer<MixinConstraint> consumer) {
+        if (expression.contains(","))
+            return false;
+
+        if (leftStrict || rightStrict)
+            throw new IllegalArgumentException("Certain expression must only be inside []: " + expression);
+
+        // [X]
+        consumer.accept(new MixinConstraint(parseExpected(expression), MinecraftVersion::isEqual));
+        return true;
+    }
+
+    private static boolean parseRangeExpression(String expression, boolean leftStrict, boolean rightStrict, Consumer<MixinConstraint> consumer) {
         boolean leftFinite = expression.charAt(0) != ',';
         boolean rightFinite = expression.charAt(expression.length() - 1) != ',';
 
+        // [X,Y] or [X,Y) or (X,Y] or (X,Y)
         if (leftFinite && rightFinite) {
             String[] bounds = expression.split(",");
-            int leftBound = Integer.parseInt(bounds[0]);
-            int rightBound = Integer.parseInt(bounds[1]);
-            return new MixinConstraint(
-                    leftStrict ? (actual -> leftBound < actual) : (actual -> leftBound <= actual),
-                    rightStrict ? (actual -> actual < rightBound) : (actual -> actual <= rightBound)
-            );
-        } else if (leftFinite && !rightFinite && rightStrict) {
-            int leftBound = Integer.parseInt(expression.substring(0, expression.length() - 1));
-            return new MixinConstraint(leftStrict ? (actual -> leftBound < actual) : (actual -> leftBound <= actual));
-        } else if (rightFinite && !leftFinite && leftStrict) {
-            int rightBound = Integer.parseInt(expression.substring(1));
-            return new MixinConstraint(rightStrict ? (actual -> actual < rightBound) : (actual -> actual <= rightBound));
-        } else {
-            throw new IllegalArgumentException("Unexpected expression: " + input);
+            MinecraftVersion leftBound = parseExpected(bounds[0]);
+            MinecraftVersion rightBound = parseExpected(bounds[1]);
+
+            if (!leftBound.isComparableWith(rightBound))
+                throw new IllegalArgumentException(String.format(
+                        "Left bound '%s' cannot be compared with right bound '%s'",
+                        leftBound, rightBound
+                ));
+
+            consumer.accept(new MixinConstraint(leftBound, (e, a) -> e.isOlderThan(a, leftStrict)));
+            consumer.accept(new MixinConstraint(rightBound, (e, a) -> e.isNewerThan(a, rightStrict)));
+            return true;
         }
+
+        // [X,) or (X,)
+        if (leftFinite && rightStrict) {
+            MinecraftVersion expected = parseExpected(expression.substring(0, expression.length() - 1));
+            consumer.accept(new MixinConstraint(expected, (e, a) -> e.isOlderThan(a, leftStrict)));
+            return true;
+        }
+
+        // (,X] or (,X)
+        if (rightFinite && leftStrict) {
+            MinecraftVersion expected = parseExpected(expression.substring(1));
+            consumer.accept(new MixinConstraint(expected, (e, a) -> e.isNewerThan(a, rightStrict)));
+            return true;
+        }
+
+        return false;
     }
 
     private static boolean isStrict(char input) {
@@ -71,6 +101,17 @@ public final class MixinConstraint {
             return false;
 
         throw new IllegalArgumentException("Unexpected character: " + input);
+    }
+
+    private static MinecraftVersion parseExpected(String expression) {
+        return MinecraftVersion.parse(expression).orElseThrow(() -> new IllegalArgumentException(
+                String.format("Unresolved expression: '%s'", expression)
+        ));
+    }
+
+    @FunctionalInterface
+    public interface VersionPredicate {
+        boolean test(MinecraftVersion expected, MinecraftVersion actual);
     }
 
 }

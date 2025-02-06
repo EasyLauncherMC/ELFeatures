@@ -12,6 +12,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":core"))
+
     compileOnly("org.spongepowered:mixin:0.8.5")
 
     implementation("com.google.code.gson:gson:2.8.0")
