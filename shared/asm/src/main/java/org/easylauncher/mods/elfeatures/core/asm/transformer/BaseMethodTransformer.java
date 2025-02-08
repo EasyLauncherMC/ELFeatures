@@ -1,6 +1,6 @@
-package org.easylauncher.mods.elfeatures.shared.asm.transformer;
+package org.easylauncher.mods.elfeatures.core.asm.transformer;
 
-import org.easylauncher.mods.elfeatures.shared.asm.TransformerService;
+import org.easylauncher.mods.elfeatures.core.asm.TransformerService;
 
 public abstract class BaseMethodTransformer extends BaseTransformer implements MethodTransformer {
 

@@ -1,10 +1,11 @@
-package org.easylauncher.mods.elfeatures.shared.mixin;
+package org.easylauncher.mods.elfeatures.core.mixin;
 
 import lombok.extern.log4j.Log4j2;
-import org.easylauncher.mods.elfeatures.version.MinecraftVersion;
+import org.easylauncher.mods.elfeatures.core.version.MinecraftVersion;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Log4j2
 public final class MixinConstraintChain {
@@ -21,6 +22,10 @@ public final class MixinConstraintChain {
 
     public boolean passBoth(MinecraftVersion minecraftVersion, MinecraftVersion worldVersion) {
         return pass(minecraftVersion) || pass(worldVersion);
+    }
+
+    public void forEach(Consumer<MixinConstraint> consumer) {
+        this.constraints.forEach(consumer);
     }
 
     private boolean pass(MinecraftVersion version) {

@@ -1,9 +1,10 @@
-package org.easylauncher.mods.elfeatures.shared.mixin;
+package org.easylauncher.mods.elfeatures.core.mixin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.log4j.Log4j2;
-import org.easylauncher.mods.elfeatures.version.MinecraftVersion;
+import org.easylauncher.mods.elfeatures.ELFeaturesMod;
+import org.easylauncher.mods.elfeatures.core.version.MinecraftVersion;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -19,6 +20,9 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
     private final Map<String, List<MixinConstraintChain>> constraintChains;
     private MinecraftVersion minecraftVersion;
     private MinecraftVersion worldVersion;
+    private String mixinPackage;
+    private boolean debugEnabled;
+    private boolean loggingEnabled;
 
     public MixinPluginBase(Consumer<MixinPluginCustomizer> customizeFunction) {
         if (customizeFunction != null) {
@@ -28,12 +32,29 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
         }
 
         this.constraintChains = new HashMap<>();
+        registerConstraints();
+    }
+
+    protected abstract void registerConstraints();
+
+    protected void onLoad() {
+        // should be implemented by child
     }
 
     private void initialize(MixinPluginCustomizer customizer) {
-        if (customizer.useCurrentWorldVersion) {
-            if (!resolveCurrentWorldVersion()) {
-                log.warn("World version constrained mixins will not be used!");
+        this.loggingEnabled = customizer.loggingEnabled;
+        this.debugEnabled = loggingEnabled && customizer.debugEnabled;
+
+        if (debugEnabled) {
+            log.info("[Debug] Initializing mixin plugin with customizer:");
+            log.info("[Debug] {}", customizer);
+        }
+
+        if (customizer.useVersionJson) {
+            if (!loadFromVersionJson()) {
+                if (loggingEnabled) {
+                    log.warn("World version constrained mixins will not be used!");
+                }
             }
         }
 
@@ -41,12 +62,12 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
             this.worldVersion = customizer.defaultWorldVersion;
 
         if (minecraftVersion == null) {
-            String profile = customizer.profile;
+            String profile = customizer.runningVersion;
             if (profile != null) {
                 Optional<MinecraftVersion> version = MinecraftVersion.ofProfile(profile);
                 if (version.isPresent()) {
                     this.minecraftVersion = version.get();
-                } else {
+                } else if (loggingEnabled) {
                     log.warn("Couldn't resolve Minecraft version from the profile '{}'!", profile);
                     log.warn("Minecraft version constrained mixins will not be used!");
                 }
@@ -57,15 +78,28 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
             }
         }
 
+        if (debugEnabled)
+            log.info("[Debug] Initialized with: { MC version = '{}', world version = '{}' }", minecraftVersion, worldVersion);
+
         if (minecraftVersion == null) {
             log.error("Minecraft version isn't defined: no mixins will be applied!");
         }
     }
 
     @Override
+    public final void onLoad(String mixinPackage) {
+        this.mixinPackage = mixinPackage;
+
+        if (debugEnabled)
+            log.info("[Debug] Using mixin package = '{}'", mixinPackage);
+
+        onLoad();
+    }
+
+    @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (minecraftVersion == null)
-            return true;
+            return false;
 
         for (String mixinSuffix : constraintChains.keySet()) {
             if (mixinClassName.endsWith(mixinSuffix)) {
@@ -81,7 +115,11 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
     }
 
     protected final MixinConstraintGroup createConstraintGroup(String childPackageName) {
-        String mixinClassPrefix = String.format(".%s.Mixin", childPackageName);
+        String mixinClassPrefix = String.format("%s.%s.Mixin", mixinPackage, childPackageName);
+
+        if (debugEnabled)
+            log.info("[Debug] Creating mixin constraint group with class prefix '{}'", mixinClassPrefix);
+
         return new MixinConstraintGroup() {
             private final Map<String, List<MixinConstraintChain>> constraintChains = new LinkedHashMap<>();
 
@@ -96,6 +134,12 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
                 MixinConstraintChain chain = new MixinConstraintChain();
                 MixinConstraint.parse(expression, chain::append);
                 chains.add(chain);
+
+                if (debugEnabled) {
+                    log.info("[Debug] Added mixin constraint chain for '{}':", mixinClass);
+                    chain.forEach(constraint -> log.info("[Debug] - {}", constraint));
+                }
+
                 return this;
             }
 
@@ -106,7 +150,7 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
         };
     }
 
-    private boolean resolveCurrentWorldVersion() {
+    private boolean loadFromVersionJson() {
         try (InputStream resource = ClassLoader.getSystemClassLoader().getResourceAsStream("version.json")) {
             if (resource == null) {
                 log.error("ELFeatures can't find 'version.json' resource in classpath!");
@@ -118,7 +162,10 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
             String profile = root.get("name").getAsString();
             int worldVersion = root.get("world_version").getAsInt();
 
-            log.info("Running MC {} (world version: #{})", profile, worldVersion);
+            if (loggingEnabled) {
+                log.info("Running MC {} (world version: #{})", profile, worldVersion);
+            }
+
             MinecraftVersion.ofProfile(profile).ifPresent(version -> this.minecraftVersion = version);
             MinecraftVersion.ofWorldVersion(worldVersion).ifPresent(version -> this.worldVersion = version);
             return true;
@@ -129,24 +176,31 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
         }
     }
 
-    @Override public void onLoad(String mixinPackage) {}
+    @Override
+    public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
+        if (debugEnabled) {
+            if (myTargets.isEmpty()) {
+                log.info("[Debug] No owned mixin targets accepted!");
+            } else {
+                log.info("[Debug] Accepting owned targets:");
+                myTargets.stream().sorted().forEach(target -> log.info("[Debug] - '{}'", target));
+            }
+        }
+    }
+
     @Override public String getRefMapperConfig() { return null; }
-    @Override public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {}
     @Override public List<String> getMixins() { return null; }
     @Override public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
     @Override public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
     public static final class MixinPluginCustomizer {
 
-        private String profile;
-        private boolean useCurrentWorldVersion;
+        private String runningVersion;
+        private boolean useVersionJson;
         private MinecraftVersion defaultMinecraftVersion;
         private MinecraftVersion defaultWorldVersion;
-
-        public MixinPluginCustomizer useCurrentMinecraftVersion(String profile) {
-            this.profile = profile;
-            return this;
-        }
+        private boolean debugEnabled = ELFeaturesMod.DEBUG_ENABLED;
+        private boolean loggingEnabled = ELFeaturesMod.LOGGING_ENABLED;
 
         public MixinPluginCustomizer useMinecraftVersion(MinecraftVersion version) {
             if (version == null || version.getType().isWorldVersion())
@@ -156,8 +210,13 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
             return this;
         }
 
-        public MixinPluginCustomizer useCurrentWorldVersion() {
-            this.useCurrentWorldVersion = true;
+        public MixinPluginCustomizer useRunningVersion(String version) {
+            this.runningVersion = version;
+            return this;
+        }
+
+        public MixinPluginCustomizer useVersionJson() {
+            this.useVersionJson = true;
             return this;
         }
 
@@ -167,6 +226,28 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
 
             this.defaultWorldVersion = version;
             return this;
+        }
+
+        public MixinPluginCustomizer withDebug(boolean enabled) {
+            this.debugEnabled = enabled;
+            return this;
+        }
+
+        public MixinPluginCustomizer withLogging(boolean enabled) {
+            this.loggingEnabled = enabled;
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return "MixinPluginCustomizer{" +
+                    "runningVersion='" + runningVersion + '\'' +
+                    ", useVersionJson=" + useVersionJson +
+                    ", defaultMinecraftVersion=" + defaultMinecraftVersion +
+                    ", defaultWorldVersion=" + defaultWorldVersion +
+                    ", debugEnabled=" + debugEnabled +
+                    ", loggingEnabled=" + loggingEnabled +
+                    '}';
         }
 
     }

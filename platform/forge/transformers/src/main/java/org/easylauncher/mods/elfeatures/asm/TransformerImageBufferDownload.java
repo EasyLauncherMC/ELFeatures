@@ -1,10 +1,10 @@
 package org.easylauncher.mods.elfeatures.asm;
 
 import lombok.extern.log4j.Log4j2;
-import org.easylauncher.mods.elfeatures.shared.asm.TransformerService;
-import org.easylauncher.mods.elfeatures.shared.asm.TransformerTarget;
-import org.easylauncher.mods.elfeatures.shared.asm.transformer.BaseClassTransformer;
-import org.easylauncher.mods.elfeatures.shared.asm.transformer.BaseMethodTransformer;
+import org.easylauncher.mods.elfeatures.core.asm.TransformerService;
+import org.easylauncher.mods.elfeatures.core.asm.TransformerTarget;
+import org.easylauncher.mods.elfeatures.core.asm.transformer.BaseClassTransformer;
+import org.easylauncher.mods.elfeatures.core.asm.transformer.BaseMethodTransformer;
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;

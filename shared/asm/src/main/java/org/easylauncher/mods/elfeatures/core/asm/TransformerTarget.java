@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.shared.asm;
+package org.easylauncher.mods.elfeatures.core.asm;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

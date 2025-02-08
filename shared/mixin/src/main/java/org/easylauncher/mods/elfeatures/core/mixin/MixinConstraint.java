@@ -1,8 +1,8 @@
-package org.easylauncher.mods.elfeatures.shared.mixin;
+package org.easylauncher.mods.elfeatures.core.mixin;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import org.easylauncher.mods.elfeatures.version.MinecraftVersion;
+import org.easylauncher.mods.elfeatures.core.version.MinecraftVersion;
 
 import java.util.function.Consumer;
 

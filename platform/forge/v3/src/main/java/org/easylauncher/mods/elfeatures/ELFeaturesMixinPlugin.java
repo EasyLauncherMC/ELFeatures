@@ -1,10 +1,15 @@
 package org.easylauncher.mods.elfeatures;
 
-import org.easylauncher.mods.elfeatures.shared.mixin.MixinPluginBase;
+import org.easylauncher.mods.elfeatures.core.mixin.MixinPluginBase;
 
 public final class ELFeaturesMixinPlugin extends MixinPluginBase {
 
     public ELFeaturesMixinPlugin() {
+        super(MixinPluginCustomizer::useVersionJson);
+    }
+
+    @Override
+    protected void registerConstraints() {
         // --- feature: skin/cape textures from EasyX
         createConstraintGroup("textures")
                 .add("SkinManager$V1",                  "(,3465]")      // 1.20.1 and earlier

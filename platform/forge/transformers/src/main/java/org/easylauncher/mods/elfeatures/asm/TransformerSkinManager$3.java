@@ -1,8 +1,8 @@
 package org.easylauncher.mods.elfeatures.asm;
 
-import org.easylauncher.mods.elfeatures.shared.asm.TransformerService;
-import org.easylauncher.mods.elfeatures.shared.asm.TransformerTarget;
-import org.easylauncher.mods.elfeatures.shared.asm.transformer.BaseMethodTransformer;
+import org.easylauncher.mods.elfeatures.core.asm.TransformerService;
+import org.easylauncher.mods.elfeatures.core.asm.TransformerTarget;
+import org.easylauncher.mods.elfeatures.core.asm.transformer.BaseMethodTransformer;
 import org.objectweb.asm.tree.*;
 
 import static org.objectweb.asm.Opcodes.*;

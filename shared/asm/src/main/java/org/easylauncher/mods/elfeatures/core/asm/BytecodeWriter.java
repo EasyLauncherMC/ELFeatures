@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.shared.asm;
+package org.easylauncher.mods.elfeatures.core.asm;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-import static org.easylauncher.mods.elfeatures.shared.asm.TransformerService.DEBUG_ENABLED;
+import static org.easylauncher.mods.elfeatures.core.asm.TransformerService.DEBUG_ENABLED;
 
 @Log4j2
 public final class BytecodeWriter {

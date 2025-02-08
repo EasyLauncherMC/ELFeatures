@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.shared.mixin;
+package org.easylauncher.mods.elfeatures.core.mixin;
 
 public interface MixinConstraintGroup {
 

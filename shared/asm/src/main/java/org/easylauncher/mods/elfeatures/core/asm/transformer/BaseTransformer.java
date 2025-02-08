@@ -1,9 +1,9 @@
-package org.easylauncher.mods.elfeatures.shared.asm.transformer;
+package org.easylauncher.mods.elfeatures.core.asm.transformer;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.easylauncher.mods.elfeatures.shared.asm.TransformerService;
+import org.easylauncher.mods.elfeatures.core.asm.TransformerService;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;

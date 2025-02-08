@@ -1,10 +1,15 @@
 package org.easylauncher.mods.elfeatures;
 
-import org.easylauncher.mods.elfeatures.shared.mixin.MixinPluginBase;
+import org.easylauncher.mods.elfeatures.core.mixin.MixinPluginBase;
 
 public final class ELFeaturesMixinPlugin extends MixinPluginBase {
 
     public ELFeaturesMixinPlugin() {
+        super(MixinPluginCustomizer::useVersionJson);
+    }
+
+    @Override
+    protected void registerConstraints() {
         // --- feature: fix for multiplayer on 1.16.X
         createConstraintGroup("multiplayer")
                 .add("MinecraftClient",                 "[2582,2586]")  // 1.16.4-pre2 - 1.16.5

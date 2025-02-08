@@ -1,8 +1,8 @@
-package org.easylauncher.mods.elfeatures.shared.asm;
+package org.easylauncher.mods.elfeatures.core.asm;
 
 import lombok.extern.log4j.Log4j2;
-import org.easylauncher.mods.elfeatures.shared.asm.transformer.ClassTransformer;
-import org.easylauncher.mods.elfeatures.shared.asm.transformer.MethodTransformer;
+import org.easylauncher.mods.elfeatures.core.asm.transformer.ClassTransformer;
+import org.easylauncher.mods.elfeatures.core.asm.transformer.MethodTransformer;
 import org.objectweb.asm.commons.Remapper;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
