@@ -1,8 +1,8 @@
-package org.easylauncher.mods.elfeatures.version;
+package org.easylauncher.mods.elfeatures.core.version;
 
 import java.util.Optional;
 
-import static org.easylauncher.mods.elfeatures.version.WorldVersion.MIN_WORLD_VERSION;
+import static org.easylauncher.mods.elfeatures.core.version.WorldVersion.MIN_WORLD_VERSION;
 
 public interface MinecraftVersion extends Comparable<MinecraftVersion> {
 

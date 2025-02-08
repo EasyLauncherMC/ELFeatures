@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.version;
+package org.easylauncher.mods.elfeatures.core.version;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
