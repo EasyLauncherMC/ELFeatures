@@ -26,9 +26,6 @@ tasks.named<InjectConstantsTask>("injectConstants") {
 
 tasks.register<ShadowJar>("shadowPlatformJar") {
     dependencies {
-        if (spec.moduleName != "vanilla")
-            exclude { dep -> dep.moduleGroup != rootProject.group }
-
         spec.usedModules.forEach { include(project(":${it}")) }
     }
 
@@ -53,7 +50,8 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
         "cpw/mods/fml/**",
         "net/minecraft/**",
         "net/minecraftforge/**",
-        "net/neoforged/**"
+        "net/neoforged/**",
+        "LICENSE*"
     ))
 
     if (spec.publishJarTask == "shadowPlatformJar") {
