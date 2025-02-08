@@ -6,7 +6,7 @@ import org.easylauncher.mods.elfeatures.core.mixin.MixinPluginBase;
 public final class ELFeaturesMixinPlugin extends MixinPluginBase {
 
     public ELFeaturesMixinPlugin() {
-        super(customizer -> customizer.useRunningVersion(ELFeaturesTweaker.RUNNING_VERSION));
+        super(MixinPluginCustomizer::useVersionJson);
     }
 
     @Override
