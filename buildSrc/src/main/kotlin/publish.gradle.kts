@@ -34,10 +34,7 @@ publishing {
             artifactId = base.archivesName.get()
             version = project.version.toString()
 
-            artifact(spec.publishJarTask) {
-                classifier = null
-            }
-
+            artifact(tasks[spec.publishJarTask])
             artifact(tasks["javadocJarStub"])
             artifact(tasks["sourcesJarStub"])
 
