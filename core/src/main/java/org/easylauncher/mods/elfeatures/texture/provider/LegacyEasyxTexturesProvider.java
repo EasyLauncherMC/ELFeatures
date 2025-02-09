@@ -17,7 +17,7 @@ public final class LegacyEasyxTexturesProvider extends LegacyTexturesProviderBas
 
     @Override
     protected String formatTexturesUrl(String username) {
-        return String.format(EASYX_TEXTURES_URL_PATTERN, username);
+        return String.format(EASYX_TEXTURES_URL_PATTERN, username.toLowerCase());
     }
 
     @Override
