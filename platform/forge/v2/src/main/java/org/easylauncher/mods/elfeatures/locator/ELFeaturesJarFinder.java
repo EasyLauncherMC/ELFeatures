@@ -25,12 +25,13 @@ final class ELFeaturesJarFinder {
         }
 
         String rawPath = resource.getPath();
-        if (!rawPath.startsWith("file:/") || !rawPath.contains("!")) {
+        if (!rawPath.startsWith("file:") || !rawPath.contains("!")) {
             log.error("ELFeaturesMod class resource URL has an unexpected path: '{}'", rawPath);
             return null;
         }
 
-        Path jarPath = Paths.get(rawPath.substring(6, rawPath.indexOf('!')).replace('/', File.separatorChar));
+        log.info("ELFeaturesMod raw path: '{}'", rawPath);
+        Path jarPath = Paths.get(rawPath.substring(5, rawPath.indexOf('!')).replace('/', File.separatorChar));
         if (Files.isRegularFile(jarPath))
             return jarPath;
 
