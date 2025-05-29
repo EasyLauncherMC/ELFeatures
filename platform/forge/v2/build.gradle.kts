@@ -17,7 +17,7 @@ dependencies {
 
     compileOnly("net.minecraft:launchwrapper:1.12")
 
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    annotationProcessor(libs.lombok)
 }
 
 tasks.jar {

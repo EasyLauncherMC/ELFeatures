@@ -25,5 +25,5 @@ dependencies {
     compileOnly(project(":facade:authlib"))
 
     annotationProcessor("org.spongepowered:mixin:0.8.4:processor")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    annotationProcessor(libs.lombok)
 }

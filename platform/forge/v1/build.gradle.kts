@@ -15,7 +15,7 @@ dependencies {
 
     spec.addUsedModules(this)
 
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    annotationProcessor(libs.lombok)
 }
 
 tasks.jar {

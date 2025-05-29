@@ -28,6 +28,6 @@ dependencies {
     implementation("org.apache.commons:commons-text:1.12.0")
     implementation("commons-io:commons-io:2.16.1")
 
-    compileOnly("org.projectlombok:lombok:1.18.34")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    compileOnly("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
 }

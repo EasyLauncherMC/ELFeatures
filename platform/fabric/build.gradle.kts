@@ -32,7 +32,7 @@ dependencies {
     spec.addUsedModules(this)
     compileOnly(project(":facade:authlib"))
 
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    annotationProcessor(libs.lombok)
 }
 
 tasks.remapJar {

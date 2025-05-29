@@ -31,7 +31,7 @@ dependencies {
     jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")?.let { implementation(it) { jarJar.ranged(it, "[0.4.1,)") } }
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
+    annotationProcessor(libs.lombok)
 }
 
 tasks.jar {
