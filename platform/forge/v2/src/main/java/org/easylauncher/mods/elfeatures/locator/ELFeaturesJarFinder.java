@@ -31,9 +31,13 @@ final class ELFeaturesJarFinder {
         }
 
         log.info("ELFeaturesMod raw path: '{}'", rawPath);
-        Path jarPath = Paths.get(rawPath.substring(5, rawPath.indexOf('!')).replace('/', File.separatorChar));
-        if (Files.isRegularFile(jarPath))
-            return jarPath;
+        String jarPath = rawPath.substring(5, rawPath.indexOf('!')).replace('/', File.separatorChar);
+        if (jarPath.startsWith("\\") && jarPath.contains(":"))
+            jarPath = jarPath.substring(1); // Windows fix for JAR path like '\\C:\\Users\\usr\\...'
+
+        Path realJarPath = Paths.get(jarPath);
+        if (Files.isRegularFile(realJarPath))
+            return realJarPath;
 
         log.error("ELFeatures JAR file not found!");
         return null;
