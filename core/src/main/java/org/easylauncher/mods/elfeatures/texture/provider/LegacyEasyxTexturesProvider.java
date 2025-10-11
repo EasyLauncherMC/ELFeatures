@@ -12,7 +12,7 @@ public final class LegacyEasyxTexturesProvider extends LegacyTexturesProviderBas
 
     @Override
     protected String keyFromProfile(GameProfile profile) {
-        return profile != null ? profile.getName() : null;
+        return profile != null ? nameOfProfile(profile) : null;
     }
 
     @Override

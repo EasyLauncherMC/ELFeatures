@@ -8,10 +8,14 @@ import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.util.UUIDTypeAdapter;
+import lombok.SneakyThrows;
 import org.easylauncher.mods.elfeatures.texture.model.TexturesData;
 import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -108,6 +112,39 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
         D loaded = texturesCache.getUnchecked(key);
         String propertyValue = loaded != null ? loaded.getPropertyValue() : null;
         return propertyValue != null ? new Property("textures", propertyValue) : null;
+    }
+
+    // -------------- INTERNAL -----------------------------------------------------------------------------------------
+
+    // GameProfile is a record starting from authlib 7.x
+    private static MethodHandle MH_GameProfile$id;
+    private static MethodHandle MH_GameProfile$name;
+
+    @SneakyThrows
+    protected final UUID idOfProfile(GameProfile profile) {
+        return MH_GameProfile$id != null
+                ? (UUID) MH_GameProfile$id.invoke(profile)
+                : profile.getId();
+    }
+
+    @SneakyThrows
+    protected final String nameOfProfile(GameProfile profile) {
+        return MH_GameProfile$name != null
+                ? (String) MH_GameProfile$name.invoke(profile)
+                : profile.getName();
+    }
+
+    static {
+        try {
+            MethodHandles.Lookup lookup = MethodHandles.publicLookup().in(GameProfile.class);
+            //noinspection JavaLangInvokeHandleSignature
+            MH_GameProfile$id = lookup.findVirtual(GameProfile.class, "id", MethodType.methodType(UUID.class));
+            //noinspection JavaLangInvokeHandleSignature
+            MH_GameProfile$name = lookup.findVirtual(GameProfile.class, "name", MethodType.methodType(String.class));
+        } catch (NoSuchMethodException ignored) {
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }

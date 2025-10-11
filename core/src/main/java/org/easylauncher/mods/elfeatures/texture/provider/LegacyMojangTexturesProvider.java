@@ -17,7 +17,7 @@ public final class LegacyMojangTexturesProvider extends LegacyTexturesProviderBa
 
     @Override
     protected UUID keyFromProfile(GameProfile profile) {
-        return profile != null ? profile.getId() : null;
+        return profile != null ? idOfProfile(profile) : null;
     }
 
     @Override
