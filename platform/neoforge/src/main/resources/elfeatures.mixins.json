@@ -6,8 +6,10 @@
   "client": [
     "textures.MixinHttpTexture",
     "textures.MixinSkinManager$V1",
+    "textures.MixinSkinManager$V2",
     "textures.MixinSkinManager1$V1",
     "textures.MixinSkinManager1$V2",
+    "textures.MixinSkinManager1$V3",
     "textures.MixinSkinTextureDownloader"
   ],
   "plugin": "org.easylauncher.mods.elfeatures.ELFeaturesMixinPlugin",

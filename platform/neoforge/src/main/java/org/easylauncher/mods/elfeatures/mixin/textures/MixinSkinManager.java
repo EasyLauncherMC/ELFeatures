@@ -32,4 +32,25 @@ public final class MixinSkinManager {
 
     }
 
+    @Mixin(SkinManager.class)
+    public static abstract class V2 {
+
+        @Redirect(
+                method = "Lnet/minecraft/client/resources/SkinManager;get(Lcom/mojang/authlib/GameProfile;)Ljava/util/concurrent/CompletableFuture;",
+                at = @At(
+                        value = "INVOKE",
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getPackedTextures(Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property;"
+                )
+        )
+        private Property redirect_getPackedTextures(MinecraftSessionService sessionService, GameProfile profile) {
+            Property packedTextures = sessionService.getPackedTextures(profile);
+
+            if (packedTextures == null)
+                packedTextures = ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesProperty(profile);
+
+            return packedTextures;
+        }
+
+    }
+
 }
