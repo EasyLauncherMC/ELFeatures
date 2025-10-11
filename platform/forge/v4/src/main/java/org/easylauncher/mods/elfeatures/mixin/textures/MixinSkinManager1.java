@@ -15,41 +15,84 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.Base64;
 import java.util.Map;
 
-@Mixin(targets = "net/minecraft/client/resources/SkinManager$1")
 public final class MixinSkinManager1 {
 
-    @Redirect(
-            method = "lambda$load$0(Lnet/minecraft/client/resources/SkinManager$CacheKey;Lcom/mojang/authlib/minecraft/MinecraftSessionService;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;unpackTextures(Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;"
-            )
-    )
-    private static MinecraftProfileTextures redirect_unpackTextures(
-            MinecraftSessionService sessionService,
-            Property property
-    ) {
-        try {
-            byte[] decodedData = Base64.getDecoder().decode(property.value());
-            AuthlibTexturesPayload payload = ELFeaturesMod.authlibEasyxTexturesProvider().parseTexturesPayload(decodedData);
-            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = payload.getTextures();
+    @Mixin(targets = "net/minecraft/client/resources/SkinManager$1")
+    public static abstract class V1 {
 
-            boolean foundEasyX = textures.values().stream()
-                    .map(MinecraftProfileTexture::getUrl)
-                    .anyMatch(TexturesInspector::hasEasyxDomain);
+        @Redirect(
+                method = "lambda$load$0(Lnet/minecraft/client/resources/SkinManager$CacheKey;Lcom/mojang/authlib/minecraft/MinecraftSessionService;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;",
+                at = @At(
+                        value = "INVOKE",
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;unpackTextures(Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;"
+                )
+        )
+        private static MinecraftProfileTextures redirect_unpackTextures(
+                MinecraftSessionService sessionService,
+                Property property
+        ) {
+            try {
+                byte[] decodedData = Base64.getDecoder().decode(property.value());
+                AuthlibTexturesPayload payload = ELFeaturesMod.authlibEasyxTexturesProvider().parseTexturesPayload(decodedData);
+                Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = payload.getTextures();
 
-            if (foundEasyX) {
-                return new MinecraftProfileTextures(
-                        textures.get(MinecraftProfileTexture.Type.SKIN),
-                        textures.get(MinecraftProfileTexture.Type.CAPE),
-                        textures.get(MinecraftProfileTexture.Type.ELYTRA),
-                        SignatureState.SIGNED
-                );
+                boolean foundEasyX = textures.values().stream()
+                        .map(MinecraftProfileTexture::getUrl)
+                        .anyMatch(TexturesInspector::hasEasyxDomain);
+
+                if (foundEasyX) {
+                    return new MinecraftProfileTextures(
+                            textures.get(MinecraftProfileTexture.Type.SKIN),
+                            textures.get(MinecraftProfileTexture.Type.CAPE),
+                            textures.get(MinecraftProfileTexture.Type.ELYTRA),
+                            SignatureState.SIGNED
+                    );
+                }
+            } catch (Throwable ignored) {
             }
-        } catch (Throwable ignored) {
+
+            return sessionService.unpackTextures(property);
         }
 
-        return sessionService.unpackTextures(property);
+    }
+
+    @Mixin(targets = "net/minecraft/client/resources/SkinManager$1")
+    public static abstract class V2 {
+
+        @Redirect(
+                method = "lambda$load$0(Lnet/minecraft/client/resources/SkinManager$CacheKey;Lnet/minecraft/server/Services;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;",
+                at = @At(
+                        value = "INVOKE",
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;unpackTextures(Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;"
+                )
+        )
+        private static MinecraftProfileTextures redirect_unpackTextures(
+                MinecraftSessionService sessionService,
+                Property property
+        ) {
+            try {
+                byte[] decodedData = Base64.getDecoder().decode(property.value());
+                AuthlibTexturesPayload payload = ELFeaturesMod.authlibEasyxTexturesProvider().parseTexturesPayload(decodedData);
+                Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = payload.getTextures();
+
+                boolean foundEasyX = textures.values().stream()
+                        .map(MinecraftProfileTexture::getUrl)
+                        .anyMatch(TexturesInspector::hasEasyxDomain);
+
+                if (foundEasyX) {
+                    return new MinecraftProfileTextures(
+                            textures.get(MinecraftProfileTexture.Type.SKIN),
+                            textures.get(MinecraftProfileTexture.Type.CAPE),
+                            textures.get(MinecraftProfileTexture.Type.ELYTRA),
+                            SignatureState.SIGNED
+                    );
+                }
+            } catch (Throwable ignored) {
+            }
+
+            return sessionService.unpackTextures(property);
+        }
+
     }
 
 }
