@@ -3,7 +3,9 @@ package org.easylauncher.mods.elfeatures.locator;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,16 +33,33 @@ final class ELFeaturesJarFinder {
         }
 
         log.info("ELFeaturesMod raw path: '{}'", rawPath);
+        return resolveJarPathCandidate(rawPath);
+    }
+
+    private static Path resolveJarPathCandidate(String rawPath) {
         String jarPath = rawPath.substring(5, rawPath.indexOf('!')).replace('/', File.separatorChar);
         if (jarPath.startsWith("\\") && jarPath.contains(":"))
             jarPath = jarPath.substring(1); // Windows fix for JAR path like '\\C:\\Users\\usr\\...'
 
-        Path realJarPath = Paths.get(jarPath);
-        if (Files.isRegularFile(realJarPath))
-            return realJarPath;
+        // --- fix for cyrillic user names and other non-latin
+        String decodedJarPath;
+        try {
+            decodedJarPath = URLDecoder.decode(jarPath, "UTF-8");
+            log.info("ELFeaturesMod decoded JAR path: '{}'", decodedJarPath);
+        } catch (UnsupportedEncodingException ex) {
+            log.error("Couldn't decode raw JAR path: '{}'", jarPath, ex);
+            return null;
+        }
 
-        log.error("ELFeatures JAR file not found!");
-        return null;
+        Path realJarPath = Paths.get(decodedJarPath);
+        log.info("ELFeaturesMod real JAR path: '{}'", realJarPath);
+
+        if (Files.isRegularFile(realJarPath)) {
+            log.error("ELFeatures JAR file not found!");
+            return null;
+        }
+
+        return realJarPath;
     }
 
 }
