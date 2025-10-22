@@ -45,14 +45,14 @@ final class ELFeaturesJarFinder {
         String decodedJarPath;
         try {
             decodedJarPath = URLDecoder.decode(jarPath, "UTF-8");
-            log.info("ELFeaturesMod decoded JAR path: '{}'", decodedJarPath);
+            log.info("Decoded JAR path: '{}'", decodedJarPath);
         } catch (UnsupportedEncodingException ex) {
             log.error("Couldn't decode raw JAR path: '{}'", jarPath, ex);
             return null;
         }
 
         Path realJarPath = Paths.get(decodedJarPath);
-        log.info("ELFeaturesMod real JAR path: '{}'", realJarPath);
+        log.info("Real JAR path: '{}'", realJarPath);
 
         if (!Files.isRegularFile(realJarPath)) {
             log.error("ELFeatures JAR file not found!");
