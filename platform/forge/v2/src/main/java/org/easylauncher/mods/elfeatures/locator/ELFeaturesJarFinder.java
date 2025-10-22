@@ -54,7 +54,7 @@ final class ELFeaturesJarFinder {
         Path realJarPath = Paths.get(decodedJarPath);
         log.info("ELFeaturesMod real JAR path: '{}'", realJarPath);
 
-        if (Files.isRegularFile(realJarPath)) {
+        if (!Files.isRegularFile(realJarPath)) {
             log.error("ELFeatures JAR file not found!");
             return null;
         }
