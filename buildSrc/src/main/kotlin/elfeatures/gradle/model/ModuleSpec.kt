@@ -16,13 +16,10 @@ data class ModuleSpec(
     val publishJarTask: String,
 ) {
 
-    fun addUsedModules(dependencyHandler: DependencyHandler): List<Dependency?> {
-        return usedModules.stream()
-            .map { dep -> ":$dep" }
-            .map(dependencyHandler::project)
-            .map { dep -> dependencyHandler.add("implementation", dep)}
-            .toList()
-    }
+    fun addUsedModules(dependencyHandler: DependencyHandler): List<Dependency?> =
+        usedModules.map { dep ->
+            dependencyHandler.add("implementation", dependencyHandler.project(":$dep"))
+        }
 
     companion object {
 
@@ -39,15 +36,9 @@ data class ModuleSpec(
             return ModuleSpec(mod, props, moduleName, usedModules, resources, javaVersion, baseJarTask, publishJarTask)
         }
 
-        private fun parseListProperty(
-            props: Properties,
-            property: String,
-            separator: String
-        ): List<String> {
-            if (property !in props)
-                return emptyList()
-
-            return props[property].toString().split(separator).toList()
+        private fun parseListProperty(props: Properties, property: String, separator: String): List<String> {
+            val value = props.getProperty(property) ?: return emptyList()
+            return value.split(separator)
         }
 
     }
