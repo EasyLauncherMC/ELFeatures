@@ -11,7 +11,11 @@ plugins {
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
 dependencies {
-    minecraft.dependency("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}")
+    implementation(minecraft.dependency("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}")) {
+        exclude(group = "org.scala-lang")
+        exclude(group = "org.scala-lang.modules")
+        exclude(group = "org.scala-lang.plugins")
+    }
 
     spec.addUsedModules(this)
 

@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import elfeatures.gradle.model.ModuleSpec
+import elfeatures.gradle.task.DecompressSrgFileTask
 import elfeatures.gradle.task.TransformJarContentTask
 
 plugins {
@@ -73,6 +74,26 @@ if (enableJarJar) {
     }
 }
 
+// decompress .tsrg.gz to plain .tsrg for MixinGradle AP
+if (enableReobf) {
+    val decompressSrgFile = tasks.register<DecompressSrgFileTask>("decompressSrgFile") {
+        outputFile.set(layout.buildDirectory.file("mappings/official2srg.tsrg"))
+    }
+
+    afterEvaluate {
+        decompressSrgFile.configure {
+            val srgCoord = minecraft.dependency.toSrg.get()
+            val srgCoordDep = project.dependencies.create(srgCoord)
+            val srgFile = project.configurations.detachedConfiguration(srgCoordDep).resolve().first()
+            inputFile.set(srgFile)
+        }
+    }
+
+    tasks.withType(JavaCompile::class.java).configureEach {
+        dependsOn(decompressSrgFile)
+    }
+}
+
 if (enableReobf) {
     renamer.classes(tasks.named("jar", Jar::class.java)) {
         afterEvaluate {
@@ -97,9 +118,6 @@ tasks.jar {
 
 if (enableJarJar) {
     tasks.named("jarJar") {
-        // populate JAR with mod banner
-        (this as Jar).from(rootProject.layout.projectDirectory.dir("resources")) {
-            include("elfeatures_banner.png")
-        }
+        (this as Jar).duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }

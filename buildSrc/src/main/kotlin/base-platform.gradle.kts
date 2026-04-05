@@ -14,6 +14,11 @@ plugins {
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
+// disable default shadowJar task — we use shadowPlatformJar instead
+tasks.named<ShadowJar>("shadowJar") {
+    enabled = false
+}
+
 base.archivesName = "${spec.mod.id}-${spec.moduleName}"
 
 tasks.named<InjectConstantsTask>("injectConstants") {
