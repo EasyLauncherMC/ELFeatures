@@ -13,6 +13,8 @@ val spec: ModuleSpec = ext["spec"] as ModuleSpec
 loom {
     mixin {
         defaultRefmapName = "${spec.mod.id}.refmap.json"
+        useLegacyMixinAp = true
+
         messages = mapOf(
             "NO_OBFDATA_FOR_METHOD" to "disabled",
             "TARGET_ELEMENT_NOT_FOUND" to "disabled"

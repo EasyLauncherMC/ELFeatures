@@ -22,13 +22,16 @@ mixin {
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}") { isChanging = false }
+    minecraft.dependency("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}")
 
     spec.addUsedModules(this)
     compileOnly(project(":facade:authlib"))
 
     annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1")?.let { compileOnly(it) }
-    jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")?.let { implementation(it) { jarJar.ranged(it, "[0.4.1,)") } }
+    jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")?.let { dep ->
+        implementation(dep)
+        jarJar.configure(dep) { version = "[0.4.1,)" }
+    }
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     annotationProcessor(libs.lombok)

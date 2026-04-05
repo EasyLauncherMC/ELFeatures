@@ -11,7 +11,7 @@ plugins {
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
 dependencies {
-    minecraft("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}")
+    minecraft.dependency("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}")
 
     spec.addUsedModules(this)
 

@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
 
 plugins {
     java
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
@@ -43,7 +43,7 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
     // construct shadow JAR from compiled JAR file instead of source-set output
     from(zipTree((tasks.getByName(spec.baseJarTask) as AbstractArchiveTask).archiveFile))
     configurations = listOf(project.configurations.compileClasspath.get())
-    manifest.inheritFrom(tasks.jar.get().manifest)
+    manifest.from(tasks.jar.get().manifest)
 
     archiveClassifier = "all"
     includeEmptyDirs = false
@@ -68,7 +68,6 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
 }
 
 tasks.jar {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     manifest {
         attributes(
             "Automatic-Module-Name"     to  spec.mod.id,
@@ -78,7 +77,7 @@ tasks.jar {
             "Implementation-Title"      to  spec.mod.name,
             "Implementation-Version"    to  spec.mod.version,
             "Implementation-Vendor"     to  spec.mod.authors,
-            "Implementation-Timestamp"  to  formatter.format(LocalDateTime.now(ZoneOffset.UTC)),
+            "Implementation-Timestamp"  to  LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_DATE_TIME),
         )
     }
 }
@@ -97,7 +96,7 @@ tasks.processResources {
 // configure mappings extraction
 val mixinMappings: Path = project.layout.projectDirectory.file("mixin.tsrg").asFile.toPath()
 if (Files.isRegularFile(mixinMappings)) {
-    tasks.register("extractTsrgMappings") {
+    val extractMappingsTask = tasks.register("extractTsrgMappings") {
         doLast {
             logger.info("Extracting TSRG mixin mappings...")
             copy {
@@ -111,7 +110,7 @@ if (Files.isRegularFile(mixinMappings)) {
     }
 
     tasks.compileJava {
-        dependsOn("extractTsrgMappings")
+        dependsOn(extractMappingsTask)
     }
 }
 

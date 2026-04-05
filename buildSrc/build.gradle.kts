@@ -15,19 +15,20 @@ repositories {
 }
 
 dependencies {
-    implementation("net.minecraftforge.gradle:ForgeGradle:6.+")
-    implementation("net.neoforged.gradle:userdev:7.0.180")
-    implementation("net.neoforged.gradle:mixin:7.0.180")
+    implementation("net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:7.+")
+    implementation("net.minecraftforge.jarjar:net.minecraftforge.jarjar.gradle.plugin:0.2.3")
+    implementation("net.minecraftforge.renamer:net.minecraftforge.renamer.gradle.plugin:1.0.14")
+    implementation("net.neoforged.gradle:userdev:7.1.21")
     implementation("org.spongepowered:mixingradle:0.7-SNAPSHOT")
-    implementation("net.fabricmc:fabric-loom:1.9-SNAPSHOT")
-    implementation("com.github.johnrengelman:shadow:8.1.1")
+    implementation("net.fabricmc:fabric-loom:1.16-SNAPSHOT")
+    implementation("com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:9.4.1")
     implementation("tech.yanand.maven-central-publish:tech.yanand.maven-central-publish.gradle.plugin:1.3.0")
 
-    implementation("org.apache.commons:commons-compress:1.27.1")
-    implementation("org.apache.commons:commons-lang3:3.15.0")
-    implementation("org.apache.commons:commons-text:1.12.0")
-    implementation("commons-io:commons-io:2.16.1")
+    implementation("org.apache.commons:commons-compress:1.28.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("org.apache.commons:commons-text:1.15.0")
+    implementation("commons-io:commons-io:2.21.0")
 
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
+    compileOnly("org.projectlombok:lombok:1.18.44")
+    annotationProcessor("org.projectlombok:lombok:1.18.44")
 }

@@ -96,11 +96,8 @@ abstract class InjectConstantsTask @Inject constructor() : DefaultTask() {
 
     companion object {
         private fun isValidJavaIdentifier(s: String): Boolean {
-            if (s.isEmpty())
-                return false
-
-            if (!Character.isJavaIdentifierStart(s[0]))
-                return false
+            if (s.isEmpty()) return false
+            if (!Character.isJavaIdentifierStart(s[0])) return false
 
             for (i in 1 until s.length)
                 if (!Character.isJavaIdentifierPart(s[i]))
@@ -109,4 +106,5 @@ abstract class InjectConstantsTask @Inject constructor() : DefaultTask() {
             return true
         }
     }
+
 }

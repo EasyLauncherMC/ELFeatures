@@ -19,7 +19,7 @@ mixin {
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}") { isChanging = false }
+    minecraft.dependency("net.minecraftforge:forge:${spec.props["minecraft_version"]}-${spec.props["forge_version"]}")
 
     spec.addUsedModules(this)
     compileOnly(project(":facade:authlib"))

@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 @DisableCachingByDefault(because = "Not worth caching")
 abstract class TransformJarContentTask @Inject constructor() : Zip() {
+
     private var fileEntryNameTransformer: UnaryOperator<String>
     private var dirEntryNameTransformer: UnaryOperator<String>
 
@@ -32,4 +33,5 @@ abstract class TransformJarContentTask @Inject constructor() : Zip() {
     fun dirEntryNameTransformer(transformer: UnaryOperator<String>) {
         dirEntryNameTransformer = transformer
     }
+
 }

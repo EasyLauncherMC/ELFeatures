@@ -92,5 +92,7 @@ class TransformJarContentCopyAction(
                 throw GradleException("Couldn't add $dirDetails to JAR '$jarFile'", ex)
             }
         }
+
     }
+
 }

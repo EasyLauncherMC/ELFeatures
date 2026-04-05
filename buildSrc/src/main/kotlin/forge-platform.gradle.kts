@@ -5,32 +5,36 @@ import elfeatures.gradle.task.TransformJarContentTask
 plugins {
     java
     id("net.minecraftforge.gradle")
+    id("net.minecraftforge.jarjar")
+    id("net.minecraftforge.renamer")
 }
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
-val enableJarJar = spec.props["enable_jarjar"]?.toString()?.toBooleanStrictOrNull()?:false
-if (enableJarJar) {
-    jarJar.enable()
+val enableJarJar = spec.props["enable_jarjar"]?.toString()?.toBooleanStrictOrNull() ?: false
+val enableReobf = spec.props["enable_reobf"]?.toString()?.toBooleanStrictOrNull() ?: true
+
+repositories {
+    mavenCentral()
+    minecraft.mavenizer(repositories)
+    maven(fg.forgeMaven)
+    maven(fg.minecraftLibsMaven)
 }
 
 minecraft {
     mappings(spec.props["mappings_channel"].toString(), spec.props["mappings_version"].toString())
-    val enableReobf = spec.props["enable_reobf"]?.toString()?.toBooleanStrictOrNull()?:true
-    if (!enableReobf) {
-        reobf = false
-    }
 }
 
 if (enableJarJar) {
+    jarJar.register()
     val transformJarSuffix = ".fuck_jengelman"
 
     tasks.register<TransformJarContentTask>("transformJarContentBeforeShadow") {
-        from(zipTree(tasks.jarJar.get().archiveFile))
-        archiveBaseName = tasks.jarJar.get().archiveBaseName
+        from(zipTree(tasks.named("jarJar").map { (it as AbstractArchiveTask).archiveFile }.get()))
+        archiveBaseName = (tasks.named("jarJar").get() as AbstractArchiveTask).archiveBaseName
         archiveClassifier = "before-shadow"
         destinationDirectory = layout.buildDirectory.dir("tmp")
-        dependsOn(tasks.jarJar)
+        dependsOn("jarJar")
 
         fileEntryNameTransformer { name: String ->
             if (name.endsWith(".jar"))
@@ -69,6 +73,15 @@ if (enableJarJar) {
     }
 }
 
+if (enableReobf) {
+    renamer.classes(tasks.named("jar", Jar::class.java)) {
+        afterEvaluate {
+            map.from(minecraft.dependency.toSrgFile)
+        }
+    }
+}
+
+
 tasks.jar {
     // populate JAR with mod banner
     from(rootProject.layout.projectDirectory.dir("resources")) {
@@ -77,15 +90,15 @@ tasks.jar {
 
     if (enableJarJar) {
         finalizedBy(spec.publishJarTask)
-    } else if (minecraft.reobf) {
-        finalizedBy("reobfJar")
+    } else if (enableReobf) {
+        finalizedBy("renameJar")
     }
 }
 
 if (enableJarJar) {
-    tasks.jarJar {
+    tasks.named("jarJar") {
         // populate JAR with mod banner
-        from(rootProject.layout.projectDirectory.dir("resources")) {
+        (this as Jar).from(rootProject.layout.projectDirectory.dir("resources")) {
             include("elfeatures_banner.png")
         }
     }

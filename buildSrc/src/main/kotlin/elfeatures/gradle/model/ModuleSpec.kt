@@ -4,9 +4,8 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.project
 import java.util.*
-import kotlin.streams.toList
 
-class ModuleSpec(
+data class ModuleSpec(
     val mod: Mod,
     val props: Properties,
     val moduleName: String,
@@ -25,23 +24,10 @@ class ModuleSpec(
             .toList()
     }
 
-    override fun toString(): String {
-        return "ModuleSpec{" +
-                "mod=" + mod +
-                ", props=" + props +
-                ", moduleName='" + moduleName + '\'' +
-                ", usedModules=" + usedModules +
-                ", resources=" + resources +
-                ", javaVersion=" + javaVersion +
-                ", baseJarTask='" + baseJarTask + '\'' +
-                ", publishJarTask='" + publishJarTask + '\'' +
-                '}'
-    }
-
     companion object {
+
         fun of(mod: Mod, props: Properties): ModuleSpec? {
-            val moduleName = props.getProperty("module_name")
-            if (moduleName == null) return null
+            val moduleName = props.getProperty("module_name") ?: return null
 
             val usedModules: List<String> = parseListProperty(props, "used_modules", ",")
             val resources: List<String> = parseListProperty(props, "resources", ";")
@@ -58,7 +44,11 @@ class ModuleSpec(
             property: String,
             separator: String
         ): List<String> {
-            return if (props.containsKey(property)) props[property].toString().split(separator).toList() else emptyList()
+            if (property !in props)
+                return emptyList()
+
+            return props[property].toString().split(separator).toList()
         }
+
     }
 }

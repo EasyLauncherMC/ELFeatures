@@ -2,7 +2,7 @@ package elfeatures.gradle.model
 
 import java.util.*
 
-class Mod(
+data class Mod(
     val id: String,
     val name: String,
     val version: String,
@@ -27,39 +27,21 @@ class Mod(
         properties.getProperty("mod_website"),
         properties.getProperty("mod_sources"),
         properties.getProperty("mod_issues"),
-        properties.getProperty("mod_authors")
+        properties.getProperty("mod_authors"),
     )
 
-    fun toReplaceProperties(): MutableMap<String?, Any?> {
-        val replacements: MutableMap<String?, Any?> = HashMap<String?, Any?>()
-        replacements.put("mod_id", id)
-        replacements.put("mod_name", name)
-        replacements.put("mod_version", version)
-        replacements.put("mod_license", license)
-        replacements.put("mod_description", description)
-        replacements.put("mod_full_description", fullDescription)
-        replacements.put("mod_summary", summary)
-        replacements.put("mod_website", website)
-        replacements.put("mod_sources", sources)
-        replacements.put("mod_issues", issues)
-        replacements.put("mod_authors", authors)
-        return replacements
-    }
-
-    override fun toString(): String {
-        return "Mod{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", version='" + version + '\'' +
-                ", license='" + license + '\'' +
-                ", description='" + description + '\'' +
-                ", fullDescription='" + fullDescription + '\'' +
-                ", summary='" + summary + '\'' +
-                ", website='" + website + '\'' +
-                ", sources='" + sources + '\'' +
-                ", issues='" + issues + '\'' +
-                ", authors='" + authors + '\'' +
-                '}'
+    fun toReplaceProperties() = buildMap {
+        put("mod_id", id)
+        put("mod_name", name)
+        put("mod_version", version)
+        put("mod_license", license)
+        put("mod_description", description)
+        put("mod_full_description", fullDescription)
+        put("mod_summary", summary)
+        put("mod_website", website)
+        put("mod_sources", sources)
+        put("mod_issues", issues)
+        put("mod_authors", authors)
     }
 
 }
