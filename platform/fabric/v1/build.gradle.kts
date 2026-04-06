@@ -38,7 +38,21 @@ dependencies {
     annotationProcessor(libs.lombok)
 }
 
+
 tasks {
+    // Loom drops extra mapping entries without official names from the final mappings.tiny,
+    // but mappings-base.tiny retains them. Redirect the mixin AP to use mappings-base.tiny instead
+    compileJava {
+        doFirst {
+            options.compilerArgs = options.compilerArgs.map { arg ->
+                if (arg.startsWith("-AinMapFileNamedIntermediary="))
+                    arg.replace("mappings.tiny", "mappings-base.tiny")
+
+                else arg
+            }
+        }
+    }
+
     jar {
         // populate JAR with mod icon
         from(rootProject.layout.projectDirectory.dir("resources")) {
