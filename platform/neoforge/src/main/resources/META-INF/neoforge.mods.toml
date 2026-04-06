@@ -16,6 +16,9 @@ ${mod_full_description}
 displayURL = "${mod_website}"
 authors = "${mod_authors}"
 
+[[mixins]]
+config = "elfeatures.mixins.json"
+
 [[dependencies.elfeatures]]
 modId = "neoforge"
 type = "required"
