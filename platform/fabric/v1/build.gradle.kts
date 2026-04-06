@@ -4,7 +4,7 @@ plugins {
     java
     id("elfeatures")
     `base-platform`
-    `fabric-platform`
+    id("net.fabricmc.fabric-loom-remap") version "1.16-SNAPSHOT"
     publish
 }
 
@@ -16,7 +16,8 @@ loom {
         useLegacyMixinAp = true
 
         messages = mapOf(
-            "NO_OBFDATA_FOR_METHOD" to "disabled",
+            "NO_OBFDATA_FOR_METHOD" to "warning",
+            "NO_OBFDATA_FOR_TARGET" to "warning",
             "TARGET_ELEMENT_NOT_FOUND" to "disabled"
         )
     }
@@ -37,6 +38,15 @@ dependencies {
     annotationProcessor(libs.lombok)
 }
 
-tasks.remapJar {
-    isPreserveFileTimestamps = true
+tasks {
+    jar {
+        // populate JAR with mod icon
+        from(rootProject.layout.projectDirectory.dir("resources")) {
+            include("assets/**")
+        }
+    }
+
+    remapJar {
+        isPreserveFileTimestamps = true
+    }
 }

@@ -23,7 +23,8 @@ include(":core")
 include(":modlocator:forge", ":modlocator:neoforge")
 
 // platform modules
-include(":platform:fabric")                 // Fabric [1.14,)
+include(":platform:fabric:v1")              // Fabric [1.14, 1.21.11]
+include(":platform:fabric:v2")              // Fabric [26.1,)
 include(":platform:forge:transformers")     // Forge ASM transformers
 include(":platform:forge:v1")               // Forge [1.7.10]
 include(":platform:forge:v2")               // Forge [1.8, 1.16.5]

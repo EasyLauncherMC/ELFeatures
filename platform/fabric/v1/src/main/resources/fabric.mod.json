@@ -14,7 +14,7 @@
 	"icon": "/assets/elfeatures/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"main": ["org.easylauncher.mods.elfeatures.ELFeaturesModFabric"]
+		"main": ["org.easylauncher.mods.elfeatures.ELFeaturesModFabricV1"]
 	},
 	"mixins": [
 		{
