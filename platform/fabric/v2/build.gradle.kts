@@ -10,18 +10,11 @@ plugins {
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
-loom {
-    mixin {
-        defaultRefmapName = "${spec.mod.id}.refmap.json"
-    }
-}
-
 dependencies {
     minecraft("com.mojang:minecraft:${spec.props["minecraft_version"]}")
     implementation("net.fabricmc:fabric-loader:${spec.props["loader_version"]}")
 
     spec.addUsedModules(this)
-//    compileOnly(project(":facade:authlib"))
 
     annotationProcessor(libs.lombok)
 }
