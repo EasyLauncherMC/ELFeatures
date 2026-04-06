@@ -4,11 +4,18 @@ plugins {
     java
     id("elfeatures")
     `base-platform`
-    `neoforge-platform`
+    id("net.neoforged.gradle.userdev") version "7.1.21"
     publish
 }
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
+
+subsystems {
+    parchment {
+        mappingsVersion = spec.props["mappings_version"]?.toString()
+        minecraftVersion = spec.props["minecraft_version"]?.toString()
+    }
+}
 
 dependencies {
     implementation("net.neoforged:neoforge:${spec.props["neoforge_version"]}")
@@ -23,21 +30,28 @@ dependencies {
     annotationProcessor(libs.lombok)
 }
 
-tasks.compileJava {
-    val tsrgFile = project.layout.buildDirectory.dir("mappings").get().file("mixin.tsrg").asFile
+tasks {
+    compileJava {
+        val tsrgFile = project.layout.buildDirectory.dir("mappings").get().file("mixin.tsrg").asFile
 
-    options.compilerArgs.addAll(listOf(
-        "-AreobfTsrgFile=${tsrgFile.canonicalPath}",
-        "-AmappingTypes=tsrg",
-        "-AMSG_MIXIN_SOFT_TARGET_NOT_RESOLVED=disabled",
-        "-AMSG_TARGET_ELEMENT_NOT_FOUND=disabled",
-        "-AshowMessageTypes=true",
-        "-Aquiet=true",
-    ))
-}
+        options.compilerArgs.addAll(listOf(
+            "-AreobfTsrgFile=${tsrgFile.canonicalPath}",
+            "-AmappingTypes=tsrg",
+            "-AMSG_MIXIN_SOFT_TARGET_NOT_RESOLVED=disabled",
+            "-AMSG_TARGET_ELEMENT_NOT_FOUND=disabled",
+            "-AshowMessageTypes=true",
+            "-Aquiet=true",
+        ))
+    }
 
-tasks.jar {
-    manifest {
-        attributes("MixinConfigs" to "elfeatures.mixins.json")
+    jar {
+        manifest {
+            attributes("MixinConfigs" to "elfeatures.mixins.json")
+        }
+
+        // populate JAR with mod banner
+        from(rootProject.layout.projectDirectory.dir("resources")) {
+            include("elfeatures_banner.png")
+        }
     }
 }

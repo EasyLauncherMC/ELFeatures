@@ -18,7 +18,6 @@ dependencies {
     implementation("net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:7.+")
     implementation("net.minecraftforge.jarjar:net.minecraftforge.jarjar.gradle.plugin:0.2.3")
     implementation("net.minecraftforge.renamer:net.minecraftforge.renamer.gradle.plugin:1.0.14")
-    implementation("net.neoforged.gradle:userdev:7.1.21")
     implementation("org.spongepowered:mixingradle:0.7-SNAPSHOT")
     implementation("com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:9.4.1")
     implementation("tech.yanand.maven-central-publish:tech.yanand.maven-central-publish.gradle.plugin:1.3.0")
