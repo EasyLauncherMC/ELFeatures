@@ -37,15 +37,14 @@ jobs:
       - name: Generate Fabric sources
         run: ./gradlew genSources --no-daemon --stacktrace
 
-      - name: Debug MC jar
+      - name: Debug Loom jars
         run: |
-          MC_JAR=$(find ~/.gradle/caches/fabric-loom -name "*merged*26.1*" -name "*.jar" | head -1)
-          echo "=== Looking for client packages ==="
-          jar tf "$MC_JAR" | grep "net/minecraft/client/" | head -10
-          echo "=== Looking for blaze3d ==="
-          jar tf "$MC_JAR" | grep "blaze3d" | head -10
-          echo "=== Total client entries ==="
-          jar tf "$MC_JAR" | grep "net/minecraft/client/" | wc -l
+          echo "=== All MC jars in Loom cache ==="
+          find ~/.gradle/caches/fabric-loom -name "*.jar" -path "*26.1*" | while read f; do
+            COUNT=$(jar tf "$f" | grep "net/minecraft/client/" | wc -l)
+            SIZE=$(stat --format=%s "$f")
+            echo "$f — ${SIZE} bytes, client entries: ${COUNT}"
+          done
 
       - name: Build fabric:v2
         run: ./gradlew :platform:fabric:v2:compileJava --no-daemon --refresh-dependencies --stacktrace
