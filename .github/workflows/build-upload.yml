@@ -31,8 +31,8 @@ jobs:
           cache-overwrite-existing: true
           gradle-version: '9.4.1'
 
-      - name: Setup Minecraft sources (Fabric)
-        run: ./gradlew genSources --no-daemon --stacktrace
+      - name: Check fabric-v2 classpath
+        run: ./gradlew :platform:fabric:v2:dependencies --configuration compileClasspath --no-daemon
 
       - name: Build with Gradle
         run: ./gradlew build --no-daemon --parallel --build-cache --stacktrace
