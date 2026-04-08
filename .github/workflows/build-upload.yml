@@ -31,6 +31,21 @@ jobs:
           cache-overwrite-existing: true
           gradle-version: '9.4.1'
 
+      - name: Generate Fabric sources
+        run: ./gradlew genSources --no-daemon --stacktrace
+
+      - name: Check MC jar contents
+        run: |
+          MC_JAR=$(find ~/.gradle/caches/fabric-loom -name "*merged*26.1*" -name "*.jar" 2>/dev/null | head -1)
+          echo "Found: $MC_JAR"
+          if [ -n "$MC_JAR" ]; then
+            echo "Size: $(stat --format=%s "$MC_JAR") bytes"
+            jar tf "$MC_JAR" | grep -E "SkinManager|NativeImage|SkinTextureDownloader" || echo "Classes NOT found in jar!"
+            jar tf "$MC_JAR" | wc -l
+          else
+            echo "MC jar not found in Loom cache!"
+          fi
+
       - name: Build fabric:v2
         run: ./gradlew :platform:fabric:v2:compileJava --no-daemon --refresh-dependencies --stacktrace
 
