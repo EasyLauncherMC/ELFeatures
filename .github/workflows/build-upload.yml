@@ -30,12 +30,9 @@ jobs:
           add-job-summary: 'never'
           cache-overwrite-existing: true
           gradle-version: '9.4.1'
-
-      - name: Clean Loom cache
-        run: rm -rf ~/.gradle/caches/fabric-loom
       
-      - name: Build only v2
-        run: ./gradlew :platform:fabric:v2:build --no-daemon --configure-on-demand --stacktrace
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon --parallel --build-cache --stacktrace
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
