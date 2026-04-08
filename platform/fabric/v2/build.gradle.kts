@@ -10,6 +10,17 @@ plugins {
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        create(spec.mod.id) {
+            sourceSet(sourceSets["main"])
+            sourceSet(sourceSets["client"])
+        }
+    }
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:${spec.props["minecraft_version"]}")
     implementation("net.fabricmc:fabric-loader:${spec.props["loader_version"]}")
