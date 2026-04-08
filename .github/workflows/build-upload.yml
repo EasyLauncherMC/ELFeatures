@@ -33,24 +33,9 @@ jobs:
 
       - name: Clean Loom cache
         run: rm -rf ~/.gradle/caches/fabric-loom
-
-      - name: Generate Fabric sources
-        run: ./gradlew genSources --no-daemon --stacktrace
-
-      - name: Debug Loom jars
-        run: |
-          echo "=== All MC jars in Loom cache ==="
-          find ~/.gradle/caches/fabric-loom -name "*.jar" -path "*26.1*" | while read f; do
-            COUNT=$(jar tf "$f" | grep "net/minecraft/client/" | wc -l)
-            SIZE=$(stat --format=%s "$f")
-            echo "$f — ${SIZE} bytes, client entries: ${COUNT}"
-          done
-
-      - name: Build fabric:v2
-        run: ./gradlew :platform:fabric:v2:compileJava --no-daemon --refresh-dependencies --stacktrace
-
-      - name: Build with Gradle
-        run: ./gradlew build --no-daemon --parallel --build-cache --stacktrace
+      
+      - name: Build only v2
+        run: ./gradlew :platform:fabric:v2:build --no-daemon --configure-on-demand --stacktrace
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
