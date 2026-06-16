@@ -1,6 +1,8 @@
 name: Build & Upload
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -28,9 +30,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           add-job-summary: 'never'
-          cache-overwrite-existing: true
           gradle-version: '9.4.1'
-      
+
       - name: Build with Gradle
         run: ./gradlew build --no-daemon --parallel --build-cache --stacktrace
 
