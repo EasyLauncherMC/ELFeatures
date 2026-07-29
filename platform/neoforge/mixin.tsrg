@@ -29,4 +29,7 @@ net/minecraft/client/resources/SkinManager$CacheKey net/minecraft/client/resourc
 net/minecraft/client/resources/SkinManager$SkinAvailableCallback net/minecraft/client/resources/SkinManager$SkinTextureCallback
 net/minecraft/client/resources/SkinManager$TextureCache net/minecraft/client/resources/SkinManager$TextureCache
 net/minecraft/client/resources/SkinManager$TextureInfo net/minecraft/client/resources/SkinManager$TextureInfo
+net/minecraft/client/server/IntegratedServer net/minecraft/client/server/IntegratedServer
+	initServer ()Z initServer
+	setUsesAuthentication (Z)V setUsesAuthentication
 net/minecraft/server/Services net/minecraft/server/Services

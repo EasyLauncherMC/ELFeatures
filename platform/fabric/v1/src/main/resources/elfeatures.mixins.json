@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "elfeatures.refmap.json",
   "client": [
+    "multiplayer.MixinIntegratedServer",
     "multiplayer.MixinMinecraftClient",
     "textures.MixinPlayerSkinProvider$V1",
     "textures.MixinPlayerSkinProvider$V2",

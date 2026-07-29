@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "refmap": "elfeatures.refmap.json",
   "client": [
+    "multiplayer.MixinIntegratedServer",
     "textures.MixinHttpTexture",
     "textures.MixinSkinManager$V1",
     "textures.MixinSkinManager$V2",

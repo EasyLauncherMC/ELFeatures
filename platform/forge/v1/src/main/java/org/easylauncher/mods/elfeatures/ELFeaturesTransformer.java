@@ -3,6 +3,7 @@ package org.easylauncher.mods.elfeatures;
 import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.easylauncher.mods.elfeatures.asm.TransformerImageBufferDownload;
+import org.easylauncher.mods.elfeatures.asm.TransformerIntegratedServer;
 import org.easylauncher.mods.elfeatures.asm.TransformerSkinManager;
 import org.easylauncher.mods.elfeatures.asm.TransformerSkinManager$3;
 import org.easylauncher.mods.elfeatures.shared.asm.TransformerService;
@@ -64,6 +65,7 @@ public final class ELFeaturesTransformer implements IClassTransformer {
                 },
                 new MethodTransformer.Instantiator[] {
                         TransformerImageBufferDownload.ParseUserSkin::new,
+                        TransformerIntegratedServer.Init::new,
                         TransformerSkinManager.LoadSkinFromCache::new,
                         TransformerSkinManager$3.Run::new,
                 }
