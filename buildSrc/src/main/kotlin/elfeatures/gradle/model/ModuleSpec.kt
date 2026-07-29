@@ -14,6 +14,7 @@ data class ModuleSpec(
     val javaVersion: Int,
     val baseJarTask: String,
     val publishJarTask: String,
+    val runtimeNames: String?,
 ) {
 
     fun addUsedModules(dependencyHandler: DependencyHandler): List<Dependency?> =
@@ -32,8 +33,9 @@ data class ModuleSpec(
             val javaVersion: Int = props.getProperty("java_version")?.toIntOrNull() ?: 8
             val baseJarTask = props.getProperty("base_jar_task", "jar")
             val publishJarTask = props.getProperty("publish_jar_task", "shadowPlatformJar")
+            val runtimeNames = props.getProperty("runtime_names")
 
-            return ModuleSpec(mod, props, moduleName, usedModules, resources, javaVersion, baseJarTask, publishJarTask)
+            return ModuleSpec(mod, props, moduleName, usedModules, resources, javaVersion, baseJarTask, publishJarTask, runtimeNames)
         }
 
         private fun parseListProperty(props: Properties, property: String, separator: String): List<String> {

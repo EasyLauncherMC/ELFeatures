@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import elfeatures.gradle.model.ModuleSpec
 import elfeatures.gradle.task.InjectConstantsTask
+import elfeatures.gradle.task.VerifyMappingsTask
 import net.minecraftforge.renamer.gradle.RenameJar
 import java.nio.file.Files
 import java.nio.file.Path
@@ -120,8 +121,23 @@ if (Files.isRegularFile(mixinMappings)) {
     }
 }
 
-tasks.build {
-    finalizedBy(spec.publishJarTask)
+tasks.assemble {
+    dependsOn(spec.publishJarTask)
+}
+
+// guard against shipping a JAR that still calls Minecraft by its development names
+val verifyMappings = tasks.register<VerifyMappingsTask>("verifyMappings") {
+    group = "verification"
+    description = "Verifies that the published JAR calls Minecraft by the names its runtime actually has"
+
+    jarFile = jarFileOf(spec.publishJarTask)
+    namingScheme = requireNotNull(spec.runtimeNames) {
+        "'runtime_names' is not set in ${project.path} build.properties (official, srg or intermediary)"
+    }
+}
+
+tasks.check {
+    dependsOn(verifyMappings)
 }
 
 // JAR is produced either by an archive task (jar, remapJar, ...) or by the renamer (renameJar)
