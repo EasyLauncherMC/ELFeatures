@@ -23,4 +23,6 @@ public @interface Mod {
 
     String acceptedMinecraftVersions() default "";
 
+    String acceptableRemoteVersions() default "";
+
 }

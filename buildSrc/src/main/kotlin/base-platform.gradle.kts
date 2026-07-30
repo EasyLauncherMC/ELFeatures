@@ -1,6 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import elfeatures.gradle.model.ModuleSpec
 import elfeatures.gradle.task.InjectConstantsTask
+import elfeatures.gradle.task.VerifyMappingsTask
+import net.minecraftforge.renamer.gradle.RenameJar
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.LocalDateTime
@@ -42,11 +44,12 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
         "META-INF/*.SF",
         "META-INF/*.DSA",
         "META-INF/*.RSA",
-        "module-info.class"
+        "module-info.class",
+        "fernflower_abstract_parameter_names.txt" // renamer leftover, only useful to a decompiler
     )
 
     // construct shadow JAR from compiled JAR file instead of source-set output
-    from(zipTree((tasks.getByName(spec.baseJarTask) as AbstractArchiveTask).archiveFile))
+    from(zipTree(jarFileOf(spec.baseJarTask)))
     configurations = listOf(project.configurations.compileClasspath.get())
     manifest.from(tasks.jar.get().manifest)
 
@@ -119,6 +122,30 @@ if (Files.isRegularFile(mixinMappings)) {
     }
 }
 
-tasks.build {
-    finalizedBy(spec.publishJarTask)
+tasks.assemble {
+    dependsOn(spec.publishJarTask)
+}
+
+// guard against shipping a JAR that still calls Minecraft by its development names
+val verifyMappings = tasks.register<VerifyMappingsTask>("verifyMappings") {
+    group = "verification"
+    description = "Verifies that the published JAR calls Minecraft by the names its runtime actually has"
+
+    jarFile = jarFileOf(spec.publishJarTask)
+    namingScheme = requireNotNull(spec.runtimeNames) {
+        "'runtime_names' is not set in ${project.path} build.properties (official, srg or intermediary)"
+    }
+}
+
+tasks.check {
+    dependsOn(verifyMappings)
+}
+
+// JAR is produced either by an archive task (jar, remapJar, ...) or by the renamer (renameJar)
+fun jarFileOf(taskName: String): Provider<RegularFile> = tasks.named(taskName).flatMap { task ->
+    when (task) {
+        is AbstractArchiveTask -> task.archiveFile
+        is RenameJar -> task.output
+        else -> error("task '$taskName' produces no JAR file to build the shadow JAR from")
+    }
 }

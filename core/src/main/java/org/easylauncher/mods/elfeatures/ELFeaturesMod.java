@@ -5,6 +5,8 @@ import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 
 public interface ELFeaturesMod extends LoggingFacade {
 
+    boolean OFFLINE_LAN_ENABLED = "true".equalsIgnoreCase(System.getProperty("elfeatures.lan.offline"));
+
     TexturesProviderService getTexturesProviderService();
 
     static ELFeaturesMod mod() {
