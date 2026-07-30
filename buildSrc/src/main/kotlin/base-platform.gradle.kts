@@ -44,7 +44,8 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
         "META-INF/*.SF",
         "META-INF/*.DSA",
         "META-INF/*.RSA",
-        "module-info.class"
+        "module-info.class",
+        "fernflower_abstract_parameter_names.txt" // renamer leftover, only useful to a decompiler
     )
 
     // construct shadow JAR from compiled JAR file instead of source-set output
