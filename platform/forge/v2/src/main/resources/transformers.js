@@ -19,6 +19,13 @@ function initializeCoreMod() {
             }
         ),
 
+        // --- feature: disable auth on LAN worlds
+        'Multiplayer_IntegratedServerTransformer': createClassMethodsTransformer(
+            'net.minecraft.server.integrated.IntegratedServer',
+            IntegratedServer$disableOnlineMode,
+            {}
+        ),
+
         // --- feature: skin/cape textures from EasyX
         'Textures_DownloadingTextureTransformer': createMethodsTransformer(
             'net.minecraft.client.renderer.texture.DownloadingTexture',
@@ -60,6 +67,52 @@ function initializeCoreMod() {
             }
         )
     }
+}
+
+// the enclosing method is not pinned by SRG name on purpose: its id drifts across
+// 1.13-1.16, while IntegratedServer calls setOnlineMode(true) in exactly one place
+function IntegratedServer$disableOnlineMode(classNode) {
+    var patched = false;
+
+    classNode.methods.forEach(function (methodNode) {
+        if (patched)
+            return;
+
+        var instructions = methodNode.instructions;
+
+        for (var iterator = instructions.iterator(); iterator.hasNext();) {
+            var insnNode = iterator.next();
+
+            // the owner isn't checked: javac emits the call against the receiver type,
+            // which is IntegratedServer, while setOnlineMode is declared on MinecraftServer.
+            // the SRG name is what the production client has, the plain one is for a deobfuscated environment
+            if (!checkMethodInsn(insnNode, Opcodes.INVOKEVIRTUAL, 'func_71229_d (Z)V')
+                    && !checkMethodInsn(insnNode, Opcodes.INVOKEVIRTUAL, 'setOnlineMode (Z)V'))
+                continue;
+
+            var argumentInsnNode = insnNode.getPrevious();
+            if (argumentInsnNode === null || argumentInsnNode.getOpcode() !== Opcodes.ICONST_1)
+                continue;
+
+            // --- PATCH
+
+            // setOnlineMode(true) -> setOnlineMode(!ELFeaturesMod.OFFLINE_LAN_ENABLED)
+            // the flag is read by the patched code and not while transforming: this script runs
+            // in a Nashorn sandbox whose class filter only exposes ASM and the Forge coremod API,
+            // so java.lang.System is unreachable from here
+            var node = ASMAPI.getMethodNode();
+            node.visitFieldInsn(Opcodes.GETSTATIC, 'org/easylauncher/mods/elfeatures/ELFeaturesMod', 'OFFLINE_LAN_ENABLED', 'Z');
+            node.visitInsn(Opcodes.ICONST_1);
+            node.visitInsn(Opcodes.IXOR);
+            instructions.insertBefore(argumentInsnNode, node.instructions);
+            instructions.remove(argumentInsnNode);
+
+            patched = true;
+            return;
+        }
+    });
+
+    return patched;
 }
 
 function DownloadingTexture_parseUserSkin(methodNode) {
