@@ -9,7 +9,8 @@ import lombok.extern.log4j.Log4j2;
         name = Constants.MOD_NAME,
         version = Constants.MOD_VERSION,
         useMetadata = true,
-        acceptedMinecraftVersions = "1.7.10"
+        acceptedMinecraftVersions = "1.7.10",
+        acceptableRemoteVersions = "*" // client-side mod: never require it from the other side
 )
 public final class ELFeaturesModForgeV1 extends ELFeaturesModBase {
 

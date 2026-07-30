@@ -11,7 +11,8 @@ import net.minecraftforge.fml.common.Mod;
         version = Constants.MOD_VERSION,
         useMetadata = true,
         clientSideOnly = true,
-        acceptedMinecraftVersions = "[1.8,1.13)"
+        acceptedMinecraftVersions = "[1.8,1.13)",
+        acceptableRemoteVersions = "*" // client-side mod: never require it from the other side
 )
 public final class ELFeaturesModForgeV2 extends ELFeaturesModBase {
 
