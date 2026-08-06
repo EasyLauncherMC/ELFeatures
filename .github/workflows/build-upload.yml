@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Build and Upload
-    runs-on: blacksmith-16vcpu-ubuntu-2404
+    runs-on: blacksmith-4vcpu-ubuntu-2404
 
     permissions:
       contents: read
