@@ -1,0 +1,7 @@
+tiny	2	0	intermediary	named
+c	net/minecraft/unmapped/C_19308569	net/minecraft/client/render/texture/NativeImage
+	m	()I	m_78918704	getWidth
+	m	()I	m_53637729	getHeight
+c	net/minecraft/unmapped/C_34366662	net/minecraft/client/render/texture/HttpTexture__34366662
+c	net/minecraft/unmapped/C_68075090	net/minecraft/client/render/texture/SkinImageProcessor
+	m	(Lnet/minecraft/unmapped/C_19308569;)Lnet/minecraft/unmapped/C_19308569;	m_85174467	process

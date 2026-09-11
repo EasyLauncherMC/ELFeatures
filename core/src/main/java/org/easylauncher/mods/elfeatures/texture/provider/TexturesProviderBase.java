@@ -7,10 +7,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.mojang.util.UUIDTypeAdapter;
 import lombok.SneakyThrows;
 import org.easylauncher.mods.elfeatures.texture.model.TexturesData;
 import org.easylauncher.mods.elfeatures.util.LoggingFacade;
+import org.easylauncher.mods.elfeatures.util.UndashedUuidTypeAdapter;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
@@ -39,7 +39,7 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
     TexturesProviderBase(String userAgent, LoggingFacade logger) {
         this.userAgent = userAgent;
         this.logger = logger;
-        this.gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+        this.gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UndashedUuidTypeAdapter()).create();
         this.texturesCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(60L, TimeUnit.SECONDS)
                 .build(this);
@@ -116,35 +116,42 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
 
     // -------------- INTERNAL -----------------------------------------------------------------------------------------
 
-    // GameProfile is a record starting from authlib 7.x
-    private static MethodHandle MH_GameProfile$id;
-    private static MethodHandle MH_GameProfile$name;
-
     @SneakyThrows
     protected final UUID idOfProfile(GameProfile profile) {
-        return MH_GameProfile$id != null
-                ? (UUID) MH_GameProfile$id.invoke(profile)
+        return GameProfileAccessors.ID != null
+                ? (UUID) GameProfileAccessors.ID.invoke(profile)
                 : profile.getId();
     }
 
     @SneakyThrows
     protected final String nameOfProfile(GameProfile profile) {
-        return MH_GameProfile$name != null
-                ? (String) MH_GameProfile$name.invoke(profile)
+        return GameProfileAccessors.NAME != null
+                ? (String) GameProfileAccessors.NAME.invoke(profile)
                 : profile.getName();
     }
 
-    static {
-        try {
-            MethodHandles.Lookup lookup = MethodHandles.publicLookup().in(GameProfile.class);
-            //noinspection JavaLangInvokeHandleSignature
-            MH_GameProfile$id = lookup.findVirtual(GameProfile.class, "id", MethodType.methodType(UUID.class));
-            //noinspection JavaLangInvokeHandleSignature
-            MH_GameProfile$name = lookup.findVirtual(GameProfile.class, "name", MethodType.methodType(String.class));
-        } catch (NoSuchMethodException ignored) {
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
+    /**
+     * GameProfile is a record starting from authlib 7.x.
+     *
+     * <p>Looked up on first use rather than when a provider loads: 1.6 has no authlib, and a provider of it has to
+     * load all the same.
+     */
+    private static final class GameProfileAccessors {
+
+        private static final MethodHandle ID = findAccessorOrNull("id", UUID.class);
+        private static final MethodHandle NAME = findAccessorOrNull("name", String.class);
+
+        private static MethodHandle findAccessorOrNull(String name, Class<?> type) {
+            try {
+                MethodHandles.Lookup lookup = MethodHandles.publicLookup().in(GameProfile.class);
+                return lookup.findVirtual(GameProfile.class, name, MethodType.methodType(type));
+            } catch (NoSuchMethodException ignored) {
+                return null;
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
         }
+
     }
 
 }

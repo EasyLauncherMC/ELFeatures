@@ -1,0 +1,13 @@
+tiny	2	0	intermediary	named
+c	net/minecraft/class_1071	net/minecraft/client/texture/PlayerSkinProvider
+	m	(Lcom/mojang/authlib/GameProfile;)Ljava/util/concurrent/CompletableFuture;	method_52863	fetchSkinTextures
+c	net/minecraft/class_1071$class_8686	net/minecraft/client/texture/PlayerSkinProvider$Key
+c	net/minecraft/class_1071$class_8688	net/minecraft/client/texture/PlayerSkinProvider$Textures
+c	net/minecraft/class_1046	net/minecraft/client/texture/PlayerSkinTexture
+	m	(Lnet/minecraft/class_1011;)Lnet/minecraft/class_1011;	method_22798	remapTexture
+	m	(Lnet/minecraft/class_1011;IIII)V	method_22796	stripAlpha
+	m	(Lnet/minecraft/class_1011;IIII)V	method_22794	stripColor
+c	net/minecraft/class_10538	net/minecraft/client/texture/PlayerSkinTextureDownloader
+	m	(Lnet/minecraft/class_1011;Ljava/lang/String;)Lnet/minecraft/class_1011;	method_65863	remapTexture
+	m	(Lnet/minecraft/class_1011;IIII)V	method_65868	stripAlpha
+	m	(Lnet/minecraft/class_1011;IIII)V	method_65862	stripColor

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 public final class NamedVersion implements MinecraftVersion {
 
-    private static final Pattern REGEX = Pattern.compile("^(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d))?(?:-(?<suffix>\\D+)(?<number>\\d+))?$");
+    private static final Pattern REGEX = Pattern.compile("^(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?(?:-(?<suffix>\\D+)(?<number>\\d+))?$");
 
     @Getter
     private final Type type;

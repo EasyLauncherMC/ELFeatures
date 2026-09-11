@@ -8,9 +8,6 @@ import org.easylauncher.mods.elfeatures.texture.provider.TexturesProviderService
 @Getter
 abstract class ELFeaturesModBase implements ELFeaturesMod {
 
-    public static final boolean DEBUG_ENABLED = "true".equalsIgnoreCase(System.getProperty("elfeatures.debug.enabled"));
-    public static final boolean LOGGING_ENABLED = "true".equalsIgnoreCase(System.getProperty("elfeatures.logging.enabled"));
-
     @Getter(AccessLevel.NONE)
     private final Logger logger;
     private final TexturesProviderService texturesProviderService;
