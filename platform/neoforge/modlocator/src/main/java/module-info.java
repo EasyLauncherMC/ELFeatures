@@ -3,7 +3,7 @@ import net.neoforged.neoforgespi.locating.IModLocator;
 import org.easylauncher.mods.elfeatures.locator.NeoForgeModFileCandidateLocator;
 import org.easylauncher.mods.elfeatures.locator.NeoForgeModLocator;
 
-module easylauncher.modlocator.neoforge {
+module easylauncher.neoforge.modlocator {
 
     requires static lombok;
     requires static fml_loader;

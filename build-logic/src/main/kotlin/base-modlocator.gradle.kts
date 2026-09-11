@@ -26,7 +26,7 @@ tasks.jar {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     manifest {
         attributes(
-            "Automatic-Module-Name"     to  "${spec.mod.id}-modlocator",
+            "Automatic-Module-Name"     to  "${spec.mod.id}-${spec.moduleName}",
             "Specification-Title"       to  spec.mod.name,
             "Specification-Vendor"      to  spec.mod.authors,
             "Specification-Version"     to  1, // we're version 1 of ourselves

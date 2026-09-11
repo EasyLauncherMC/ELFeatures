@@ -1,7 +1,7 @@
 import net.minecraftforge.forgespi.locating.IModLocator;
 import org.easylauncher.mods.elfeatures.locator.ForgeModLocator;
 
-module easylauncher.modlocator.forge {
+module easylauncher.forge.modlocator {
 
     requires static lombok;
     requires static net.minecraftforge.forgespi;
