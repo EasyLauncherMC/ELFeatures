@@ -5,8 +5,10 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "multiplayer.MixinIntegratedServer",
-    "textures.MixinSkinProvider",
-    "textures.MixinSkinProvider1",
+    "textures.MixinSkinProvider$V1",
+    "textures.MixinSkinProvider$V2",
+    "textures.MixinSkinProvider1$V1",
+    "textures.MixinSkinProvider1$V2",
     "textures.MixinSkinTextureDownloader"
   ],
   "plugin": "org.easylauncher.mods.elfeatures.ELFeaturesMixinPlugin",
