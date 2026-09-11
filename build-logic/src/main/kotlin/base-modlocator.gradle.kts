@@ -41,7 +41,7 @@ tasks.jar {
         copy {
             from(archiveFile)
             into(rootProject.layout.buildDirectory)
-            rename { name -> name.replace("-${spec.mod.version}", "") }
+            rename { name -> name.replace("-${project.version}", "") }
         }
     }
 }

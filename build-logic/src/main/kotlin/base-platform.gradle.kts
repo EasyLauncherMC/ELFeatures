@@ -70,7 +70,7 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
             copy {
                 from(archiveFile)
                 into(rootProject.layout.buildDirectory)
-                rename { name -> name.replace("-${spec.mod.version}", "").replace("-all", "") }
+                rename { name -> name.replace("-${project.version}", "").replace("-all", "") }
             }
         }
     }
