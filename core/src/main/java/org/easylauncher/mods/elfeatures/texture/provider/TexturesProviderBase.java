@@ -10,7 +10,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.SneakyThrows;
 import org.easylauncher.mods.elfeatures.texture.model.TexturesData;
 import org.easylauncher.mods.elfeatures.util.LoggingFacade;
-import org.easylauncher.mods.elfeatures.util.UndashedUuidTypeAdapter;
+import org.easylauncher.mods.elfeatures.util.UuidTypeAdapter;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
@@ -39,7 +39,7 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
     TexturesProviderBase(String userAgent, LoggingFacade logger) {
         this.userAgent = userAgent;
         this.logger = logger;
-        this.gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UndashedUuidTypeAdapter()).create();
+        this.gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UuidTypeAdapter()).create();
         this.texturesCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(60L, TimeUnit.SECONDS)
                 .build(this);

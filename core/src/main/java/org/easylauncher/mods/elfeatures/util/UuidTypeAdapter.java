@@ -14,7 +14,7 @@ import java.util.UUID;
  *
  * <p>Nulls are handled here rather than by {@code nullSafe()}, which the gson of 1.6 doesn't have yet.
  */
-public final class UndashedUuidTypeAdapter extends TypeAdapter<UUID> {
+public final class UuidTypeAdapter extends TypeAdapter<UUID> {
 
     private static final String DASHED_GROUPS = "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{12})";
 
