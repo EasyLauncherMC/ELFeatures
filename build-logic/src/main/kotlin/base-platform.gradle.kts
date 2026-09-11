@@ -40,6 +40,11 @@ tasks.register<ShadowJar>("shadowPlatformJar") {
         spec.usedModules.forEach { include(project(":${it}")) }
     }
 
+    // shadow defaults to EXCLUDE, which drops the copies the service-file transformer is there to merge
+    filesMatching("META-INF/services/**") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+
     exclude(
         "META-INF/INDEX.LIST",
         "META-INF/*.SF",
