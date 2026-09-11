@@ -4,9 +4,13 @@ import java.util.*
 
 plugins {
     base
+    id("elfeatures") apply false
+    id("net.fabricmc.fabric-loom") version "1.17.20" apply false
+    id("net.fabricmc.fabric-loom-remap") version "1.17.20" apply false
+    id("ploceus") version "1.17.7" apply false
 }
 
-val mod by extra(Mod(loadProperties(project)))
+val mod = Mod(loadProperties(project))
 
 group = "org.easylauncher.mods.elfeatures"
 version = mod.version

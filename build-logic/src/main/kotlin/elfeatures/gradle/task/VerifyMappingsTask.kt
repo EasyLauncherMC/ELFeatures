@@ -25,7 +25,7 @@ abstract class VerifyMappingsTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.NONE)
     abstract val jarFile: RegularFileProperty
 
-    /** how Minecraft members are named at runtime: `official`, `srg` or `intermediary` */
+    /** how Minecraft members are named at runtime: `official`, `srg`, `intermediary` or `calamus` */
     @get:Input
     abstract val namingScheme: Property<String>
 
@@ -42,7 +42,7 @@ abstract class VerifyMappingsTask : DefaultTask() {
             zip.entries().asSequence().filter { it.name.endsWith(".class") }.forEach { entry ->
                 val bytecode = zip.getInputStream(entry).use { it.readBytes() }
                 memberReferences(bytecode) { owner, name, descriptor ->
-                    if (MINECRAFT_PACKAGES.any(owner::startsWith) && name !in INHERITED && !accepts(scheme, name)) {
+                    if (isGameMember(owner) && name !in INHERITED && !accepts(scheme, name)) {
                         offenders.getOrPut("$owner.$name$descriptor") { sortedSetOf() } += entry.name
                     }
                 }
@@ -60,6 +60,9 @@ abstract class VerifyMappingsTask : DefaultTask() {
             "${jar.name} references ${offenders.size} Minecraft member(s) not named as '$scheme' at runtime:\n$report"
         )
     }
+
+    private fun isGameMember(owner: String): Boolean =
+        MINECRAFT_PACKAGES.any(owner::startsWith) && LIBRARY_PACKAGES.none(owner::startsWith)
 
     private fun accepts(scheme: String, name: String): Boolean =
         if (scheme == OFFICIAL) {
@@ -118,9 +121,14 @@ abstract class VerifyMappingsTask : DefaultTask() {
 
         val MINECRAFT_PACKAGES = listOf("net/minecraft/", "com/mojang/blaze3d/")
 
+        // libraries sitting under the game's own package prefix, whose members no mapping ever renames
+        val LIBRARY_PACKAGES = listOf("net/minecraft/launchwrapper/")
+
         val SCHEMES = mapOf(
             "srg" to Regex("m_\\d+_|f_\\d+_|func_\\d+_\\w+|field_\\d+_\\w+"),
             "intermediary" to Regex("method_\\d+|field_\\d+|comp_\\d+"),
+            // Ornithe's intermediary, which is what the game is read through below 1.14
+            "calamus" to Regex("m_\\d+|f_\\d+"),
         )
 
         // members Minecraft inherits or overrides from non-Minecraft types — those are never renamed

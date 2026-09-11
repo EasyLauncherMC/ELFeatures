@@ -1,10 +1,14 @@
 pluginManagement {
+    includeBuild("build-logic")
+
     repositories {
         gradlePluginPortal()
         maven("https://maven.minecraftforge.net/")
         maven("https://maven.neoforged.net/releases/")
         maven("https://repo.spongepowered.org/repository/maven-public/")
         maven("https://maven.fabricmc.net/")
+        maven("https://maven.ornithemc.net/releases/")
+        maven("https://maven.ornithemc.net/snapshots/")
     }
 }
 
@@ -19,18 +23,27 @@ rootProject.name = "ELFeatures"
 // platform-independent logic
 include(":core")
 
-// modlocator implementations for Forge v3/v4 and NeoForge platforms
-include(":modlocator:forge", ":modlocator:neoforge")
-
-// platform modules
+// platform modules — Fabric
 include(":platform:fabric:v1")              // Fabric [1.14, 1.21.11]
 include(":platform:fabric:v2")              // Fabric [26.1,)
+
+// platform modules — Forge
+include(":platform:forge:modlocator")       // Forge v3/v4 mod locator
 include(":platform:forge:transformers")     // Forge ASM transformers
 include(":platform:forge:v1")               // Forge [1.7.10]
 include(":platform:forge:v2")               // Forge [1.8, 1.16.5]
 include(":platform:forge:v3")               // Forge [1.17, 1.20.4]
 include(":platform:forge:v4")               // Forge [1.20.6,)
-include(":platform:neoforge")               // NeoForge [1.20.2,)
+
+// platform modules — NeoForge
+include(":platform:neoforge:modlocator")    // NeoForge mod locator
+include(":platform:neoforge:v1")            // NeoForge [1.20.2,)
+
+// platform modules — Vanilla (+ OptiFine)
+include(":platform:vanilla:agent")          // Vanilla java agent
+include(":platform:vanilla:v1")             // Vanilla [1.6, 1.14)
+include(":platform:vanilla:v2")             // Vanilla [1.14, 26.1)
+include(":platform:vanilla:v3")             // Vanilla [26.1,)
 
 // platform cross-module shared code
 include(":shared:asm", ":shared:mixin")

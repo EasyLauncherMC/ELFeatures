@@ -3,9 +3,9 @@ import elfeatures.gradle.model.ModuleSpec
 plugins {
     java
     id("elfeatures")
-    `base-platform`
-    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
-    publish
+    id("base-platform")
+    id("net.fabricmc.fabric-loom")
+    id("publish")
 }
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
@@ -26,6 +26,7 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${spec.props["loader_version"]}")
 
     spec.addUsedModules(this)
+    compileOnly(project(":facade:authlib"))
 
     annotationProcessor(libs.lombok)
 }

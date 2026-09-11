@@ -73,5 +73,7 @@ publishing {
 }
 
 signing {
+    // a build published to the local repository never leaves this machine, and the key may well not be here
+    setRequired({ gradle.taskGraph.allTasks.none { it is PublishToMavenLocal } })
     sign(publishing.publications["maven"])
 }

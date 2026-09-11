@@ -33,7 +33,8 @@ tasks.named<InjectConstantsTask>("injectConstants") {
 
 tasks.register<ShadowJar>("shadowPlatformJar") {
     dependencies {
-        if (spec.moduleName != "vanilla")
+        // a vanilla platform carries the loader itself, so it names what to bundle by including it
+        if (!spec.moduleName.startsWith("vanilla"))
             exclude { dep -> dep.moduleGroup != rootProject.group }
 
         spec.usedModules.forEach { include(project(":${it}")) }
@@ -104,17 +105,11 @@ tasks.processResources {
 // configure mappings extraction
 val mixinMappings: Path = project.layout.projectDirectory.file("mixin.tsrg").asFile.toPath()
 if (Files.isRegularFile(mixinMappings)) {
-    val extractMappingsTask = tasks.register("extractTsrgMappings") {
-        doLast {
-            logger.info("Extracting TSRG mixin mappings...")
-            copy {
-                from(projectDir) {
-                    include("mixin.tsrg")
-                }
+    val extractMappingsTask = tasks.register<Copy>("extractTsrgMappings") {
+        description = "Copies mixin.tsrg into build/mappings, where the mixin annotation processor reads it from"
 
-                into(project.layout.buildDirectory.dir("mappings").get())
-            }
-        }
+        from(layout.projectDirectory.file("mixin.tsrg"))
+        into(layout.buildDirectory.dir("mappings"))
     }
 
     tasks.compileJava {
@@ -133,7 +128,7 @@ val verifyMappings = tasks.register<VerifyMappingsTask>("verifyMappings") {
 
     jarFile = jarFileOf(spec.publishJarTask)
     namingScheme = requireNotNull(spec.runtimeNames) {
-        "'runtime_names' is not set in ${project.path} build.properties (official, srg or intermediary)"
+        "'runtime_names' is not set in ${project.path} build.properties (official, srg, intermediary or calamus)"
     }
 }
 

@@ -1,7 +1,7 @@
 plugins {
     java
-    `base-modlocator`
-    publish
+    id("base-modlocator")
+    id("publish")
 }
 
 repositories {

@@ -3,9 +3,9 @@ import elfeatures.gradle.model.ModuleSpec
 plugins {
     java
     id("elfeatures")
-    `base-platform`
-    id("net.fabricmc.fabric-loom-remap") version "1.16-SNAPSHOT"
-    publish
+    id("base-platform")
+    id("net.fabricmc.fabric-loom-remap")
+    id("publish")
 }
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
@@ -58,9 +58,5 @@ tasks {
         from(rootProject.layout.projectDirectory.dir("resources")) {
             include("assets/**")
         }
-    }
-
-    remapJar {
-        isPreserveFileTimestamps = true
     }
 }
