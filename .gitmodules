@@ -1,3 +1,4 @@
 [submodule "platform/forge/mixingradle"]
 	path = platform/forge/mixingradle
 	url = https://github.com/SoKnight/MixinGradleKt.git
+	branch = main
