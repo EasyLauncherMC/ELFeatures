@@ -3,6 +3,9 @@ com/mojang/authlib/minecraft/MinecraftSessionService com/mojang/authlib/minecraf
 	getPackedTextures (Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property; getPackedTextures
 	getTextures (Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map; getTextures
 	unpackTextures (Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures; unpackTextures
+com/mojang/authlib/minecraft/SessionService com/mojang/authlib/minecraft/SessionService
+	getPackedTextures (Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property; getPackedTextures
+	unpackTextures (Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures; unpackTextures
 com/mojang/blaze3d/platform/NativeImage com/mojang/blaze3d/platform/NativeImage
 	getWidth ()I getWidth
 	getHeight ()I getHeight
