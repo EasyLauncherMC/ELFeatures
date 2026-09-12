@@ -14,6 +14,8 @@ import java.util.Map;
 @AllArgsConstructor
 public final class MixinRemapper implements IRemapper {
 
+    private static final String CLASS_PREFIX = "C_";
+
     private final MappingTree mappings;
     private final int fromId;
     private final int toId;
@@ -27,7 +29,13 @@ public final class MixinRemapper implements IRemapper {
 
     @Override
     public String map(String typeName) {
-        return mappings.mapClassName(typeName, fromId, toId);
+        String mapped = mappings.mapClassName(typeName, fromId, toId);
+        if (!mapped.equals(typeName) || typeName.indexOf('$') < 1)
+            return mapped;
+
+        String flat = flattened(typeName);
+        String flatMapped = mappings.mapClassName(flat, fromId, toId);
+        return flatMapped.equals(flat) ? typeName : flatMapped;
     }
 
     @Override
@@ -69,6 +77,12 @@ public final class MixinRemapper implements IRemapper {
     @Override
     public String unmapDesc(String desc) {
         return mappings.mapDesc(desc, toId, fromId);
+    }
+
+    private static String flattened(String typeName) {
+        int nesting = typeName.lastIndexOf('$');
+        int packageEnd = typeName.lastIndexOf('/', nesting);
+        return typeName.substring(0, packageEnd + 1) + CLASS_PREFIX + typeName.substring(nesting + 1);
     }
 
     private String inheritedNameFrom(String name) {
