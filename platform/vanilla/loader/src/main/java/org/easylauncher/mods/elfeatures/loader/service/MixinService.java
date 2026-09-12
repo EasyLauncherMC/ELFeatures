@@ -1,7 +1,9 @@
-package org.easylauncher.mods.elfeatures.loader.mixin;
+package org.easylauncher.mods.elfeatures.loader.service;
 
-import org.easylauncher.mods.elfeatures.loader.ELFeaturesClassTransformer;
+import lombok.Setter;
 import org.easylauncher.mods.elfeatures.loader.ELFeaturesMixinBootstrap;
+import org.easylauncher.mods.elfeatures.loader.MixinPipeline;
+import org.easylauncher.mods.elfeatures.loader.naming.MixinClassRemapper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.commons.ClassRemapper;
@@ -19,22 +21,25 @@ import org.spongepowered.asm.util.ReEntranceLock;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Mixin's whole view of the world when it is running as a java agent.
+ * Mixin's whole view of the world when it is running without a mod loader.
  *
- * <p>There is no class loader of ours to ask: the game is on the system class path, so a class is read as a
- * resource and the JVM is left to define it. What a mixin names is intermediary, what lies on the class path is
- * obfuscated — the remapper stands between the two.
+ * <p>A class is read as a resource off the loader the game itself came from and the defining is left to whoever
+ * asked — the system loader under the agent, the wrapper's own loader under the tweaker. What a mixin names is
+ * intermediary, what lies on the class path is obfuscated — the remapper stands between the two.
  */
 public final class MixinService implements IMixinService, IClassProvider, IClassBytecodeProvider, ITransformerProvider, IClassTracker {
 
     private static final MixinClassRemapper CLASS_REMAPPER = new MixinClassRemapper();
 
+    @Setter
+    private static ClassLoader classSource = ClassLoader.getSystemClassLoader();
     private static IMixinTransformer transformer;
 
     private final ReEntranceLock lock = new ReEntranceLock(1);
@@ -124,7 +129,7 @@ public final class MixinService implements IMixinService, IClassProvider, IClass
 
     @Override
     public IContainerHandle getPrimaryContainer() {
-        return new ContainerHandleURI(agentJarUri());
+        return new ContainerHandleURI(modJarUri());
     }
 
     @Override
@@ -134,7 +139,7 @@ public final class MixinService implements IMixinService, IClassProvider, IClass
 
     @Override
     public InputStream getResourceAsStream(String name) {
-        return ClassLoader.getSystemResourceAsStream(name);
+        return classSource.getResourceAsStream(name);
     }
 
     @Override
@@ -174,7 +179,7 @@ public final class MixinService implements IMixinService, IClassProvider, IClass
 
         // the game's own classes are read under the names they already have; a mixin is written against
         // intermediary ones and has to be rewritten before mixin measures it against its target
-        ClassVisitor visitor = ELFeaturesClassTransformer.isMinecraftClass(name.replace('.', '/'))
+        ClassVisitor visitor = MixinPipeline.isMinecraftClass(name.replace('.', '/'))
                 ? node
                 : new ClassRemapper(node, CLASS_REMAPPER);
 
@@ -194,7 +199,7 @@ public final class MixinService implements IMixinService, IClassProvider, IClass
 
     @Override
     public Class<?> findClass(String name, boolean initialize) throws ClassNotFoundException {
-        return Class.forName(name, initialize, ClassLoader.getSystemClassLoader());
+        return Class.forName(name, initialize, classSource);
     }
 
     @Override
@@ -234,25 +239,18 @@ public final class MixinService implements IMixinService, IClassProvider, IClass
         return transformer;
     }
 
-    /**
-     * The bytes of a class as they lie on the class path, under whichever name the running release has for it.
-     *
-     * <p>The bytes are the untouched ones from the jar even where OptiFine patches the class — what
-     * {@code transform} is handed is the patched shape, and mixin only asks here about classes it hasn't been
-     * handed.
-     */
     private byte[] getClassBytes(String name) throws ClassNotFoundException, IOException {
         String internalName = name.replace('.', '/');
 
         IRemapper remapper = ELFeaturesMixinBootstrap.getMixinRemapper();
-        if (remapper != null && ELFeaturesClassTransformer.isMinecraftClass(internalName)) {
+        if (remapper != null && MixinPipeline.isMinecraftClass(internalName)) {
             String obfuscatedName = remapper.map(internalName);
             if (obfuscatedName != null) {
                 internalName = obfuscatedName;
             }
         }
 
-        InputStream resource = ClassLoader.getSystemResourceAsStream(internalName + ".class");
+        InputStream resource = classSource.getResourceAsStream(internalName + ".class");
         if (resource == null)
             throw new ClassNotFoundException(name);
 
@@ -270,11 +268,14 @@ public final class MixinService implements IMixinService, IClassProvider, IClass
         }
     }
 
-    private static URI agentJarUri() {
+    private static URI modJarUri() {
         try {
-            return MixinService.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+            URL location = MixinService.class.getProtectionDomain().getCodeSource().getLocation();
+            return "jar".equals(location.getProtocol())
+                    ? ((JarURLConnection) location.openConnection()).getJarFileURL().toURI()
+                    : location.toURI();
         } catch (Exception cause) {
-            throw new IllegalStateException("The agent can't tell which jar it was loaded from!", cause);
+            throw new IllegalStateException("The mod can't tell which JAR it was loaded from!", cause);
         }
     }
 

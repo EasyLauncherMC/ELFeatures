@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.loader.mapping;
+package org.easylauncher.mods.elfeatures.loader.naming;
 
 import net.fabricmc.mappingio.MappedElementKind;
 import net.fabricmc.mappingio.MappingVisitor;

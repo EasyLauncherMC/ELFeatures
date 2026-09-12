@@ -8,13 +8,15 @@ java {
 
 repositories {
     mavenCentral()
-    maven("https://maven.fabricmc.net/")
+    maven("https://libraries.minecraft.net/")
 }
 
 dependencies {
     implementation(project(":core"))
 
     api(project(":platform:vanilla:loader"))
+
+    compileOnlyApi("net.minecraft:launchwrapper:1.12")
 
     compileOnly("org.apache.logging.log4j:log4j-api:2.0-beta9")
 

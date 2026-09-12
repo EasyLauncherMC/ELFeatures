@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.loader.mapping;
+package org.easylauncher.mods.elfeatures.loader.naming;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

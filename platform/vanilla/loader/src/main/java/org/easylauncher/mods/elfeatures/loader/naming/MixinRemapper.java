@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.loader.mixin;
+package org.easylauncher.mods.elfeatures.loader.naming;
 
 import lombok.AllArgsConstructor;
 import net.fabricmc.mappingio.tree.MappingTree;

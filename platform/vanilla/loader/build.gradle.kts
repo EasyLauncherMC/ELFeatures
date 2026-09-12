@@ -14,7 +14,12 @@ repositories {
 dependencies {
     implementation(project(":core"))
 
-    api(project(":platform:vanilla:loader"))
+    api("io.github.llamalad7:mixinextras-common:0.5.5")
+    api("net.fabricmc:mapping-io:0.7.1")
+    api("net.fabricmc:sponge-mixin:0.17.4+mixin.0.8.7")
+
+    api(libs.asm.commons)
+    api(libs.asm.util)
 
     compileOnly("org.apache.logging.log4j:log4j-api:2.0-beta9")
 

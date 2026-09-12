@@ -1,13 +1,11 @@
 package org.easylauncher.mods.elfeatures.loader;
 
 import lombok.extern.log4j.Log4j2;
-import org.easylauncher.mods.elfeatures.loader.mixin.MixinService;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.Remapper;
 import org.objectweb.asm.tree.ClassNode;
-import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,7 +39,7 @@ final class SyntheticClasses {
     }
 
     /** Lays down whatever [classBytes] came to refer to that isn't on the class path. */
-    synchronized void defineReferencedBy(byte[] classBytes, MixinEnvironment environment) {
+    synchronized void defineReferencedBy(byte[] classBytes) {
         for (String internalName : referencedTypes(classBytes)) {
             if (!defined.add(internalName))
                 continue;
@@ -50,8 +48,7 @@ final class SyntheticClasses {
                 continue;
 
             try {
-                String name = internalName.replace('/', '.');
-                byte[] generated = MixinService.getTransformer().generateClass(environment, name);
+                byte[] generated = MixinPipeline.generate(internalName);
                 if (generated != null) append(internalName, generated);
             } catch (Throwable cause) {
                 log.error("Couldn't lay down the generated class '" + internalName + "'!", cause);

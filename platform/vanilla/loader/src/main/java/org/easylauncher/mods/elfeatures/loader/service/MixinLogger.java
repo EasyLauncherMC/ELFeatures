@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.loader.mixin;
+package org.easylauncher.mods.elfeatures.loader.service;
 
 import lombok.extern.log4j.Log4j2;
 import org.easylauncher.mods.elfeatures.ELFeaturesMod;

@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.loader.mixin;
+package org.easylauncher.mods.elfeatures.loader.naming;
 
 import org.easylauncher.mods.elfeatures.loader.ELFeaturesMixinBootstrap;
 import org.objectweb.asm.Opcodes;
@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.extensibility.IRemapper;
  * a handler's signature, a call to the game from a handler's body — it leaves alone, because every loader it
  * was written for runs a game named the same way the mixins are.
  */
-final class MixinClassRemapper extends Remapper {
+public final class MixinClassRemapper extends Remapper {
 
-    MixinClassRemapper() {
+    public MixinClassRemapper() {
         super(Opcodes.ASM9);
     }
 

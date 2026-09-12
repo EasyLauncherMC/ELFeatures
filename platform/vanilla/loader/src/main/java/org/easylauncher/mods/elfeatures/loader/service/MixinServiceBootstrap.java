@@ -1,4 +1,4 @@
-package org.easylauncher.mods.elfeatures.loader.mixin;
+package org.easylauncher.mods.elfeatures.loader.service;
 
 import org.spongepowered.asm.service.IMixinServiceBootstrap;
 

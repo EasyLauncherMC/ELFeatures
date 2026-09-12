@@ -2,7 +2,7 @@ package org.easylauncher.mods.elfeatures.mixin.textures;
 
 import net.minecraft.client.render.texture.NativeImage;
 import net.minecraft.client.render.texture.SkinImageProcessor;
-import org.easylauncher.mods.elfeatures.ELFeaturesAgentBase;
+import org.easylauncher.mods.elfeatures.ELFeaturesLoaderModBase;
 import org.easylauncher.mods.elfeatures.texture.TexturesInspector;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -29,7 +29,7 @@ public abstract class MixinSkinImageProcessor {
     )
     private void inject_head(BufferedImage image, CallbackInfoReturnable<BufferedImage> callbackInfo) {
         this.elfeatures$scaleFactor = 1;
-        if (image == null || ELFeaturesAgentBase.RUNNING_OPTIFINE)
+        if (image == null || ELFeaturesLoaderModBase.RUNNING_OPTIFINE)
             return;
 
         int scaleFactor = TexturesInspector.computeTextureScale(image);
@@ -50,7 +50,7 @@ public abstract class MixinSkinImageProcessor {
     )
     private void inject_headNative(NativeImage image, CallbackInfoReturnable<NativeImage> callbackInfo) {
         this.elfeatures$scaleFactor = 1;
-        if (image == null || ELFeaturesAgentBase.RUNNING_OPTIFINE)
+        if (image == null || ELFeaturesLoaderModBase.RUNNING_OPTIFINE)
             return;
 
         int scaleFactor = TexturesInspector.computeTextureScale(image.getWidth(), image.getHeight());
