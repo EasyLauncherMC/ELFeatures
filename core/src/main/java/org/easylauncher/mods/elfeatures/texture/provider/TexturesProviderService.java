@@ -14,21 +14,21 @@ public final class TexturesProviderService {
     private LegacyEasyxTexturesProvider legacyEasyxTexturesProvider;
     private LegacyMojangTexturesProvider legacyMojangTexturesProvider;
 
-    public AuthlibEasyxTexturesProvider authlibEasyxTexturesProvider() {
+    public synchronized AuthlibEasyxTexturesProvider authlibEasyxTexturesProvider() {
         if (authlibEasyxTexturesProvider == null)
             this.authlibEasyxTexturesProvider = new AuthlibEasyxTexturesProvider(userAgent, logger);
 
         return authlibEasyxTexturesProvider;
     }
 
-    public LegacyEasyxTexturesProvider legacyEasyxTexturesProvider() {
+    public synchronized LegacyEasyxTexturesProvider legacyEasyxTexturesProvider() {
         if (legacyEasyxTexturesProvider == null)
             this.legacyEasyxTexturesProvider = new LegacyEasyxTexturesProvider(userAgent, logger);
 
         return legacyEasyxTexturesProvider;
     }
 
-    public LegacyMojangTexturesProvider legacyMojangTexturesProvider() {
+    public synchronized LegacyMojangTexturesProvider legacyMojangTexturesProvider() {
         if (legacyMojangTexturesProvider == null)
             this.legacyMojangTexturesProvider = new LegacyMojangTexturesProvider(userAgent, logger);
 
