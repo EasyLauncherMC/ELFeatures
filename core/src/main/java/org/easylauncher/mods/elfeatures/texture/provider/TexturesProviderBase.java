@@ -93,7 +93,8 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
                     return parseTexturesData(key, rawResponseBody);
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception cause) {
+            logger.log("Textures for '%s' not loaded: %s", key, cause);
         }
 
         return emptyTexturesData();
