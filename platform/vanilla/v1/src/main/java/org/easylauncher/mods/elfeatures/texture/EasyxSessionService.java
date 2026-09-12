@@ -36,15 +36,20 @@ public final class EasyxSessionService implements InvocationHandler {
     @Override
     @SuppressWarnings("unchecked")
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        boolean texturesCall = "getTextures".equals(method.getName()) && args != null && args.length == 2;
         Object result;
 
         try {
             result = method.invoke(delegate, args);
         } catch (InvocationTargetException cause) {
-            throw cause.getCause();
+            // authlib 1.5.8 of 1.7.7 throws for a profile with no textures at all, and the game doesn't catch it
+            if (!texturesCall || !"InsecureTextureException".equals(cause.getCause().getClass().getSimpleName()))
+                throw cause.getCause();
+
+            result = null;
         }
 
-        if (!"getTextures".equals(method.getName()) || args == null || args.length != 2)
+        if (!texturesCall)
             return result;
 
         return ELFeaturesMod.authlibEasyxTexturesProvider().loadTexturesMap(
