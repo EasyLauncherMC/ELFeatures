@@ -9,6 +9,9 @@ plugins {
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
+// the branch this was built from already said which of the two this build is, by naming the version
+val isSnapshot = version.toString().endsWith("-SNAPSHOT")
+
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(spec.javaVersion)
 }
@@ -28,6 +31,20 @@ tasks.register<Jar>("sourcesJarStub") {
 }
 
 publishing {
+    repositories {
+        // a snapshot goes to our own repository and never to Central
+        if (isSnapshot) {
+            maven("https://reposilite.easylauncher.org/snapshots/") {
+                name = "EasyLauncherSnapshots"
+
+                credentials {
+                    username = lookup("repo.username", "SNAPSHOTS_REPO_USERNAME")
+                    password = lookup("repo.password", "SNAPSHOTS_REPO_PASSWORD")
+                }
+            }
+        }
+    }
+
     publications {
         create<MavenPublication>("maven") {
             groupId = project.group.toString()
@@ -73,7 +90,12 @@ publishing {
 }
 
 signing {
-    // a build published to the local repository never leaves this machine, and the key may well not be here
-    setRequired({ gradle.taskGraph.allTasks.none { it is PublishToMavenLocal } })
+    // only Central asks for a signature: a snapshot and a local publish are both to go through without a key
+    setRequired({ !isSnapshot && gradle.taskGraph.allTasks.none { it is PublishToMavenLocal } })
     sign(publishing.publications["maven"])
 }
+
+fun lookup(propertyKey: String, envVariableKey: String): String? =
+    findProperty("easylauncher.$propertyKey") as? String
+        ?: System.getProperty("easylauncher.$propertyKey", "").takeIf(String::isNotEmpty)
+        ?: System.getenv(envVariableKey)?.takeIf(String::isNotEmpty)
