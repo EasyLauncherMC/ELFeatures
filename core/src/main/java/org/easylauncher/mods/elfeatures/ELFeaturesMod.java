@@ -6,6 +6,7 @@ import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 public interface ELFeaturesMod extends LoggingFacade {
 
     boolean DEBUG_ENABLED = "true".equalsIgnoreCase(System.getProperty("elfeatures.debug.enabled"));
+    boolean LEGACY_SKINS_ONLY = "true".equalsIgnoreCase(System.getProperty("elfeatures.skins.legacy"));
     boolean LOGGING_ENABLED = "true".equalsIgnoreCase(System.getProperty("elfeatures.logging.enabled"));
     boolean OFFLINE_LAN_ENABLED = "true".equalsIgnoreCase(System.getProperty("elfeatures.lan.offline"));
 

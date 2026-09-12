@@ -1,5 +1,6 @@
 package org.easylauncher.mods.elfeatures.texture;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
@@ -10,6 +11,20 @@ public final class TexturesInspector {
 
     public static BufferedImage passValidTextureImage(BufferedImage image) {
         return image != null && computeTextureScale(image) != 0 ? image : null;
+    }
+
+    public static BufferedImage toLegacyLayout(BufferedImage image) {
+        if (image == null || image.getWidth() != image.getHeight() || computeTextureScale(image) == 0)
+            return image;
+
+        int width = image.getWidth();
+        int height = image.getHeight() / 2;
+
+        BufferedImage legacy = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics graphics = legacy.getGraphics();
+        graphics.drawImage(image, 0, 0, width, height, 0, 0, width, height, null);
+        graphics.dispose();
+        return legacy;
     }
 
     public static int computeTextureScale(BufferedImage image) {

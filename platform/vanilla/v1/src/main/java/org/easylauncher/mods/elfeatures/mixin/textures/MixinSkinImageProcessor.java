@@ -3,6 +3,7 @@ package org.easylauncher.mods.elfeatures.mixin.textures;
 import net.minecraft.client.render.texture.NativeImage;
 import net.minecraft.client.render.texture.SkinImageProcessor;
 import org.easylauncher.mods.elfeatures.ELFeaturesLoaderModBase;
+import org.easylauncher.mods.elfeatures.ELFeaturesMod;
 import org.easylauncher.mods.elfeatures.texture.TexturesInspector;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -11,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Group;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.image.BufferedImage;
@@ -19,6 +21,16 @@ import java.awt.image.BufferedImage;
 public abstract class MixinSkinImageProcessor {
 
     @Unique private int elfeatures$scaleFactor;
+
+    @ModifyVariable(
+            method = "process(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;",
+            at = @At("HEAD"),
+            argsOnly = true,
+            require = 0
+    )
+    private BufferedImage modifyVariable_image(BufferedImage image) {
+        return ELFeaturesMod.LEGACY_SKINS_ONLY ? TexturesInspector.toLegacyLayout(image) : image;
+    }
 
     @Group(name = "head", min = 1, max = 1)
     @Inject(
