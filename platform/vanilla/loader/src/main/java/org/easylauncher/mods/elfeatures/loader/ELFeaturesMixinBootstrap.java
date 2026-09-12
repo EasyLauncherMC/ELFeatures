@@ -19,7 +19,8 @@ public final class ELFeaturesMixinBootstrap {
 
     private static final String MIXIN_CONFIG = "elfeatures.mixins.json";
     private static final String SOURCE_NAMESPACE = "intermediary";
-    private static final String TARGET_NAMESPACE = "official";
+    private static final String TARGET_NAMESPACE_DEFAULT = "official";
+    private static final String TARGET_NAMESPACE_CLIENT = "clientOfficial";
 
     private static boolean initialized = false;
     private static MixinRemapper mixinRemapper;
@@ -45,7 +46,11 @@ public final class ELFeaturesMixinBootstrap {
         // no remapper at all from 26.1 on
         MappingTree mappings = MappingProvider.loadMappings();
         if (mappings.getNamespaceId(SOURCE_NAMESPACE) != MappingTree.NULL_NAMESPACE_ID) {
-            mixinRemapper = new MixinRemapper(mappings, SOURCE_NAMESPACE, TARGET_NAMESPACE);
+            String target = mappings.getNamespaceId(TARGET_NAMESPACE_DEFAULT) != MappingTree.NULL_NAMESPACE_ID
+                    ? TARGET_NAMESPACE_DEFAULT
+                    : TARGET_NAMESPACE_CLIENT;
+
+            mixinRemapper = new MixinRemapper(mappings, SOURCE_NAMESPACE, target);
             MixinEnvironment.getDefaultEnvironment().getRemappers().add(mixinRemapper);
         }
 
