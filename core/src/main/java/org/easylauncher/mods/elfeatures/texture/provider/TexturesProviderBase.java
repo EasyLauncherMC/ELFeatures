@@ -12,7 +12,7 @@ import org.easylauncher.mods.elfeatures.texture.model.TexturesData;
 import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 import org.easylauncher.mods.elfeatures.util.UuidTypeAdapter;
 
-import java.io.InputStream;
+import java.io.DataInputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -86,14 +86,10 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
                     return emptyTexturesData();
                 }
 
-                try (InputStream inputStream = httpConnection.getInputStream()) {
+                // a single read() hands back whatever has arrived so far, which can be less than the whole body
+                try (DataInputStream inputStream = new DataInputStream(httpConnection.getInputStream())) {
                     byte[] rawResponseBody = new byte[contentLength];
-                    int read = inputStream.read(rawResponseBody);
-                    if (read != contentLength) {
-                        logger.log("Textures for '%s' not found (content length/bytes read mismatch)", key);
-                        return emptyTexturesData();
-                    }
-
+                    inputStream.readFully(rawResponseBody);
                     return parseTexturesData(key, rawResponseBody);
                 }
             }
