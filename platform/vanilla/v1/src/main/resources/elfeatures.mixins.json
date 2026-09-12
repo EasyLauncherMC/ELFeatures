@@ -7,6 +7,7 @@
   "refmapWrapper": "MixinRuntimeRefMapper",
   "client": [
     "multiplayer.MixinIntegratedServer",
+    "textures.MixinClientPlayerEntity",
     "textures.MixinHttpTextureDownload",
     "textures.MixinMinecraft",
     "textures.MixinSkinImageProcessor"
