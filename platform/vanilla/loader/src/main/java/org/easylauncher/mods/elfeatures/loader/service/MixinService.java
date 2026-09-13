@@ -188,6 +188,7 @@ public final class MixinService implements IMixinService, IClassProvider, IClass
     }
 
     @Override
+    @Deprecated
     public URL[] getClassPath() {
         return new URL[0];
     }

@@ -25,7 +25,8 @@ public final class MixinPlayerSkinProvider1 {
                 method = "load(Lcom/mojang/authlib/GameProfile;)Ljava/util/Map;",
                 at = @At(
                         value = "INVOKE",
-                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getTextures(Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map;"
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getTextures(Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map;",
+                        remap = false
                 )
         )
         private Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> redirect_load(
@@ -45,7 +46,8 @@ public final class MixinPlayerSkinProvider1 {
                 method = "method_52867(Lcom/mojang/authlib/minecraft/MinecraftSessionService;Lcom/mojang/authlib/GameProfile;)Lnet/minecraft/client/texture/PlayerSkinProvider$Textures;",
                 at = @At(
                         value = "INVOKE",
-                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getTextures(Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map;"
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getTextures(Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map;",
+                        remap = false
                 )
         )
         private static Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> redirect_m52867(
@@ -65,7 +67,8 @@ public final class MixinPlayerSkinProvider1 {
                 method = "method_54647(Lnet/minecraft/client/texture/PlayerSkinProvider$Key;Lcom/mojang/authlib/minecraft/MinecraftSessionService;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;",
                 at = @At(
                         value = "INVOKE",
-                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;unpackTextures(Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;"
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;unpackTextures(Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;",
+                        remap = false
                 )
         )
         private static MinecraftProfileTextures redirect_unpackTextures(
@@ -104,7 +107,8 @@ public final class MixinPlayerSkinProvider1 {
                 method = "method_54647(Lnet/minecraft/client/texture/PlayerSkinProvider$Key;Lnet/minecraft/class_7497;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;",
                 at = @At(
                         value = "INVOKE",
-                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;unpackTextures(Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;"
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;unpackTextures(Lcom/mojang/authlib/properties/Property;)Lcom/mojang/authlib/minecraft/MinecraftProfileTextures;",
+                        remap = false
                 )
         )
         private static MinecraftProfileTextures redirect_unpackTextures(

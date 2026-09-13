@@ -24,8 +24,8 @@ loom {
     runs.clear()
 
     mixin {
-        defaultRefmapName = "${spec.mod.id}.refmap.json"
         useLegacyMixinAp = true
+        defaultRefmapName = "${spec.mod.id}.refmap.json"
 
         messages = mapOf(
             "NO_OBFDATA_FOR_METHOD" to "warning",
@@ -51,6 +51,10 @@ dependencies {
     })
 
     spec.addUsedModules(this)
+
+    // the merged game jar marks client-only members with @Environment, which lives in the loader; a plain compileOnly
+    // keeps loom from taking the loader's installer data, and the shadow JAR only bundles what it includes by name
+    compileOnly("net.fabricmc:fabric-loader:0.16.0") { isTransitive = false }
 
     annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
     annotationProcessor(libs.lombok)

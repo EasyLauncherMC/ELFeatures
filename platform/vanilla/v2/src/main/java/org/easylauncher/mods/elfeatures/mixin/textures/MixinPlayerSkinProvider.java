@@ -23,7 +23,8 @@ public final class MixinPlayerSkinProvider {
                 method = "method_4653(Lcom/mojang/authlib/GameProfile;ZLnet/minecraft/client/texture/PlayerSkinProvider$SkinTextureAvailableCallback;)V",
                 at = @At(
                         value = "INVOKE",
-                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getTextures(Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map;"
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getTextures(Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map;",
+                        remap = false
                 )
         )
         private Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> redirect_m4653(
@@ -55,7 +56,8 @@ public final class MixinPlayerSkinProvider {
                 method = "method_4653(Lcom/mojang/authlib/GameProfile;ZLnet/minecraft/client/texture/PlayerSkinProvider$SkinTextureAvailableCallback;)V",
                 at = @At(
                         value = "INVOKE",
-                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getTextures(Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map;"
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getTextures(Lcom/mojang/authlib/GameProfile;Z)Ljava/util/Map;",
+                        remap = false
                 )
         )
         private Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> redirect_m4653(
@@ -75,7 +77,8 @@ public final class MixinPlayerSkinProvider {
                 method = "fetchSkinTextures(Lcom/mojang/authlib/GameProfile;)Ljava/util/concurrent/CompletableFuture;",
                 at = @At(
                         value = "INVOKE",
-                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getPackedTextures(Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property;"
+                        target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;getPackedTextures(Lcom/mojang/authlib/GameProfile;)Lcom/mojang/authlib/properties/Property;",
+                        remap = false
                 )
         )
         private Property redirect_getPackedTextures(MinecraftSessionService sessionService, GameProfile profile) {
