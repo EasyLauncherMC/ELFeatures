@@ -37,11 +37,14 @@ tasks.jar {
         )
     }
 
+    // read while configuring: Task.project is off-limits once the task runs
+    val projectVersion = project.version
+
     doLast {
         copy {
             from(archiveFile)
             into(rootProject.layout.buildDirectory)
-            rename { name -> name.replace("-${project.version}", "") }
+            rename { name -> name.replace("-$projectVersion", "") }
         }
     }
 }
