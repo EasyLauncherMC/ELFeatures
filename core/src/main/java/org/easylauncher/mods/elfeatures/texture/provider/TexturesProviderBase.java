@@ -13,6 +13,7 @@ import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 import org.easylauncher.mods.elfeatures.util.UuidTypeAdapter;
 
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -28,8 +29,9 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
     protected static final String EASYX_TEXTURES_URL_PATTERN = "http://textures.easyxcdn.net/users/%s.json";
     protected static final String MOJANG_TEXTURES_URL_PATTERN = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
 
-    protected static final int CONNECT_TIMEOUT_MS = 5000;
-    protected static final int READ_TIMEOUT_MS = 5000;
+    protected static final int CONNECT_TIMEOUT_MS = 3000;
+    protected static final int READ_TIMEOUT_MS = 3000;
+    private static final int MAX_ATTEMPTS = 3;
 
     protected final String userAgent;
     protected final LoggingFacade logger;
@@ -64,40 +66,57 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
         if (!validateKey(key))
             return emptyTexturesData();
 
-        try {
-            URL url = new URI(formatTexturesUrl(key)).toURL();
-            URLConnection urlConnection = url.openConnection();
-            if (urlConnection instanceof HttpURLConnection) {
-                HttpURLConnection httpConnection = (HttpURLConnection) urlConnection;
-                httpConnection.setConnectTimeout(CONNECT_TIMEOUT_MS);
-                httpConnection.setReadTimeout(READ_TIMEOUT_MS);
-                httpConnection.setUseCaches(false);
-                httpConnection.setRequestProperty("User-Agent", userAgent);
-
-                int responseCode = httpConnection.getResponseCode();
-                if (responseCode != 200) {
-                    logger.log("Textures for '%s' not found (response code: %d)", key, responseCode);
+        // whatever comes back is cached, so a single dropped request would leave the player without a skin
+        for (int attempt = 1; ; attempt++) {
+            try {
+                return request(key);
+            } catch (IOException cause) {
+                if (attempt == MAX_ATTEMPTS) {
+                    logger.log("Textures for '%s' not loaded: %s", key, cause);
                     return emptyTexturesData();
                 }
 
-                int contentLength = httpConnection.getContentLength();
-                if (contentLength <= 0) {
-                    logger.log("Textures for '%s' not found (invalid content length: %d)", key, contentLength);
-                    return emptyTexturesData();
-                }
-
-                // a single read() hands back whatever has arrived so far, which can be less than the whole body
-                try (DataInputStream inputStream = new DataInputStream(httpConnection.getInputStream())) {
-                    byte[] rawResponseBody = new byte[contentLength];
-                    inputStream.readFully(rawResponseBody);
-                    return parseTexturesData(key, rawResponseBody);
-                }
+                logger.log("Textures for '%s' not loaded (attempt %d of %d), retrying: %s", key, attempt, MAX_ATTEMPTS, cause);
+            } catch (Exception cause) {
+                logger.log("Textures for '%s' not loaded: %s", key, cause);
+                return emptyTexturesData();
             }
-        } catch (Exception cause) {
-            logger.log("Textures for '%s' not loaded: %s", key, cause);
+        }
+    }
+
+    private D request(K key) throws Exception {
+        URL url = new URI(formatTexturesUrl(key)).toURL();
+        URLConnection urlConnection = url.openConnection();
+        if (!(urlConnection instanceof HttpURLConnection))
+            return emptyTexturesData();
+
+        HttpURLConnection httpConnection = (HttpURLConnection) urlConnection;
+        httpConnection.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        httpConnection.setReadTimeout(READ_TIMEOUT_MS);
+        httpConnection.setUseCaches(false);
+        httpConnection.setRequestProperty("User-Agent", userAgent);
+
+        int responseCode = httpConnection.getResponseCode();
+        if (responseCode >= 500)
+            throw new IOException("Server error (response code: " + responseCode + ")");
+
+        if (responseCode != 200) {
+            logger.log("Textures for '%s' not found (response code: %d)", key, responseCode);
+            return emptyTexturesData();
         }
 
-        return emptyTexturesData();
+        int contentLength = httpConnection.getContentLength();
+        if (contentLength <= 0) {
+            logger.log("Textures for '%s' not found (invalid content length: %d)", key, contentLength);
+            return emptyTexturesData();
+        }
+
+        // a single read() hands back whatever has arrived so far, which can be less than the whole body
+        try (DataInputStream inputStream = new DataInputStream(httpConnection.getInputStream())) {
+            byte[] rawResponseBody = new byte[contentLength];
+            inputStream.readFully(rawResponseBody);
+            return parseTexturesData(key, rawResponseBody);
+        }
     }
 
     public Property loadTexturesProperty(GameProfile profile) {
