@@ -25,6 +25,9 @@ public final class ActivityJournalWriter {
     private static String connectingHost;
     private static Integer connectingPort;
 
+    // a join written and not closed by an idle entry yet; every hook runs on the client thread
+    private static boolean joined;
+
     public static void connecting(String host, int port) {
         connectingHost = host;
         connectingPort = port;
@@ -58,14 +61,23 @@ public final class ActivityJournalWriter {
         }
 
         // a join nothing announced, as Realms makes
-        if (host == null)
-            return;
+        if (host == null) return;
 
+        joined = true;
         write(new Entry("multiplayer", null, null, host, port, serverName, gamemode, nowMillis()));
     }
 
     public static void singleplayer(String directoryName, String levelName, String gamemode) {
+        joined = true;
         write(new Entry("singleplayer", directoryName, levelName, null, null, null, gamemode, nowMillis()));
+    }
+
+    // the player is in no world: the join written last is over
+    public static void idle() {
+        if (!joined) return;
+
+        joined = false;
+        write(new Entry("idle", null, null, null, null, null, null, nowMillis()));
     }
 
     private static void write(Entry entry) {
