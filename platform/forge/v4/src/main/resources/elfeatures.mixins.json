@@ -4,6 +4,9 @@
   "package": "org.easylauncher.mods.elfeatures.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "activity.MixinClientPacketListener",
+    "activity.MixinMinecraft",
+    "activity.MixinMinecraftServer",
     "multiplayer.MixinIntegratedServer",
     "textures.MixinHttpTexture",
     "textures.MixinSkinManager$V1",

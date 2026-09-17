@@ -10,6 +10,10 @@ com/mojang/blaze3d/platform/NativeImage com/mojang/blaze3d/platform/NativeImage
 	getHeight ()I getHeight
 	copyRect (IIIIIIZZ)V copyRect
 	fillRect (IIIII)V fillRect
+net/minecraft/client/Minecraft net/minecraft/client/Minecraft
+	tick ()V tick
+net/minecraft/client/multiplayer/ClientPacketListener net/minecraft/client/multiplayer/ClientPacketListener
+	handleLogin (Lnet/minecraft/network/protocol/game/ClientboundLoginPacket;)V handleLogin
 net/minecraft/client/renderer/texture/HttpTexture net/minecraft/client/renderer/texture/HttpTexture
 	load (Ljava/io/InputStream;)Lcom/mojang/blaze3d/platform/NativeImage; load
 	processLegacySkin (Lcom/mojang/blaze3d/platform/NativeImage;)Lcom/mojang/blaze3d/platform/NativeImage; processLegacySkin
@@ -30,4 +34,6 @@ net/minecraft/client/resources/SkinManager$CacheKey net/minecraft/client/resourc
 net/minecraft/client/server/IntegratedServer net/minecraft/client/server/IntegratedServer
 	initServer ()Z initServer
 	setUsesAuthentication (Z)V setUsesAuthentication
+net/minecraft/server/MinecraftServer net/minecraft/server/MinecraftServer
+	storageSource storageSource
 net/minecraft/server/Services net/minecraft/server/Services
