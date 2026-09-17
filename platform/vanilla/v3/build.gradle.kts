@@ -16,8 +16,9 @@ java {
 }
 
 loom {
-    // the agent is a client-side thing only, so the client's own classes belong on the one source set there is
-    clientOnlyMinecraftJar()
+    // both halves of the game on the one source set there is: the client-only jar leaves out the classes the client
+    // shares with the server, and the merged one comes out of loom with no classes at all for 26.1
+    splitMinecraftJar()
 
     // the launcher starts the game with an agent, not loom with a loader: with no run configurations left, the
     // IDE sync stops setting up launches (assets, natives, run configurations) too
