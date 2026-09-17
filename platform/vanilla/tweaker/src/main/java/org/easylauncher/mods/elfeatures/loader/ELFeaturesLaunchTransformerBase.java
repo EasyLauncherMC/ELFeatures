@@ -32,6 +32,16 @@ public abstract class ELFeaturesLaunchTransformerBase extends ELFeaturesLoaderMo
         String internalName = transformedName.replace('.', '/');
         if (classBytes == null) return generated(internalName);
 
+        if (MixinPipeline.isMixinClass(internalName)) {
+            try {
+                byte[] remapped = MixinPipeline.remapAccessor(classBytes);
+                return remapped != null ? remapped : classBytes;
+            } catch (Throwable cause) {
+                LOG.error("Couldn't rename the accessor '" + transformedName + "'!", cause);
+                return classBytes;
+            }
+        }
+
         if (!MixinPipeline.isMinecraftClass(internalName))
             return classBytes;
 

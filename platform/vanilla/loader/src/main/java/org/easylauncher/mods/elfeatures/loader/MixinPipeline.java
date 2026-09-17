@@ -2,7 +2,11 @@ package org.easylauncher.mods.elfeatures.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.easylauncher.mods.elfeatures.loader.naming.MixinClassRemapper;
 import org.easylauncher.mods.elfeatures.loader.service.MixinService;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.commons.ClassRemapper;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
 /**
@@ -14,6 +18,9 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MixinPipeline {
 
+    private static final String MIXIN_PACKAGE = "org/easylauncher/mods/elfeatures/mixin/";
+    private static final MixinClassRemapper MIXIN_REMAPPER = new MixinClassRemapper();
+
     /**
      * Whether the class is the game's, which is the package it is in: {@code net.minecraft} where the release
      * is named, and the default package where it is obfuscated.
@@ -23,6 +30,31 @@ public final class MixinPipeline {
      */
     public static boolean isMinecraftClass(String internalName) {
         return internalName != null && (!internalName.contains("/") || internalName.startsWith("net/minecraft/"));
+    }
+
+    /**
+     * Whether the class is one of the mod's mixins. The JVM ever loads one itself only where it is an accessor:
+     * an interface the game's classes are made to implement, and the handlers cast to.
+     */
+    public static boolean isMixinClass(String internalName) {
+        return internalName != null && internalName.startsWith(MIXIN_PACKAGE);
+    }
+
+    /**
+     * The accessor rewritten into the names the running game has, or {@code null} where it runs on the names the
+     * mixins are written against.
+     *
+     * <p>Mixin reads a mixin through the service, which rewrites it on the way, and generates the accessor methods
+     * from that copy. The interface the JVM loads comes from the jar as it is: left alone, it would still declare
+     * those methods with intermediary types, and no call to them would find the ones generated.
+     */
+    public static byte[] remapAccessor(byte[] classBytes) {
+        if (ELFeaturesMixinBootstrap.getMixinRemapper() == null)
+            return null;
+
+        ClassWriter writer = new ClassWriter(0);
+        new ClassReader(classBytes).accept(new ClassRemapper(writer, MIXIN_REMAPPER), 0);
+        return writer.toByteArray();
     }
 
     /** The class with the mixins in it, or {@code null} where none of them had anything to say about it. */

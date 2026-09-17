@@ -27,6 +27,15 @@ public final class ELFeaturesClassTransformer implements ClassFileTransformer {
         if (className == null || classfileBuffer == null || classfileBuffer.length == 0)
             return null;
 
+        if (MixinPipeline.isMixinClass(className)) {
+            try {
+                return MixinPipeline.remapAccessor(classfileBuffer);
+            } catch (Throwable cause) {
+                log.error("Couldn't rename the accessor '" + className + "'!", cause);
+                return null;
+            }
+        }
+
         if (!MixinPipeline.isMinecraftClass(className))
             return null;
 
