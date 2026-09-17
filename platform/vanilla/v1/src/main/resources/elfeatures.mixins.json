@@ -5,8 +5,12 @@
   "compatibilityLevel": "JAVA_8",
   "refmap": "elfeatures.refmap.json",
   "refmapWrapper": "MixinRuntimeRefMapper",
+  "plugin": "org.easylauncher.mods.elfeatures.ELFeaturesMixinPlugin",
   "client": [
+    "activity.MixinClientPlayNetworkHandler",
+    "activity.MixinConnectScreen",
     "multiplayer.MixinIntegratedServer",
+    "quickplay.MixinMinecraft",
     "textures.MixinClientPlayerEntity",
     "textures.MixinHttpTextureDownload",
     "textures.MixinMinecraft",
