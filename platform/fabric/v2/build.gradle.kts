@@ -26,6 +26,7 @@ dependencies {
     implementation("net.fabricmc:fabric-loader:${spec.props["loader_version"]}")
 
     spec.addUsedModules(this)
+    compileOnly(project(":facade:authlib"))
 
     annotationProcessor(libs.lombok)
 }
