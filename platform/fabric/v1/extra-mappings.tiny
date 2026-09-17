@@ -7,6 +7,9 @@ c	net/minecraft/class_1046	net/minecraft/client/texture/PlayerSkinTexture
 	m	(Lnet/minecraft/class_1011;)Lnet/minecraft/class_1011;	method_22798	remapTexture
 	m	(Lnet/minecraft/class_1011;IIII)V	method_22796	stripAlpha
 	m	(Lnet/minecraft/class_1011;IIII)V	method_22794	stripColor
+c	net/minecraft/class_32$class_5143	net/minecraft/world/level/storage/LevelStorage$Session
+c	net/minecraft/class_5219	net/minecraft/world/SaveProperties
+c	net/minecraft/class_7196	net/minecraft/server/integrated/IntegratedServerLoader
 c	net/minecraft/class_10538	net/minecraft/client/texture/PlayerSkinTextureDownloader
 	m	(Lnet/minecraft/class_1011;Ljava/lang/String;)Lnet/minecraft/class_1011;	method_65863	remapTexture
 	m	(Lnet/minecraft/class_1011;IIII)V	method_65868	stripAlpha

@@ -16,6 +16,7 @@ loom {
         defaultRefmapName = "${spec.mod.id}.refmap.json"
 
         messages = mapOf(
+            "ACCESSOR_TARGET_NOT_FOUND" to "disabled",
             "NO_OBFDATA_FOR_METHOD" to "warning",
             "NO_OBFDATA_FOR_TARGET" to "warning",
             "TARGET_ELEMENT_NOT_FOUND" to "disabled"
