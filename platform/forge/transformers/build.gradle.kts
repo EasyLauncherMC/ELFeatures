@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly(project(":core"))
     implementation(project(":shared:asm"))
 
     implementation("org.ow2.asm:asm-all:5.0.3")
