@@ -5,9 +5,34 @@ import org.easylauncher.mods.elfeatures.shared.mixin.MixinPluginBase;
 public final class ELFeaturesMixinPlugin extends MixinPluginBase {
 
     public ELFeaturesMixinPlugin() {
+        // --- feature: journal of worlds and servers joined
+        createConstraintGroup("activity")
+                .add("ClientPlayNetworkHandler$V1",     "(,2521]")      // 20w13b (1.16) and earlier
+                .add("ClientPlayNetworkHandler$V2",     "[2524,2526]")  // 20w14a (1.16) - 20w16a (1.16)
+                .add("ClientPlayNetworkHandler$V3",     "[2529,)")      // 20w17a (1.16) and newer
+                .add("ConnectScreen$V1",                "(,2713]")      // 21w18a (1.17) and earlier
+                .add("ConnectScreen$V2",                "[2714,3443]")  // 21w19a (1.17) - 23w13a (1.19.4)
+                .add("LevelStorageSession",             "[2524,)")      // 20w14a (1.16) and newer
+                .add("MinecraftServer$V2",              "[2524,2526]")  // 20w14a (1.16) - 20w16a (1.16)
+                .add("MinecraftServer$V3",              "[2529,)")      // 20w17a (1.16) and newer
+                .apply();
+
         // --- feature: fix for multiplayer on 1.16.X
         createConstraintGroup("multiplayer")
                 .add("MinecraftClient",                 "[2582,2586]")  // 1.16.4-pre2 - 1.16.5
+                .apply();
+
+        // --- feature: quick play into a world, native since 23w14a
+        createConstraintGroup("quickplay")
+                .add("IntegratedServerLoader$V5",       "[3080,3080]")  // 22w11a (1.19)
+                .add("IntegratedServerLoader$V6",       "[3082,3443]")  // 22w12a (1.19) - 23w13a (1.19.4)
+                .add("LevelStorage",                    "(,2526]")      // 20w16a (1.16) and earlier
+                .add("MinecraftClient$V1",              "(,1932]")      // 19w07a (1.14) and earlier
+                .add("MinecraftClient$V2",              "[1933,2526]")  // 19w08a (1.14) - 20w16a (1.16)
+                .add("MinecraftClient$V3",              "[2529,2555]")  // 20w17a (1.16) - 20w22a (1.16)
+                .add("MinecraftClient$V4",              "[2556,2975]")  // 1.16-pre1 - 1.18.2
+                .add("MinecraftClient$V5",              "[3080,3080]")  // 22w11a (1.19)
+                .add("MinecraftClient$V6",              "[3082,3443]")  // 22w12a (1.19) - 23w13a (1.19.4)
                 .apply();
 
         // --- feature: skin/cape textures from EasyX
