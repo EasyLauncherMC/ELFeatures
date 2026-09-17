@@ -6,9 +6,11 @@ import lombok.extern.log4j.Log4j2;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.service.MixinService;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.*;
 
 @Log4j2
@@ -23,7 +25,7 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {
-        try (InputStream resource = ClassLoader.getSystemClassLoader().getResourceAsStream("version.json")) {
+        try (InputStream resource = openVersionJson()) {
             if (resource == null) {
                 log.warn("ELFeatures can't find 'version.json' resource!");
                 log.warn("Seems that you're running MC version earlier than 18w47b or your client JAR is corrupted.");
@@ -43,17 +45,90 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (dataVersion == 0)
-            return false;
-
+        MixinConstraint constraint = null;
         for (String mixinSuffix : constraints.keySet()) {
             if (mixinClassName.endsWith(mixinSuffix)) {
-                MixinConstraint constraint = constraints.get(mixinSuffix);
-                return constraint == null || constraint.pass(dataVersion);
+                constraint = constraints.get(mixinSuffix);
+                break;
             }
         }
 
-        return true;
+        if (constraint == null)
+            return true;
+
+        return dataVersion != 0 && constraint.pass(dataVersion);
+    }
+
+    // Forge 1.17+ keeps the client jar off the system class loader (ModLauncher union / modules)
+    private static InputStream openVersionJson() {
+        InputStream in;
+
+        try {
+            in = MixinService.getService().getResourceAsStream("version.json");
+            if (in != null) return in;
+        } catch (Throwable ignored) {
+        }
+
+        ClassLoader[] loaders = {
+                Thread.currentThread().getContextClassLoader(),
+                MixinPluginBase.class.getClassLoader(),
+                ClassLoader.getSystemClassLoader(),
+        };
+
+        for (ClassLoader loader : loaders) {
+            if (loader == null) continue;
+            in = loader.getResourceAsStream("version.json");
+            if (in != null) return in;
+        }
+
+        in = openVersionJsonBeside("net.minecraft.DetectedVersion");
+        if (in != null) return in;
+
+        return openVersionJsonBeside("net.minecraft.client.Minecraft");
+    }
+
+    private static InputStream openVersionJsonBeside(String className) {
+        try {
+            Class<?> type = MixinService.getService().getClassProvider().findClass(className, false);
+            InputStream in = type.getResourceAsStream("/version.json");
+            if (in != null) return in;
+
+            if (type.getClassLoader() != null) {
+                in = type.getClassLoader().getResourceAsStream("version.json");
+                if (in != null) return in;
+            }
+
+            if (type.getProtectionDomain() == null || type.getProtectionDomain().getCodeSource() == null)
+                return null;
+
+            URL location = type.getProtectionDomain().getCodeSource().getLocation();
+            if (location == null) return null;
+
+            try {
+                return new URL(location, "version.json").openStream();
+            } catch (Exception ignored) {
+            }
+
+            return openVersionJsonInJar(location);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    private static InputStream openVersionJsonInJar(URL location) {
+        String spec = location.toExternalForm();
+        int jar = spec.toLowerCase(Locale.ROOT).indexOf(".jar");
+        if (jar < 0) return null;
+
+        String jarUrl = spec.substring(0, jar + 4);
+        if (jarUrl.startsWith("union:"))
+            jarUrl = "file:" + jarUrl.substring("union:".length());
+
+        try {
+            return new URL("jar:" + jarUrl + "!/version.json").openStream();
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     protected final MixinConstraintGroup createConstraintGroup(String childPackageName) {
