@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.locator;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 import net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileLocator;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-@Log4j2
+@CustomLog
 public class ELFeaturesModLocator extends AbstractJarFileLocator {
 
     @Override
@@ -76,8 +76,7 @@ public class ELFeaturesModLocator extends AbstractJarFileLocator {
             modJars.put(modFile, fileSystem);
             return true;
         } catch (Throwable ex) {
-            log.error("Couldn't register ModFile via reflection!");
-            log.error(ex);
+            log.error("Couldn't register ModFile via reflection!", ex);
             return false;
         }
     }

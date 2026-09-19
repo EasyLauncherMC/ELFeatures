@@ -6,7 +6,6 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import org.easylauncher.mods.elfeatures.texture.model.AuthlibTexturesData;
 import org.easylauncher.mods.elfeatures.texture.model.AuthlibTexturesPayload;
-import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -15,8 +14,8 @@ import java.util.Map;
 
 abstract class AuthlibTexturesProviderBase<K> extends TexturesProviderBase<K, AuthlibTexturesData, AuthlibTexturesPayload> {
 
-    AuthlibTexturesProviderBase(String userAgent, LoggingFacade logger) {
-        super(userAgent, logger);
+    AuthlibTexturesProviderBase(String userAgent) {
+        super(userAgent);
     }
 
     @Override
@@ -33,7 +32,7 @@ abstract class AuthlibTexturesProviderBase<K> extends TexturesProviderBase<K, Au
     @Override
     protected AuthlibTexturesData parseTexturesData(K key, byte[] rawResponseBody) {
         Map<Type, MinecraftProfileTexture> texturesMap = parseTexturesPayload(rawResponseBody).getTextures();
-        logger.log("Received textures for '%s': '%s'", key, texturesMap);
+        logger.info("Received textures for '{}': '{}'", key, texturesMap);
 
         if (texturesMap != null && !texturesMap.isEmpty()) {
             String propertyValue = Base64.getEncoder().encodeToString(rawResponseBody);

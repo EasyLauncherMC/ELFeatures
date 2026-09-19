@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.asm;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 import org.easylauncher.mods.elfeatures.shared.asm.TransformerService;
 import org.easylauncher.mods.elfeatures.shared.asm.TransformerTarget;
 import org.easylauncher.mods.elfeatures.shared.asm.transformer.BaseClassTransformer;
@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.objectweb.asm.Opcodes.*;
 
-@Log4j2
+@CustomLog
 public final class TransformerImageBufferDownload {
 
     private static final String FIELD_NAME_SCALE_FACTOR = "elfeatures$scaleFactor";

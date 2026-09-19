@@ -5,7 +5,6 @@ import org.easylauncher.mods.elfeatures.texture.model.LegacyProfileTexture;
 import org.easylauncher.mods.elfeatures.texture.model.LegacyProfileTexture.Type;
 import org.easylauncher.mods.elfeatures.texture.model.LegacyTexturesData;
 import org.easylauncher.mods.elfeatures.texture.model.LegacyTexturesPayload;
-import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -14,8 +13,8 @@ import java.util.Map;
 
 abstract class LegacyTexturesProviderBase<K> extends TexturesProviderBase<K, LegacyTexturesData, LegacyTexturesPayload> {
 
-    LegacyTexturesProviderBase(String userAgent, LoggingFacade logger) {
-        super(userAgent, logger);
+    LegacyTexturesProviderBase(String userAgent) {
+        super(userAgent);
     }
 
     @Override
@@ -32,7 +31,7 @@ abstract class LegacyTexturesProviderBase<K> extends TexturesProviderBase<K, Leg
     @Override
     protected LegacyTexturesData parseTexturesData(K key, byte[] rawResponseBody) {
         Map<Type, LegacyProfileTexture> texturesMap = parseTexturesPayload(rawResponseBody).getTextures();
-        logger.log("Received textures for '%s': '%s'", key, texturesMap);
+        logger.info("Received textures for '{}': '{}'", key, texturesMap);
 
         if (texturesMap != null && !texturesMap.isEmpty()) {
             String propertyValue = Base64.getEncoder().encodeToString(rawResponseBody);

@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.shared.asm;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 import org.easylauncher.mods.elfeatures.shared.asm.transformer.ClassTransformer;
 import org.easylauncher.mods.elfeatures.shared.asm.transformer.MethodTransformer;
 import org.objectweb.asm.commons.Remapper;
@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j2
+@CustomLog
 public final class TransformerService {
 
     public static final boolean DEBUG_ENABLED = "true".equalsIgnoreCase(System.getProperty("elfeatures.debug.enabled"));
@@ -59,8 +59,7 @@ public final class TransformerService {
                 log.debug("Transformed class: '{}' (with '{}')", name, transformerName);
             }
         } catch (Exception ex) {
-            log.error("Failed to transform class: '{}' (with '{}')", name, transformerName);
-            log.error(ex);
+            log.error("Failed to transform class: '{}' (with '{}')", name, transformerName, ex);
         }
 
         return node;
@@ -104,7 +103,7 @@ public final class TransformerService {
                     hasSameDesc = map.keySet().stream().anyMatch(key -> key.endsWith(suffix));
 
                 if (hasSameDesc) {
-                    log.warn("Found potentially correct method '{}'!", methodTarget);
+                    log.debug("Found potentially correct method '{}'!", methodTarget);
                 } else {
                     log.debug("Skipped method '{}'", methodTarget);
                 }
@@ -120,8 +119,7 @@ public final class TransformerService {
                 log.debug("Transformed method: '{}' in class '{}' (with '{}')", name, className, transformerName);
             }
         } catch (Exception ex) {
-            log.error("Failed to transform method: '{}' in class '{}' (with '{}')", name, className, transformerName);
-            log.error(ex);
+            log.error("Failed to transform method: '{}' in class '{}' (with '{}')", name, className, transformerName, ex);
         }
 
         return node;

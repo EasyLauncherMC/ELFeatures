@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.activity;
 
-import org.easylauncher.mods.elfeatures.ELFeaturesMod;
+import lombok.CustomLog;
 import org.easylauncher.mods.elfeatures.loader.ELFeaturesMixinBootstrap;
 import org.easylauncher.mods.elfeatures.loader.naming.MixinRemapper;
 
@@ -17,6 +17,7 @@ import java.util.List;
  * {@code NoSuchMethodError} in the middle of a tick. The members are named in calamus intermediary, which keeps one id
  * for every one of them over the whole range, and put into the running game's names by the loader's remapper.
  */
+@CustomLog
 public final class LegacyActivityHooks {
 
     private static final String TITLE_SCREEN = "net/minecraft/unmapped/C_95462098";
@@ -64,7 +65,7 @@ public final class LegacyActivityHooks {
             if (world != null) startWorld(client, world);
         } catch (Throwable cause) {
             titleScreenSeen = true;
-            ELFeaturesMod.mod().log("Quick play failed: %s", cause);
+            log.warn("Quick play failed", cause);
         }
     }
 
@@ -97,7 +98,7 @@ public final class LegacyActivityHooks {
             String serverName = entry != null ? (String) get(entry, "f_20279990") : null;
             ActivityJournalWriter.multiplayer(address, serverName, gamemode);
         } catch (Throwable cause) {
-            ELFeaturesMod.mod().log("Activity not recorded: %s", cause);
+            log.warn("Activity not recorded", cause);
         }
     }
 
@@ -116,7 +117,7 @@ public final class LegacyActivityHooks {
         } catch (Throwable cause) {
             // a field that is not there stays missing, so it is not looked for again on every tick
             worldCheckFailed = true;
-            ELFeaturesMod.mod().log("Idle not recorded: %s", cause);
+            log.warn("Idle not recorded", cause);
         }
     }
 
@@ -130,7 +131,7 @@ public final class LegacyActivityHooks {
                 summary = candidate;
 
         if (summary == null) {
-            ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+            log.warn("Quick play world '{}' not found, staying in the main menu", world);
             return;
         }
 

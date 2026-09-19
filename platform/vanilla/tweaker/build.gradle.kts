@@ -18,8 +18,6 @@ dependencies {
 
     compileOnlyApi("net.minecraft:launchwrapper:1.12")
 
-    compileOnly("org.apache.logging.log4j:log4j-api:2.0-beta9")
-
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 }

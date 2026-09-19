@@ -2,13 +2,11 @@ package org.easylauncher.mods.elfeatures.texture.provider;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 
 @RequiredArgsConstructor
 public final class TexturesProviderService {
 
     @Getter private final String userAgent;
-    @Getter private final LoggingFacade logger;
 
     private AuthlibEasyxTexturesProvider authlibEasyxTexturesProvider;
     private LegacyEasyxTexturesProvider legacyEasyxTexturesProvider;
@@ -16,21 +14,21 @@ public final class TexturesProviderService {
 
     public synchronized AuthlibEasyxTexturesProvider authlibEasyxTexturesProvider() {
         if (authlibEasyxTexturesProvider == null)
-            this.authlibEasyxTexturesProvider = new AuthlibEasyxTexturesProvider(userAgent, logger);
+            this.authlibEasyxTexturesProvider = new AuthlibEasyxTexturesProvider(userAgent);
 
         return authlibEasyxTexturesProvider;
     }
 
     public synchronized LegacyEasyxTexturesProvider legacyEasyxTexturesProvider() {
         if (legacyEasyxTexturesProvider == null)
-            this.legacyEasyxTexturesProvider = new LegacyEasyxTexturesProvider(userAgent, logger);
+            this.legacyEasyxTexturesProvider = new LegacyEasyxTexturesProvider(userAgent);
 
         return legacyEasyxTexturesProvider;
     }
 
     public synchronized LegacyMojangTexturesProvider legacyMojangTexturesProvider() {
         if (legacyMojangTexturesProvider == null)
-            this.legacyMojangTexturesProvider = new LegacyMojangTexturesProvider(userAgent, logger);
+            this.legacyMojangTexturesProvider = new LegacyMojangTexturesProvider(userAgent);
 
         return legacyMojangTexturesProvider;
     }

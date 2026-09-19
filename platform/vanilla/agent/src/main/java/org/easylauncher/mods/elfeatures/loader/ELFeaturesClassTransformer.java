@@ -1,13 +1,13 @@
 package org.easylauncher.mods.elfeatures.loader;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
 
 /** Runs the mixins over every game class the JVM is about to define. */
-@Log4j2
+@CustomLog
 public final class ELFeaturesClassTransformer implements ClassFileTransformer {
 
     private final SyntheticClasses syntheticClasses;

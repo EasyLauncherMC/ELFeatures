@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.loader;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.ClassRemapper;
@@ -27,7 +27,7 @@ import java.util.jar.JarOutputStream;
  * every class a freshly transformed one refers to and nothing on disk answers for is generated here and
  * appended to the system class path, which happens well before the code that needs it runs.
  */
-@Log4j2
+@CustomLog
 final class SyntheticClasses {
 
     private final Instrumentation instrumentation;

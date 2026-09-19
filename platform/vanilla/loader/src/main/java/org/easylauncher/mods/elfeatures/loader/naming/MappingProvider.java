@@ -1,8 +1,8 @@
 package org.easylauncher.mods.elfeatures.loader.naming;
 
 import lombok.AccessLevel;
+import lombok.CustomLog;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import net.fabricmc.mappingio.MappingReader;
 import net.fabricmc.mappingio.format.MappingFormat;
 import net.fabricmc.mappingio.format.tiny.Tiny1FileReader;
@@ -26,7 +26,7 @@ import java.util.jar.JarFile;
  * and a game started without a network still has to run. An empty tree is a valid answer — the releases whose
  * classes are not obfuscated need no mappings at all.
  */
-@Log4j2
+@CustomLog
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MappingProvider {
 
@@ -59,9 +59,7 @@ public final class MappingProvider {
                 read(bufferedReader, new FilteringMappingVisitor(mappings));
             }
 
-            if (ELFeaturesMod.LOGGING_ENABLED) {
-                log.info("Loading mappings took {} ms.", System.currentTimeMillis() - time);
-            }
+            log.info("Loading mappings took {} ms.", System.currentTimeMillis() - time);
         } catch (Exception cause) {
             log.error("Couldn't load the mappings from '" + path + "'!", cause);
         }

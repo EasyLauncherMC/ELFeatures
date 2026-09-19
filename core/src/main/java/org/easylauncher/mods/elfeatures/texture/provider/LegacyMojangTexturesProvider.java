@@ -4,15 +4,14 @@ import com.mojang.authlib.GameProfile;
 import org.easylauncher.mods.elfeatures.texture.model.LegacyProperty;
 import org.easylauncher.mods.elfeatures.texture.model.LegacyTexturesPayload;
 import org.easylauncher.mods.elfeatures.texture.model.LegacyTexturesResponse;
-import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public final class LegacyMojangTexturesProvider extends LegacyTexturesProviderBase<UUID> {
 
-    public LegacyMojangTexturesProvider(String userAgent, LoggingFacade logger) {
-        super(userAgent, logger);
+    public LegacyMojangTexturesProvider(String userAgent) {
+        super(userAgent);
     }
 
     @Override

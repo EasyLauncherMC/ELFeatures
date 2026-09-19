@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures;
 
-import org.apache.logging.log4j.Logger;
+import lombok.CustomLog;
 import org.easylauncher.mods.elfeatures.loader.ELFeaturesClassTransformer;
 
 import java.lang.instrument.Instrumentation;
@@ -13,10 +13,11 @@ import java.lang.instrument.Instrumentation;
  * about to define — already patched by OptiFine where OptiFine is installed, rather than the untouched ones
  * lying in the client jar.
  */
+@CustomLog
 public abstract class ELFeaturesAgentBase extends ELFeaturesLoaderModBase {
 
-    protected ELFeaturesAgentBase(String modVersion, Logger logger) {
-        super(modVersion, logger);
+    protected ELFeaturesAgentBase(String modVersion) {
+        super(modVersion);
     }
 
     /** Brings mixin up and starts transforming. */
@@ -24,7 +25,7 @@ public abstract class ELFeaturesAgentBase extends ELFeaturesLoaderModBase {
         startMixin();
 
         instrumentation.addTransformer(new ELFeaturesClassTransformer(instrumentation));
-        log("[ELFeaturesAgent] Hung on the game, transforming from here on");
+        log.info("[ELFeaturesAgent] Hung on the game, transforming from here on");
     }
 
 }

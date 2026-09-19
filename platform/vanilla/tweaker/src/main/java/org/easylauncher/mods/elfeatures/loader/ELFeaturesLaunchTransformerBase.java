@@ -1,9 +1,8 @@
 package org.easylauncher.mods.elfeatures.loader;
 
+import lombok.CustomLog;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.Launch;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.easylauncher.mods.elfeatures.ELFeaturesLoaderModBase;
 import org.easylauncher.mods.elfeatures.loader.service.MixinService;
 
@@ -14,17 +13,16 @@ import org.easylauncher.mods.elfeatures.loader.service.MixinService;
  * transformer inside its class loader, which is the one loader the mod may live in — and the only place from
  * which mixin can be pointed at the classes the game will actually be given.
  */
+@CustomLog
 public abstract class ELFeaturesLaunchTransformerBase extends ELFeaturesLoaderModBase implements IClassTransformer {
 
-    private static final Logger LOG = LogManager.getLogger(ELFeaturesLaunchTransformerBase.class);
-
-    protected ELFeaturesLaunchTransformerBase(String modVersion, Logger logger) {
-        super(modVersion, logger);
+    protected ELFeaturesLaunchTransformerBase(String modVersion) {
+        super(modVersion);
 
         MixinService.setClassSource(Launch.classLoader);
         startMixin();
 
-        log("[ELFeaturesTweaker] Hung on the game, transforming from here on");
+        log.info("[ELFeaturesTweaker] Hung on the game, transforming from here on");
     }
 
     @Override
@@ -37,7 +35,7 @@ public abstract class ELFeaturesLaunchTransformerBase extends ELFeaturesLoaderMo
                 byte[] remapped = MixinPipeline.remapAccessor(classBytes);
                 return remapped != null ? remapped : classBytes;
             } catch (Throwable cause) {
-                LOG.error("Couldn't rename the accessor '" + transformedName + "'!", cause);
+                log.error("Couldn't rename the accessor '" + transformedName + "'!", cause);
                 return classBytes;
             }
         }
@@ -49,7 +47,7 @@ public abstract class ELFeaturesLaunchTransformerBase extends ELFeaturesLoaderMo
             byte[] transformed = MixinPipeline.apply(internalName, classBytes);
             return transformed != null ? transformed : classBytes;
         } catch (Throwable cause) {
-            LOG.error("Couldn't apply the mixins to '" + transformedName + "'!", cause);
+            log.error("Couldn't apply the mixins to '" + transformedName + "'!", cause);
             return classBytes;
         }
     }
@@ -58,7 +56,7 @@ public abstract class ELFeaturesLaunchTransformerBase extends ELFeaturesLoaderMo
         try {
             return MixinPipeline.generate(internalName);
         } catch (Throwable cause) {
-            LOG.error("Couldn't make up the class '" + internalName + "'!", cause);
+            log.error("Couldn't make up the class '" + internalName + "'!", cause);
             return null;
         }
     }

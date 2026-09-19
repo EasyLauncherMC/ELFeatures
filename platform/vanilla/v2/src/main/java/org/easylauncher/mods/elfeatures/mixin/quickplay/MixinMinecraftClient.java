@@ -69,7 +69,7 @@ public final class MixinMinecraftClient {
             }
 
             if (summary == null) {
-                ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+                ELFeaturesMod.LOGGER.warn("Quick play world '{}' not found, staying in the main menu", world);
                 return;
             }
 
@@ -109,7 +109,7 @@ public final class MixinMinecraftClient {
             }
 
             if (summary == null) {
-                ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+                ELFeaturesMod.LOGGER.warn("Quick play world '{}' not found, staying in the main menu", world);
                 return;
             }
 
@@ -141,7 +141,7 @@ public final class MixinMinecraftClient {
             if (world == null) return;
 
             if (!client.getLevelStorage().levelExists(world)) {
-                ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+                ELFeaturesMod.LOGGER.warn("Quick play world '{}' not found, staying in the main menu", world);
                 return;
             }
 
@@ -173,7 +173,7 @@ public final class MixinMinecraftClient {
             if (world == null) return;
 
             if (!client.getLevelStorage().levelExists(world)) {
-                ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+                ELFeaturesMod.LOGGER.warn("Quick play world '{}' not found, staying in the main menu", world);
                 return;
             }
 
@@ -205,7 +205,7 @@ public final class MixinMinecraftClient {
             if (world == null) return;
 
             if (!client.getLevelStorage().levelExists(world)) {
-                ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+                ELFeaturesMod.LOGGER.warn("Quick play world '{}' not found, staying in the main menu", world);
                 return;
             }
 
@@ -238,7 +238,7 @@ public final class MixinMinecraftClient {
             if (world == null) return;
 
             if (!client.getLevelStorage().levelExists(world)) {
-                ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+                ELFeaturesMod.LOGGER.warn("Quick play world '{}' not found, staying in the main menu", world);
                 return;
             }
 

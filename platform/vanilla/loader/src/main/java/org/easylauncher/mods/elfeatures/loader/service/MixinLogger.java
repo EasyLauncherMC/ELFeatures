@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.loader.service;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 import org.easylauncher.mods.elfeatures.ELFeaturesMod;
 import org.spongepowered.asm.logging.ILogger;
 import org.spongepowered.asm.logging.Level;
@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 // based on source code: https://github.com/FabricMC/fabric-loader/blob/master/src/main/java/net/fabricmc/loader/impl/launch/knot/MixinLogger.java
 
-@Log4j2
+@CustomLog
 public final class MixinLogger extends LoggerAdapterAbstract {
 
     private static final Map<String, ILogger> LOGGER_MAP = new ConcurrentHashMap<>();
@@ -95,15 +95,22 @@ public final class MixinLogger extends LoggerAdapterAbstract {
         if (!shouldLog(level))
             return;
 
+        // an argument rather than the pattern, since the message is formatted already
         switch (level) {
             case TRACE:
-                log.info("[Trace] " + message, throwable);
+                log.info("[Trace] {}", message, throwable);
                 break;
             case DEBUG:
-                log.info("[Debug] " + message, throwable);
+                log.info("[Debug] {}", message, throwable);
+                break;
+            case INFO:
+                log.info("{}", message, throwable);
+                break;
+            case WARN:
+                log.warn("{}", message, throwable);
                 break;
             default:
-                log.log(toLog4jLevel(level), message, throwable);
+                log.error("{}", message, throwable);
                 break;
         }
     }
@@ -112,25 +119,6 @@ public final class MixinLogger extends LoggerAdapterAbstract {
     public <T extends Throwable> T throwing(T throwable) {
         log(Level.ERROR, "Throwing " + throwable, throwable);
         return throwable;
-    }
-
-    private static org.apache.logging.log4j.Level toLog4jLevel(Level level) {
-        switch (level) {
-            case TRACE:
-                return org.apache.logging.log4j.Level.TRACE;
-            case DEBUG:
-                return org.apache.logging.log4j.Level.DEBUG;
-            case INFO:
-                return org.apache.logging.log4j.Level.INFO;
-            case WARN:
-                return org.apache.logging.log4j.Level.WARN;
-            case ERROR:
-                return org.apache.logging.log4j.Level.ERROR;
-            case FATAL:
-                return org.apache.logging.log4j.Level.FATAL;
-            default:
-                return org.apache.logging.log4j.Level.OFF;
-        }
     }
 
     private static boolean shouldLog(Level level) {

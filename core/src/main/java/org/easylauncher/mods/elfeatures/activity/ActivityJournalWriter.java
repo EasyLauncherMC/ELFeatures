@@ -4,7 +4,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.AllArgsConstructor;
-import org.easylauncher.mods.elfeatures.ELFeaturesMod;
+import lombok.CustomLog;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+@CustomLog
 public final class ActivityJournalWriter {
 
     private static final String JOURNAL_PATH = System.getProperty("elfeatures.activity.journal");
@@ -95,7 +96,7 @@ public final class ActivityJournalWriter {
             // opened and closed per entry, so the launcher is free to delete the file once the session is over
             Files.write(path, line, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (Exception cause) {
-            ELFeaturesMod.mod().log("Activity not written to '%s': %s", JOURNAL_PATH, cause);
+            log.warn("Activity not written to '{}': {}", JOURNAL_PATH, cause);
         }
     }
 

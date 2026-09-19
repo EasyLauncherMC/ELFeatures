@@ -8,8 +8,8 @@ import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.SneakyThrows;
+import org.easylauncher.mods.elfeatures.logging.LoggerAdapter;
 import org.easylauncher.mods.elfeatures.texture.model.TexturesData;
-import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 import org.easylauncher.mods.elfeatures.util.UuidTypeAdapter;
 
 import java.io.DataInputStream;
@@ -34,13 +34,13 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
     private static final int MAX_ATTEMPTS = 3;
 
     protected final String userAgent;
-    protected final LoggingFacade logger;
+    protected final LoggerAdapter logger;
     protected final Gson gson;
     protected final LoadingCache<K, D> texturesCache;
 
-    TexturesProviderBase(String userAgent, LoggingFacade logger) {
+    TexturesProviderBase(String userAgent) {
         this.userAgent = userAgent;
-        this.logger = logger;
+        this.logger = LoggerAdapter.of(getClass());
         this.gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UuidTypeAdapter()).create();
         this.texturesCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(60L, TimeUnit.SECONDS)
@@ -72,13 +72,16 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
                 return request(key);
             } catch (IOException cause) {
                 if (attempt == MAX_ATTEMPTS) {
-                    logger.log("Textures for '%s' not loaded: %s", key, cause);
+                    logger.warn("Textures for '{}' not loaded: {}", key, cause);
                     return emptyTexturesData();
                 }
 
-                logger.log("Textures for '%s' not loaded (attempt %d of %d), retrying: %s", key, attempt, MAX_ATTEMPTS, cause);
+                logger.info(
+                        "Textures for '{}' not loaded (attempt {} of {}), retrying: {}",
+                        key, attempt, MAX_ATTEMPTS, cause
+                );
             } catch (Exception cause) {
-                logger.log("Textures for '%s' not loaded: %s", key, cause);
+                logger.warn("Textures for '{}' not loaded: {}", key, cause);
                 return emptyTexturesData();
             }
         }
@@ -101,13 +104,13 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
             throw new IOException("Server error (response code: " + responseCode + ")");
 
         if (responseCode != 200) {
-            logger.log("Textures for '%s' not found (response code: %d)", key, responseCode);
+            logger.info("Textures for '{}' not found (response code: {})", key, responseCode);
             return emptyTexturesData();
         }
 
         int contentLength = httpConnection.getContentLength();
         if (contentLength <= 0) {
-            logger.log("Textures for '%s' not found (invalid content length: %d)", key, contentLength);
+            logger.info("Textures for '{}' not found (invalid content length: {})", key, contentLength);
             return emptyTexturesData();
         }
 
@@ -124,7 +127,7 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
     }
 
     public Property loadTexturesProperty(K key) {
-        logger.log("Requesting textures property for '%s'%n", key);
+        logger.info("Requesting textures property for '{}'", key);
         D loaded = texturesCache.getUnchecked(key);
         String propertyValue = loaded != null ? loaded.getPropertyValue() : null;
         return propertyValue != null ? new Property("textures", propertyValue) : null;

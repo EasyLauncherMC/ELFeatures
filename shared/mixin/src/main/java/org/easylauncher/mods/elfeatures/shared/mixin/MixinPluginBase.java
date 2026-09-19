@@ -2,7 +2,7 @@ package org.easylauncher.mods.elfeatures.shared.mixin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
-@Log4j2
+@CustomLog
 public abstract class MixinPluginBase implements IMixinConfigPlugin {
 
     private final Map<String, MixinConstraint> constraints;
@@ -38,8 +38,7 @@ public abstract class MixinPluginBase implements IMixinConfigPlugin {
 
             log.info("Running MC {} (data version: #{})", name, dataVersion);
         } catch (Exception ex) {
-            log.error("An exception occurred when reading 'version.json'!");
-            log.error(ex);
+            log.error("An exception occurred when reading 'version.json'!", ex);
         }
     }
 

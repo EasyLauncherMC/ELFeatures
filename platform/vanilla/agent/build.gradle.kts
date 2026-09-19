@@ -16,8 +16,6 @@ dependencies {
 
     api(project(":platform:vanilla:loader"))
 
-    compileOnly("org.apache.logging.log4j:log4j-api:2.0-beta9")
-
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 }

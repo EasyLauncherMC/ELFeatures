@@ -1,6 +1,5 @@
 package org.easylauncher.mods.elfeatures;
 
-import org.apache.logging.log4j.Logger;
 import org.easylauncher.mods.elfeatures.loader.ELFeaturesMixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
@@ -14,8 +13,8 @@ public abstract class ELFeaturesLoaderModBase extends ELFeaturesModBase {
 
     public static final boolean RUNNING_OPTIFINE;
 
-    protected ELFeaturesLoaderModBase(String modVersion, Logger logger) {
-        super(String.format("ELFeatures/%s (%s)", modVersion, RUNNING_OPTIFINE ? "OptiFine" : "Vanilla"), logger);
+    protected ELFeaturesLoaderModBase(String modVersion) {
+        super(String.format("ELFeatures/%s (%s)", modVersion, RUNNING_OPTIFINE ? "OptiFine" : "Vanilla"));
     }
 
     protected final void startMixin() {

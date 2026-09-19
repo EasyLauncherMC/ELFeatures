@@ -88,10 +88,6 @@ tasks {
             include(dependency("net.fabricmc:mapping-io"))
             include(dependency("net.fabricmc:sponge-mixin"))
             include(dependency("org.ow2.asm:.*:.*"))
-
-            // 1.6 ships no log4j at all; left unrelocated, since from 1.7 on the game's own copy comes first on the
-            // class path an agent is appended to, and that one is wired to the game's log
-            include(dependency("org.apache.logging.log4j:log4j-api"))
         }
 
         mergeServiceFiles()

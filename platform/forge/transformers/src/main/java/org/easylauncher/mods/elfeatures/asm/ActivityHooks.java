@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.asm;
 
-import org.easylauncher.mods.elfeatures.ELFeaturesMod;
+import lombok.CustomLog;
 import org.easylauncher.mods.elfeatures.activity.ActivityJournalWriter;
 import org.easylauncher.mods.elfeatures.activity.QuickPlayWorldHolder;
 
@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
  * client keeps them from 1.7.10 to 1.16.5, and every one used below has the same id over the whole range. One class
  * serves both ways the patches get in, the launch wrapper's Java transformers and the ModLauncher script.
  */
+@CustomLog
 public final class ActivityHooks {
 
     private static final String[] TITLE_SCREENS = {
@@ -66,7 +67,7 @@ public final class ActivityHooks {
             if (world != null) startWorld(client, world);
         } catch (Throwable cause) {
             titleScreenSeen = true;
-            ELFeaturesMod.mod().log("Quick play failed: %s", cause);
+            log.warn("Quick play failed", cause);
         }
     }
 
@@ -98,7 +99,7 @@ public final class ActivityHooks {
             String serverName = entry != null ? (String) get(entry, "field_78847_a") : null;
             ActivityJournalWriter.multiplayer(address, serverName, gamemode);
         } catch (Throwable cause) {
-            ELFeaturesMod.mod().log("Activity not recorded: %s", cause);
+            log.warn("Activity not recorded", cause);
         }
     }
 
@@ -142,7 +143,7 @@ public final class ActivityHooks {
         } catch (Throwable cause) {
             // a field that is not there stays missing, so it is not looked for again on every tick
             worldCheckFailed = true;
-            ELFeaturesMod.mod().log("Idle not recorded: %s", cause);
+            log.warn("Idle not recorded", cause);
         }
     }
 
@@ -194,7 +195,7 @@ public final class ActivityHooks {
     }
 
     private static void worldNotFound(String world) {
-        ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+        log.warn("Quick play world '{}' not found, staying in the main menu", world);
     }
 
     // getMinecraft: a join can land before the first tick has stored the client

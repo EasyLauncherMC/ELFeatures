@@ -45,7 +45,7 @@ public final class MixinMinecraft {
             if (world == null) return;
 
             if (!minecraft.getLevelSource().levelExists(world)) {
-                ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+                ELFeaturesMod.LOGGER.warn("Quick play world '{}' not found, staying in the main menu", world);
                 return;
             }
 
@@ -82,7 +82,7 @@ public final class MixinMinecraft {
             if (world == null) return;
 
             if (!minecraft.getLevelSource().levelExists(world)) {
-                ELFeaturesMod.mod().log("Quick play world '%s' not found, staying in the main menu", world);
+                ELFeaturesMod.LOGGER.warn("Quick play world '{}' not found, staying in the main menu", world);
                 return;
             }
 
