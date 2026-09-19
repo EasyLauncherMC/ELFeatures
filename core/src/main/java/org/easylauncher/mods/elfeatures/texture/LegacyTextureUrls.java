@@ -15,7 +15,10 @@ import java.util.regex.Pattern;
  */
 public final class LegacyTextureUrls {
 
-    private static final Pattern MOJANG_URL = Pattern.compile("^https?://skins\\.minecraft\\.net/Minecraft(Skins|Cloaks)/(.+)\\.png$");
+    // up to 1.2.5 the textures lay right in the S3 buckets
+    private static final Pattern MOJANG_URL = Pattern.compile(
+            "^https?://(?:skins\\.minecraft\\.net|s3\\.amazonaws\\.com)/Minecraft(Skins|Cloaks)/(.+)\\.png$"
+    );
 
     // a texture nobody has: the game passes a 404 over quietly,
     // while the dead host drops the connection and gets logged

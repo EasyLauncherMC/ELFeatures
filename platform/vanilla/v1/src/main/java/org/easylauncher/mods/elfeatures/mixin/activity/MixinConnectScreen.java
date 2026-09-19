@@ -26,7 +26,7 @@ public abstract class MixinConnectScreen {
         ActivityJournalWriter.connecting(host, port);
     }
 
-    // up to 1.4.7, where the screen has no parent to go back to
+    // up to 1.4.7, where the screen has no parent to go back to; up to 1.2.5 the server list joins through it too
     @Inject(
             method = "<init>(Lnet/minecraft/client/Minecraft;Ljava/lang/String;I)V",
             at = @At("RETURN"),

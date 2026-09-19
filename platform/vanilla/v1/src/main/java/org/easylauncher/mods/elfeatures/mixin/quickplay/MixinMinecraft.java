@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Quick play before 23w14a and the idle entry: every client tick is handed to {@link LegacyActivityHooks#onClientTick},
  * which closes a join once the world is gone and opens the quick play world once the title screen is up. The tick itself
- * keeps one intermediary name from 1.3 on.
+ * keeps one intermediary name from 1.0 on.
  */
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {

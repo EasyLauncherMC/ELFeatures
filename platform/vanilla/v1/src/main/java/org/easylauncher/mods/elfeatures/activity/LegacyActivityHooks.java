@@ -4,12 +4,15 @@ import lombok.CustomLog;
 import org.easylauncher.mods.elfeatures.loader.ELFeaturesMixinBootstrap;
 import org.easylauncher.mods.elfeatures.loader.naming.MixinRemapper;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
- * Quick play and the activity journal on the vanilla game from 1.3 to the 1.14 snapshots, called from the mixins in
+ * Quick play and the activity journal on the vanilla game from 1.0 to the 1.14 snapshots, called from the mixins in
  * {@code mixin.activity} and {@code mixin.quickplay}.
  *
  * <p>This range has nothing to gate mixins by version with, {@code version.json} only comes in 18w47b, so every call into
@@ -22,6 +25,10 @@ public final class LegacyActivityHooks {
 
     private static final String TITLE_SCREEN = "net/minecraft/unmapped/C_95462098";
 
+    // what the world list up to 1.2.5 sets the client up with before it opens a world, by the world's mode
+    private static final String SURVIVAL_INTERACTION_MANAGER = "net/minecraft/unmapped/C_54765678";
+    private static final String CREATIVE_INTERACTION_MANAGER = "net/minecraft/unmapped/C_83928382";
+
     // the client, kept from its first tick for the joins that come after it
     private static Object minecraft;
     private static boolean titleScreenSeen;
@@ -29,6 +36,9 @@ public final class LegacyActivityHooks {
     // the world field, looked up on the first tick, and whether that failed
     private static Field worldField;
     private static boolean worldCheckFailed;
+
+    // up to 1.2.5 an old world is converted and then opened by a nested call, and both calls end in onStartGame
+    private static WeakReference<Object> journaledWorld = new WeakReference<>(null);
 
     /**
      * At the head of every client tick: the idle entry once the world is gone, and quick play.
@@ -55,7 +65,7 @@ public final class LegacyActivityHooks {
                 return;
 
             // getOverlay, 19w08a and newer
-            Method overlay = find(client.getClass(), "m_45915379", 0);
+            Method overlay = find(client.getClass(), "m_45915379");
             if (overlay != null && overlay.invoke(client) != null)
                 return;
 
@@ -80,25 +90,69 @@ public final class LegacyActivityHooks {
             return;
 
         try {
-            // interactionManager.gameMode.getKey()
-            Object gameMode = get(get(client, "f_17639899"), "f_14768439");
-            String gamemode = gameMode != null ? (String) call(gameMode, "m_51006294") : null;
+            String gamemode = gamemodeOf(client);
 
-            // getServer
-            Object server = call(client, "m_37046522");
+            // getServer, 1.3 and newer; up to 1.2.5 only a server sends the login packet
+            Object server = find(client.getClass(), "m_37046522") != null ? call(client, "m_37046522") : null;
             if (server != null) {
                 // getWorldSaveName is the directory, getWorldName the name the world was opened with
                 ActivityJournalWriter.singleplayer((String) call(server, "m_70179823"), (String) call(server, "m_65157856"), gamemode);
                 return;
             }
 
-            // currentServerEntry: ip as typed, name
-            Object entry = get(client, "f_32571834");
+            // currentServerEntry, 1.3 and newer: ip as typed, name
+            Object entry = null;
+            try {
+                entry = get(client, "f_32571834");
+            } catch (NoSuchFieldException ignored) {
+                // up to 1.2.5 the server is known only by the address the connecting screen kept
+            }
+
             String address = entry != null ? (String) get(entry, "f_01631523") : null;
             String serverName = entry != null ? (String) get(entry, "f_20279990") : null;
             ActivityJournalWriter.multiplayer(address, serverName, gamemode);
         } catch (Throwable cause) {
             log.warn("Activity not recorded", cause);
+        }
+    }
+
+    /**
+     * Once a world of one's own is opened, up to 1.2.5: the journal entry for it. The world is loaded right in the
+     * client there, and no login packet follows; from 1.3 on one does, from the integrated server.
+     */
+    public static void onStartGame(Object client, String directoryName) {
+        try {
+            // getServer, 1.3 and newer
+            if (find(client.getClass(), "m_37046522") != null)
+                return;
+
+            // world, still empty when the open was handed over to the conversion of an old world
+            Object world = get(client, "f_26407825");
+            if (world == null || world == journaledWorld.get())
+                return;
+
+            journaledWorld = new WeakReference<>(world);
+
+            // getData().getName(): the name the world was opened with, put into its data over the one there
+            String levelName = (String) call(call(world, "m_67440400"), "m_90700428");
+            ActivityJournalWriter.singleplayer(directoryName, levelName, gamemodeOf(client));
+        } catch (Throwable cause) {
+            log.warn("Activity not recorded", cause);
+        }
+    }
+
+    private static String gamemodeOf(Object client) throws ReflectiveOperationException {
+        // interactionManager
+        Object interactionManager = get(client, "f_17639899");
+
+        try {
+            // gameMode.getKey(), 1.3 and newer
+            Object gameMode = get(interactionManager, "f_14768439");
+            return gameMode != null ? (String) call(gameMode, "m_51006294") : null;
+        } catch (NoSuchFieldException ignored) {
+            // world.getData().defaultGameMode up to 1.2.5: a number, and survival or creative, nothing else
+            int gameMode = (Integer) get(call(get(client, "f_26407825"), "m_67440400"), "f_26217704");
+            return gameMode == 1 ? "creative" : "survival";
         }
     }
 
@@ -135,9 +189,40 @@ public final class LegacyActivityHooks {
             return;
         }
 
+        // getServer, 1.3 and newer; up to 1.2.5 the world is opened right in the client, which is readied for it first
+        boolean integratedServer = find(client.getClass(), "m_37046522") != null;
+        if (!integratedServer)
+            setUpInteractionManager(client, summary);
+
         // startGame(String, String, WorldSettings) with no settings, as the world list calls it;
         // the name is written into level.dat over the one there, so it has to be that one, getDisplayName
         call(client, "m_16362034", world, call(summary, "m_59791697"), null);
+
+        // openScreen(null), with which the world list closes itself up to 1.2.5, the mouse grabbed along the way;
+        // a null fits every overload, so the one taking a screen is told by its parameter
+        if (!integratedServer) {
+            Class<?> screenType = field(client, "f_70816363").getType();
+            Method openScreen = findMatching(client.getClass(), "m_52715402",
+                    method -> method.getParameterCount() == 1 && method.getParameterTypes()[0] == screenType);
+
+            if (openScreen == null)
+                throw new NoSuchMethodException(client.getClass().getName() + ".m_52715402");
+
+            openScreen.invoke(client, (Object) null);
+        }
+    }
+
+    // interactionManager, survival or creative by getGameMode
+    private static void setUpInteractionManager(Object client, Object summary) throws ReflectiveOperationException {
+        String type = (Integer) call(summary, "m_12400919") == 0
+                ? SURVIVAL_INTERACTION_MANAGER
+                : CREATIVE_INTERACTION_MANAGER;
+
+        // the client is a subclass the launcher made, and the managers take the Minecraft class itself
+        Field interactionManager = field(client, "f_17639899");
+        Class<?> managerType = Class.forName(className(type), true, client.getClass().getClassLoader());
+        Object manager = managerType.getConstructor(interactionManager.getDeclaringClass()).newInstance(client);
+        interactionManager.set(client, manager);
     }
 
     private static boolean isTitleScreen(Object screen) {
@@ -169,15 +254,23 @@ public final class LegacyActivityHooks {
     }
 
     private static Object call(Object target, String intermediary, Object... arguments) throws ReflectiveOperationException {
-        Method method = find(target.getClass(), intermediary, arguments.length);
+        Method method = find(target.getClass(), intermediary, arguments);
         if (method == null)
             throw new NoSuchMethodException(target.getClass().getName() + '.' + intermediary);
 
         return method.invoke(target, arguments);
     }
 
-    // obfuscated method names repeat within a class, told apart here by how many parameters they take
-    private static Method find(Class<?> owner, String intermediary, int parameterCount) {
+    // obfuscated method names repeat within a class, so a method is told apart by the arguments it takes
+    private static Method find(Class<?> owner, String intermediary, Object... arguments) {
+        return findMatching(owner, intermediary, method -> accepts(method, arguments));
+    }
+
+    /**
+     * Statics are left out: up to 1.2.5 {@code startGame} called with no settings fits {@code startMainThread} too,
+     * which starts a second client.
+     */
+    private static Method findMatching(Class<?> owner, String intermediary, Predicate<Method> fits) {
         String name = memberName(intermediary);
 
         for (Class<?> type = owner; type != null; type = type.getSuperclass()) {
@@ -190,7 +283,7 @@ public final class LegacyActivityHooks {
             }
 
             for (Method method : methods) {
-                if (method.getName().equals(name) && method.getParameterCount() == parameterCount) {
+                if (method.getName().equals(name) && !Modifier.isStatic(method.getModifiers()) && fits.test(method)) {
                     method.setAccessible(true);
                     return method;
                 }
@@ -198,6 +291,19 @@ public final class LegacyActivityHooks {
         }
 
         return null;
+    }
+
+    // no argument here is ever a primitive, so a primitive parameter takes none
+    private static boolean accepts(Method method, Object[] arguments) {
+        Class<?>[] parameters = method.getParameterTypes();
+        if (parameters.length != arguments.length)
+            return false;
+
+        for (int i = 0; i < parameters.length; i++)
+            if (arguments[i] != null ? !parameters[i].isInstance(arguments[i]) : parameters[i].isPrimitive())
+                return false;
+
+        return true;
     }
 
     private static String memberName(String intermediary) {

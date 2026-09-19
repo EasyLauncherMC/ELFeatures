@@ -9,6 +9,7 @@
   "client": [
     "activity.MixinClientPlayNetworkHandler",
     "activity.MixinConnectScreen",
+    "activity.MixinMinecraft",
     "multiplayer.MixinIntegratedServer",
     "quickplay.MixinMinecraft",
     "textures.MixinClientPlayerEntity",
