@@ -1,9 +1,8 @@
 package org.easylauncher.mods.elfeatures.mixin.multiplayer;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraftforge.common.ForgeHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,16 +20,15 @@ import java.lang.reflect.Field;
 @Mixin(value = ForgeHooks.class, remap = false)
 public abstract class MixinForgeHooks {
 
+    // only the loot is taken: the argument ahead of it is a LootTable by 26.2, where ResourceLocation is gone
     @Inject(
             method = "modifyLoot",
             at = @At("HEAD"),
             cancellable = true
     )
     private static void elfeatures$skipUntilLoaded(
-            ResourceLocation name,
-            ObjectArrayList<ItemStack> generatedLoot,
-            LootContext context,
-            CallbackInfoReturnable<ObjectArrayList<ItemStack>> cir
+            CallbackInfoReturnable<ObjectArrayList<ItemStack>> cir,
+            @Local(argsOnly = true) ObjectArrayList<ItemStack> generatedLoot
     ) {
         if (elfeatures$lootModifiersUnready()) {
             cir.setReturnValue(generatedLoot);
