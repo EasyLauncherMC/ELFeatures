@@ -83,10 +83,16 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> {
     }
 
     private D request(K key) throws Exception {
-        URL url = new URI(formatTexturesUrl(key)).toURL();
+        byte[] rawResponseBody = fetch(formatTexturesUrl(key), key);
+        return rawResponseBody != null ? parseTexturesData(key, rawResponseBody) : emptyTexturesData();
+    }
+
+    /** The body of a 200 response, or {@code null} for any other; a server error is thrown to be retried. */
+    protected final byte[] fetch(String rawUrl, Object key) throws Exception {
+        URL url = new URI(rawUrl).toURL();
         URLConnection urlConnection = url.openConnection();
         if (!(urlConnection instanceof HttpURLConnection))
-            return emptyTexturesData();
+            return null;
 
         HttpURLConnection httpConnection = (HttpURLConnection) urlConnection;
         httpConnection.setConnectTimeout(CONNECT_TIMEOUT_MS);
@@ -100,20 +106,20 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> {
 
         if (responseCode != 200) {
             logger.info("Textures for '{}' not found (response code: {})", key, responseCode);
-            return emptyTexturesData();
+            return null;
         }
 
         int contentLength = httpConnection.getContentLength();
         if (contentLength <= 0) {
             logger.info("Textures for '{}' not found (invalid content length: {})", key, contentLength);
-            return emptyTexturesData();
+            return null;
         }
 
         // a single read() hands back whatever has arrived so far, which can be less than the whole body
         try (DataInputStream inputStream = new DataInputStream(httpConnection.getInputStream())) {
             byte[] rawResponseBody = new byte[contentLength];
             inputStream.readFully(rawResponseBody);
-            return parseTexturesData(key, rawResponseBody);
+            return rawResponseBody;
         }
     }
 
