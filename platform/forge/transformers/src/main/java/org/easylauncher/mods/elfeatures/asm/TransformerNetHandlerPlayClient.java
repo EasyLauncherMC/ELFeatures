@@ -50,7 +50,7 @@ public final class TransformerNetHandlerPlayClient {
     }
 
     // ActivityHooks.onJoinGame() before every return
-    private static MethodNode insertOnJoinGame(MethodNode methodNode) {
+    static MethodNode insertOnJoinGame(MethodNode methodNode) {
         for (AbstractInsnNode insnNode : methodNode.instructions.toArray()) {
             if (insnNode.getOpcode() != RETURN)
                 continue;

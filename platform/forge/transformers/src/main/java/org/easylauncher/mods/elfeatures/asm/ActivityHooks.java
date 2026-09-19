@@ -72,9 +72,9 @@ public final class ActivityHooks {
     }
 
     /**
-     * At the end of {@code handleJoinGame}, which runs on the client thread: the journal entry for the world or server
-     * joined. A running integrated server tells a singleplayer world from a server; a server is named by its list
-     * entry, or, with none, by the address the connecting screen kept.
+     * At the end of {@code handleJoinGame}, {@code handleLogin} up to 1.6.4, which runs on the client thread: the journal
+     * entry for the world or server joined. A running integrated server tells a singleplayer world from a server; a
+     * server is named by its list entry, or, with none, by the address the connecting screen kept.
      */
     public static void onJoinGame() {
         Object client = minecraft;
