@@ -49,7 +49,7 @@ abstract class LegacyTexturesProviderBase<K> extends TexturesProviderBase<K, Leg
         if (!validateKey(key))
             return new HashMap<>();
 
-        LegacyTexturesData loaded = texturesCache.getUnchecked(key);
+        LegacyTexturesData loaded = texturesCache.get(key);
         return loaded != null ? new HashMap<>(loaded.getTexturesMap()) : new HashMap<>();
     }
 

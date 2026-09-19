@@ -61,7 +61,7 @@ abstract class AuthlibTexturesProviderBase<K> extends TexturesProviderBase<K, Au
         if (!textures.isEmpty() || !validateKey(key))
             return textures;
 
-        AuthlibTexturesData loaded = texturesCache.getUnchecked(key);
+        AuthlibTexturesData loaded = texturesCache.get(key);
         if (loaded != null)
             textures.putAll(loaded.getTexturesMap());
 

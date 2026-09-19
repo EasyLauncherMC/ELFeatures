@@ -1,8 +1,5 @@
 package org.easylauncher.mods.elfeatures.texture.provider;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
@@ -10,6 +7,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.SneakyThrows;
 import org.easylauncher.mods.elfeatures.logging.LoggerAdapter;
 import org.easylauncher.mods.elfeatures.texture.model.TexturesData;
+import org.easylauncher.mods.elfeatures.util.ExpiringCache;
 import org.easylauncher.mods.elfeatures.util.UuidTypeAdapter;
 
 import java.io.DataInputStream;
@@ -24,7 +22,7 @@ import java.net.URLConnection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheLoader<K, D> {
+abstract class TexturesProviderBase<K, D extends TexturesData, P> {
 
     protected static final String EASYX_TEXTURES_URL_PATTERN = "http://textures.easyxcdn.net/users/%s.json";
     protected static final String MOJANG_TEXTURES_URL_PATTERN = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
@@ -36,15 +34,13 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
     protected final String userAgent;
     protected final LoggerAdapter logger;
     protected final Gson gson;
-    protected final LoadingCache<K, D> texturesCache;
+    protected final ExpiringCache<K, D> texturesCache;
 
     TexturesProviderBase(String userAgent) {
         this.userAgent = userAgent;
         this.logger = LoggerAdapter.of(getClass());
         this.gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UuidTypeAdapter()).create();
-        this.texturesCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(60L, TimeUnit.SECONDS)
-                .build(this);
+        this.texturesCache = new ExpiringCache<>(60L, TimeUnit.SECONDS, this::load);
     }
 
     protected abstract K keyFromProfile(GameProfile profile);
@@ -61,8 +57,7 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
         return key != null;
     }
 
-    @Override
-    public D load(K key) {
+    private D load(K key) {
         if (!validateKey(key))
             return emptyTexturesData();
 
@@ -128,7 +123,8 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
 
     public Property loadTexturesProperty(K key) {
         logger.info("Requesting textures property for '{}'", key);
-        D loaded = texturesCache.getUnchecked(key);
+        D loaded = texturesCache.get(key);
+
         String propertyValue = loaded != null ? loaded.getPropertyValue() : null;
         return propertyValue != null ? new Property("textures", propertyValue) : null;
     }
