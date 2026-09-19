@@ -9,6 +9,12 @@ public final class ELFeaturesAgent extends ELFeaturesAgentBase {
     }
 
     public static void premain(String arguments, Instrumentation instrumentation) {
+        // a copy of the mod brought up here would stay outside the wrapper's loader, where the game is
+        if (VanillaTweakerTransformer.isGameWrapped()) {
+            instrumentation.addTransformer(new VanillaTweakerTransformer());
+            return;
+        }
+
         new ELFeaturesAgent().start(instrumentation);
     }
 

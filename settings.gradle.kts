@@ -43,7 +43,7 @@ include(":platform:neoforge:v1")            // NeoForge [1.20.2,)
 include(":platform:vanilla:agent")          // Vanilla java agent
 include(":platform:vanilla:loader")         // Mixin without a mod loader
 include(":platform:vanilla:tweaker")        // LaunchWrapper tweaker
-include(":platform:vanilla:v1")             // Vanilla [1.6, 1.14)
+include(":platform:vanilla:v1")             // Vanilla [1.3, 1.14)
 include(":platform:vanilla:v2")             // Vanilla [1.14, 26.1)
 include(":platform:vanilla:v3")             // Vanilla [26.1,)
 

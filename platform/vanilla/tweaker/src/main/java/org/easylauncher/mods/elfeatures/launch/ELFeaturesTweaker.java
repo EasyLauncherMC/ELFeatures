@@ -7,7 +7,8 @@ import java.io.File;
 import java.util.List;
 
 /**
- * The mod's way into a game a launch wrapper starts, which is any game OptiFine was installed into.
+ * The mod's way into a game a launch wrapper starts: any game OptiFine was installed into, and the vanilla one up
+ * to 1.5.2.
  *
  * <p>Alone in its package on purpose: a launch wrapper excludes the package of every tweak class it loads from
  * its own loader, and everything else of ours has to stay inside that loader — the game's authlib lives there,

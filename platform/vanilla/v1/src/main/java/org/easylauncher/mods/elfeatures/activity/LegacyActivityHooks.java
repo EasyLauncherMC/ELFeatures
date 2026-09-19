@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * Quick play and the activity journal on the vanilla game from 1.6 to the 1.14 snapshots, called from the mixins in
+ * Quick play and the activity journal on the vanilla game from 1.3 to the 1.14 snapshots, called from the mixins in
  * {@code mixin.activity} and {@code mixin.quickplay}.
  *
  * <p>This range has nothing to gate mixins by version with, {@code version.json} only comes in 18w47b, so every call into

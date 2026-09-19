@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Mixins that name authlib types are left off the versions that have none: 1.6 through 1.7.5. Mixin still merges a
+ * Mixins that name authlib types are left off the versions that have none, up to 1.7.5. Mixin still merges a
  * missed {@code @Redirect} into the target, and reflecting over {@code Minecraft} then fails while looking up the
  * tick and the join.
  */

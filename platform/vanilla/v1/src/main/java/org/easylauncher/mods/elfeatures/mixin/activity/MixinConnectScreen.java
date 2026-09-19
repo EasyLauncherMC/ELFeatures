@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * The address of a connection no server list entry stands behind, as {@code --server} makes, kept for the join it
- * leads to. This constructor is the one taking a bare host and port; a join from the server list goes through the
- * other one and is named by its entry.
+ * leads to. These constructors are the ones taking a bare host and port; a join from the server list goes through the
+ * others and is named by its entry.
  */
 @Mixin(ConnectScreen.class)
 public abstract class MixinConnectScreen {
@@ -23,6 +23,16 @@ public abstract class MixinConnectScreen {
             require = 0
     )
     private void inject_init(Screen parent, Minecraft minecraft, String host, int port, CallbackInfo callbackInfo) {
+        ActivityJournalWriter.connecting(host, port);
+    }
+
+    // up to 1.4.7, where the screen has no parent to go back to
+    @Inject(
+            method = "<init>(Lnet/minecraft/client/Minecraft;Ljava/lang/String;I)V",
+            at = @At("RETURN"),
+            require = 0
+    )
+    private void inject_initParentless(Minecraft minecraft, String host, int port, CallbackInfo callbackInfo) {
         ActivityJournalWriter.connecting(host, port);
     }
 
