@@ -1,9 +1,11 @@
 package org.easylauncher.mods.elfeatures;
 
 import cpw.mods.fml.relauncher.CoreModManager;
+import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.RelaunchClassLoader;
 import cpw.mods.fml.relauncher.RelaunchLibraryManager;
+import lombok.CustomLog;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -17,7 +19,9 @@ import java.util.Map;
  * lead to, and the mod starts here rather than as an {@code @Mod} its discovery would have to read.
  *
  * <p>No MCVersion: FML leaves a core mod out on any version but the one it names, and this one serves 1.5.2-1.7.10.
+ * The range is checked here instead, for the jar put into {@code mods/} by hand.
  */
+@CustomLog
 @IFMLLoadingPlugin.Name(Constants.MOD_NAME)
 @IFMLLoadingPlugin.SortingIndex(1001)
 @IFMLLoadingPlugin.TransformerExclusions("org.easylauncher.mods.elfeatures.")
@@ -26,6 +30,12 @@ public final class ELFeaturesFMLPlugin implements IFMLLoadingPlugin {
     /** FML of 1.5 relaunches the game in a class loader of its own, the one launchwrapper took over in 1.6. */
     private static final boolean RELAUNCHED = ELFeaturesFMLPlugin.class.getClassLoader().getClass().getName()
             .equals("cpw.mods.fml.relauncher.RelaunchClassLoader");
+
+    // mccversion, set before any core mod is loaded
+    private static final String MINECRAFT_VERSION = (String) FMLInjectionData.data()[4];
+    private static final boolean SUPPORTED = MINECRAFT_VERSION.equals("1.5.2")
+            || MINECRAFT_VERSION.startsWith("1.6.")
+            || MINECRAFT_VERSION.startsWith("1.7.");
 
     /** The jar the mod came in, which {@link ELFeaturesModContainer} names as its source. */
     static File jar;
@@ -36,6 +46,11 @@ public final class ELFeaturesFMLPlugin implements IFMLLoadingPlugin {
         if (codeSource != null) {
             jar = new File(codeSource.getLocation().toURI());
             (RELAUNCHED ? RelaunchLibraryManager.getLibraries() : CoreModManager.getLoadedCoremods()).add(jar.getName());
+        }
+
+        if (!SUPPORTED) {
+            log.warn("This build serves Minecraft 1.5.2-1.7.10, not {}: left off", MINECRAFT_VERSION);
+            return;
         }
 
         new ELFeaturesModForgeV1();
@@ -50,13 +65,13 @@ public final class ELFeaturesFMLPlugin implements IFMLLoadingPlugin {
     // FML of 1.5 knows no sorting index and would run it ahead of the deobfuscation: see injectData
     @Override
     public String[] getASMTransformerClass() {
-        return RELAUNCHED ? null : new String[] {MOD_TRANSFORMER_FQN};
+        return RELAUNCHED || !SUPPORTED ? null : new String[] {MOD_TRANSFORMER_FQN};
     }
 
     // in place of the @Mod the discovery skipping this jar would have found
     @Override
     public String getModContainerClass() {
-        return jar != null ? MOD_CONTAINER_FQN : null;
+        return jar != null && SUPPORTED ? MOD_CONTAINER_FQN : null;
     }
 
     @Nullable
@@ -68,7 +83,7 @@ public final class ELFeaturesFMLPlugin implements IFMLLoadingPlugin {
     // FML of 1.5 registers its deobfuscation right before it calls this
     @Override
     public void injectData(Map<String, Object> map) {
-        if (RELAUNCHED) {
+        if (RELAUNCHED && SUPPORTED) {
             RelaunchClassLoader classLoader = (RelaunchClassLoader) ELFeaturesFMLPlugin.class.getClassLoader();
             classLoader.registerTransformer(RELAUNCH_TRANSFORMER_FQN);
         }
