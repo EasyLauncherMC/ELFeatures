@@ -30,7 +30,7 @@ include(":platform:fabric:v2")              // Fabric [26.1,)
 // platform modules — Forge
 include(":platform:forge:modlocator")       // Forge v3/v4 mod locator
 include(":platform:forge:transformers")     // Forge ASM transformers
-include(":platform:forge:v1")               // Forge [1.7.10]
+include(":platform:forge:v1")               // Forge [1.5.2, 1.7.10]
 include(":platform:forge:v2")               // Forge [1.8, 1.16.5]
 include(":platform:forge:v3")               // Forge [1.17, 1.20.4]
 include(":platform:forge:v4")               // Forge [1.20.6,)

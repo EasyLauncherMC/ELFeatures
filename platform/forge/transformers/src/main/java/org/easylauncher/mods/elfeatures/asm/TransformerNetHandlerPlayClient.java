@@ -55,12 +55,11 @@ public final class TransformerNetHandlerPlayClient {
             if (insnNode.getOpcode() != RETURN)
                 continue;
 
-            methodNode.instructions.insertBefore(insnNode, new MethodInsnNode(
+            methodNode.instructions.insertBefore(insnNode, BaseMethodTransformer.methodInsn(
                     INVOKESTATIC,
                     "org/easylauncher/mods/elfeatures/asm/ActivityHooks",
                     "onJoinGame",
-                    "()V",
-                    false
+                    "()V"
             ));
         }
 

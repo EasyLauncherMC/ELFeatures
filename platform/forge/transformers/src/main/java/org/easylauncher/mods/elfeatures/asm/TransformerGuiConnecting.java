@@ -34,12 +34,11 @@ public final class TransformerGuiConnecting {
                 InsnList insnList = new InsnList();
                 insnList.add(new VarInsnNode(ALOAD, 3));
                 insnList.add(new VarInsnNode(ILOAD, 4));
-                insnList.add(new MethodInsnNode(
+                insnList.add(methodInsn(
                         INVOKESTATIC,
                         "org/easylauncher/mods/elfeatures/activity/ActivityJournalWriter",
                         "connecting",
-                        "(Ljava/lang/String;I)V",
-                        false
+                        "(Ljava/lang/String;I)V"
                 ));
 
                 methodNode.instructions.insertBefore(insnNode, insnList);
@@ -73,12 +72,11 @@ public final class TransformerGuiConnecting {
 
                 InsnList insnList = new InsnList();
                 insnList.add(new VarInsnNode(ALOAD, 3));
-                insnList.add(new MethodInsnNode(
+                insnList.add(methodInsn(
                         INVOKESTATIC,
                         "org/easylauncher/mods/elfeatures/asm/ActivityHooks",
                         "connectingFromServerData",
-                        "(Ljava/lang/Object;)V",
-                        false
+                        "(Ljava/lang/Object;)V"
                 ));
                 methodNode.instructions.insertBefore(insnNode, insnList);
             }

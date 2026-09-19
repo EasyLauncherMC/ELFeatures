@@ -15,6 +15,8 @@ import static org.objectweb.asm.Opcodes.*;
 @CustomLog
 public final class TransformerImageBufferDownload {
 
+    public static final boolean LEGACY_SKINS_ONLY = "true".equalsIgnoreCase(System.getProperty("elfeatures.skins.legacy"));
+
     private static final String FIELD_NAME_SCALE_FACTOR = "elfeatures$scaleFactor";
 
     @TransformerTarget(className = "net.minecraft.client.renderer.ImageBufferDownload")
@@ -46,6 +48,11 @@ public final class TransformerImageBufferDownload {
         @Override
         public MethodNode transform(ClassNode classNode, MethodNode methodNode) {
             InsnList instructions = methodNode.instructions;
+
+            // ahead of the HD check: OptiFine's buffer grows until it fits both sides of a square skin,
+            // and a square HD skin then lands in the left half of a 2:1 texture
+            if (LEGACY_SKINS_ONLY) instructions.insert(toLegacyLayout());
+
             for (int i = 0; i < instructions.size(); i++) {
                 AbstractInsnNode insnNode = instructions.get(i);
                 if (insnNode.getOpcode() == ALOAD && checkOpcodes(instructions, i + 1, DUP, GETFIELD, ICONST_2, IMUL, PUTFIELD)) {
@@ -64,12 +71,11 @@ public final class TransformerImageBufferDownload {
                     InsnList insnList = new InsnList();
 
                     // pass only valid texture images
-                    insnList.add(new MethodInsnNode(
+                    insnList.add(methodInsn(
                             INVOKESTATIC,
                             "org/easylauncher/mods/elfeatures/texture/TexturesInspector",
                             "passValidTextureImage",
-                            "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;",
-                            false
+                            "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;"
                     ));
 
                     pendingInjections.add(() -> instructions.insertBefore(insnNode, insnList));
@@ -88,12 +94,11 @@ public final class TransformerImageBufferDownload {
                     insnList.add(new VarInsnNode(ALOAD, 1));
 
                     // compute scale factor
-                    insnList.add(new MethodInsnNode(
+                    insnList.add(methodInsn(
                             INVOKESTATIC,
                             "org/easylauncher/mods/elfeatures/texture/TexturesInspector",
                             "computeTextureScale",
-                            "(Ljava/awt/image/BufferedImage;)I",
-                            false
+                            "(Ljava/awt/image/BufferedImage;)I"
                     ));
 
                     // save scale factor
@@ -143,6 +148,21 @@ public final class TransformerImageBufferDownload {
 
             return methodNode;
         }
+
+        // image = TexturesInspector.toLegacyLayout(image)
+        private static InsnList toLegacyLayout() {
+            InsnList insnList = new InsnList();
+            insnList.add(new VarInsnNode(ALOAD, 1));
+            insnList.add(methodInsn(
+                    INVOKESTATIC,
+                    "org/easylauncher/mods/elfeatures/texture/TexturesInspector",
+                    "toLegacyLayout",
+                    "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;"
+            ));
+            insnList.add(new VarInsnNode(ASTORE, 1));
+            return insnList;
+        }
+
     }
 
 }

@@ -8,12 +8,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * Quick play and the activity journal on Forge 1.7.10 – 1.16.5, called from the bytecode the transformers put into the
+ * Quick play and the activity journal on Forge 1.5.2 – 1.16.5, called from the bytecode the transformers put into the
  * game.
  *
  * <p>The patches hand over nothing but plain objects, so the patched bytecode names no game member whatever state the
  * class is in when it is patched. The game is reached from here by reflection on SRG names instead: the production
- * client keeps them from 1.7.10 to 1.16.5, and every one used below has the same id over the whole range. One class
+ * client keeps them from 1.5.2 to 1.16.5, and every one used below has the same id over the whole range. One class
  * serves both ways the patches get in, the launch wrapper's Java transformers and the ModLauncher script.
  */
 @CustomLog

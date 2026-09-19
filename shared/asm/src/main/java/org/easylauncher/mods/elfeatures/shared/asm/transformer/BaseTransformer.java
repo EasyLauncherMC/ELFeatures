@@ -13,6 +13,13 @@ public abstract class BaseTransformer {
 
     protected final TransformerService transformerService;
 
+    @SuppressWarnings("deprecation")
+    public static MethodInsnNode methodInsn(int opcode, String owner, String name, String desc) {
+        // the constructor without the interface flag:
+        // the ASM 4.1 of 1.6-1.7.2 has no other, and every later one keeps it
+        return new MethodInsnNode(opcode, owner, name, desc);
+    }
+
     protected final boolean checkOpcodes(InsnList instructions, int start, int... opcodes) {
         if (instructions.size() <= start + opcodes.length)
             return false;

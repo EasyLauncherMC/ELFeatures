@@ -8,6 +8,8 @@ import java.util.Map;
 
 public interface IFMLLoadingPlugin {
 
+    String[] getLibraryRequestClass();
+
     String[] getASMTransformerClass();
 
     String getModContainerClass();
@@ -26,8 +28,14 @@ public interface IFMLLoadingPlugin {
 
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface MCVersion {
-        String value() default "";
+    @interface SortingIndex {
+        int value() default 0;
+    }
+
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface TransformerExclusions {
+        String[] value() default "";
     }
 
 }

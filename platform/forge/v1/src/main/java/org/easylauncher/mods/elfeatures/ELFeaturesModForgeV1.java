@@ -1,15 +1,6 @@
 package org.easylauncher.mods.elfeatures;
 
-import cpw.mods.fml.common.Mod;
-
-@Mod(
-        modid = "elfeatures",
-        name = Constants.MOD_NAME,
-        version = Constants.MOD_VERSION,
-        useMetadata = true,
-        acceptedMinecraftVersions = "1.7.10",
-        acceptableRemoteVersions = "*" // client-side mod: never require it from the other side
-)
+/** Started by {@link ELFeaturesFMLPlugin} rather than by FML, which cannot read it on 1.5-1.7.2. */
 public final class ELFeaturesModForgeV1 extends ELFeaturesModBase {
 
     public ELFeaturesModForgeV1() {

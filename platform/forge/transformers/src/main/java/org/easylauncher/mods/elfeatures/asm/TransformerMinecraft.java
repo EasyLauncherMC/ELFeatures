@@ -27,12 +27,11 @@ public final class TransformerMinecraft {
             // ActivityHooks.onClientTick(this)
             InsnList insnList = new InsnList();
             insnList.add(new VarInsnNode(ALOAD, 0));
-            insnList.add(new MethodInsnNode(
+            insnList.add(methodInsn(
                     INVOKESTATIC,
                     "org/easylauncher/mods/elfeatures/asm/ActivityHooks",
                     "onClientTick",
-                    "(Ljava/lang/Object;)V",
-                    false
+                    "(Ljava/lang/Object;)V"
             ));
 
             methodNode.instructions.insert(insnList);
