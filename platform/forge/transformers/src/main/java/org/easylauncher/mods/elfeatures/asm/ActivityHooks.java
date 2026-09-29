@@ -97,7 +97,8 @@ public final class ActivityHooks {
             Object entry = currentServerEntry(client);
             String address = entry != null ? (String) get(entry, "field_78845_b") : null;
             String serverName = entry != null ? (String) get(entry, "field_78847_a") : null;
-            ActivityJournalWriter.multiplayer(address, serverName, gamemode);
+            String defaultServerName = entry != null ? defaultServerName(client) : null;
+            ActivityJournalWriter.multiplayer(address, serverName, defaultServerName, gamemode);
         } catch (Throwable cause) {
             log.warn("Activity not recorded", cause);
         }
@@ -204,6 +205,27 @@ public final class ActivityHooks {
             Method method = find(Class.forName("net.minecraft.client.Minecraft"), "func_71410_x");
             return method != null ? method.invoke(null) : null;
         } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    // the name the server list gives an entry, in the language the game runs in; a failed lookup keeps the name as is
+    private static String defaultServerName(Object client) {
+        ClassLoader classLoader = client.getClass().getClassLoader();
+        String key = ActivityJournalWriter.DEFAULT_SERVER_NAME_KEY;
+
+        try {
+            try {
+                // I18n.format(String, Object...), 1.6 and newer
+                Class<?> i18n = Class.forName("net.minecraft.client.resources.I18n", true, classLoader);
+                return (String) find(i18n, "func_135052_a").invoke(null, key, new Object[0]);
+            } catch (ClassNotFoundException ignored) {
+                // StringTranslate.getInstance().translateKey(String), 1.5.2
+                Class<?> stringTranslate = Class.forName("net.minecraft.src.StringTranslate", true, classLoader);
+                return (String) call(find(stringTranslate, "func_74808_a").invoke(null), "func_74805_b", key);
+            }
+        } catch (Throwable cause) {
+            log.warn("Default server name not translated", cause);
             return null;
         }
     }

@@ -25,6 +25,10 @@ public final class LegacyActivityHooks {
 
     private static final String TITLE_SCREEN = "net/minecraft/unmapped/C_95462098";
 
+    // the client's translations from 1.6 on, and the one translation source before it
+    private static final String CLIENT_I18N = "net/minecraft/unmapped/C_38554624";
+    private static final String LANGUAGE = "net/minecraft/unmapped/C_16154270";
+
     // what the world list up to 1.2.5 sets the client up with before it opens a world, by the world's mode
     private static final String SURVIVAL_INTERACTION_MANAGER = "net/minecraft/unmapped/C_54765678";
     private static final String CREATIVE_INTERACTION_MANAGER = "net/minecraft/unmapped/C_83928382";
@@ -110,7 +114,8 @@ public final class LegacyActivityHooks {
 
             String address = entry != null ? (String) get(entry, "f_01631523") : null;
             String serverName = entry != null ? (String) get(entry, "f_20279990") : null;
-            ActivityJournalWriter.multiplayer(address, serverName, gamemode);
+            String defaultServerName = entry != null ? defaultServerName(client) : null;
+            ActivityJournalWriter.multiplayer(address, serverName, defaultServerName, gamemode);
         } catch (Throwable cause) {
             log.warn("Activity not recorded", cause);
         }
@@ -138,6 +143,25 @@ public final class LegacyActivityHooks {
             ActivityJournalWriter.singleplayer(directoryName, levelName, gamemodeOf(client));
         } catch (Throwable cause) {
             log.warn("Activity not recorded", cause);
+        }
+    }
+
+    // the name the server list gives an entry, in the language the game runs in; a failed lookup keeps the name as is
+    private static String defaultServerName(Object client) {
+        ClassLoader classLoader = client.getClass().getClassLoader();
+        String key = ActivityJournalWriter.DEFAULT_SERVER_NAME_KEY;
+
+        try {
+            try {
+                // I18n.translate(String, Object...), 1.6 and newer
+                return (String) callStatic(classLoader, CLIENT_I18N, "m_54126296", key, new Object[0]);
+            } catch (ClassNotFoundException ignored) {
+                // Language.getInstance().translate(String) up to 1.5.2
+                return (String) call(callStatic(classLoader, LANGUAGE, "m_56062593"), "m_77288988", key);
+            }
+        } catch (Throwable cause) {
+            log.warn("Default server name not translated", cause);
+            return null;
         }
     }
 
@@ -259,6 +283,21 @@ public final class LegacyActivityHooks {
             throw new NoSuchMethodException(target.getClass().getName() + '.' + intermediary);
 
         return method.invoke(target, arguments);
+    }
+
+    private static Object callStatic(ClassLoader classLoader, String owner, String intermediary, Object... arguments)
+            throws ReflectiveOperationException {
+        Class<?> type = Class.forName(className(owner), true, classLoader);
+        String name = memberName(intermediary);
+
+        for (Method method : type.getDeclaredMethods()) {
+            if (method.getName().equals(name) && Modifier.isStatic(method.getModifiers()) && accepts(method, arguments)) {
+                method.setAccessible(true);
+                return method.invoke(null, arguments);
+            }
+        }
+
+        throw new NoSuchMethodException(type.getName() + '.' + intermediary);
     }
 
     // obfuscated method names repeat within a class, so a method is told apart by the arguments it takes
