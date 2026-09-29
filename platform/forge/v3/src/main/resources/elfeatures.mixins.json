@@ -10,6 +10,7 @@
     "activity.MixinMinecraft",
     "activity.MixinMinecraftServer",
     "multiplayer.MixinIntegratedServer",
+    "quickplay.MixinMain",
     "quickplay.MixinMinecraft$V1",
     "quickplay.MixinMinecraft$V2",
     "quickplay.MixinWorldOpenFlows",

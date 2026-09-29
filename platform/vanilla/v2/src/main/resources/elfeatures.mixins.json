@@ -20,6 +20,7 @@
     "quickplay.MixinIntegratedServerLoader$V5",
     "quickplay.MixinIntegratedServerLoader$V6",
     "quickplay.MixinLevelStorage",
+    "quickplay.MixinMain",
     "quickplay.MixinMinecraftClient$V1",
     "quickplay.MixinMinecraftClient$V2",
     "quickplay.MixinMinecraftClient$V3",

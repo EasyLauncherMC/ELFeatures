@@ -9,6 +9,7 @@
     "activity.MixinMinecraftServer",
     "multiplayer.MixinForgeHooks",
     "multiplayer.MixinIntegratedServer",
+    "quickplay.MixinMain",
     "textures.MixinHttpTexture",
     "textures.MixinSkinManager$V1",
     "textures.MixinSkinManager$V2",
