@@ -20,7 +20,8 @@ import java.lang.reflect.Method;
 public final class ActivityHooks {
 
     private static final String[] TITLE_SCREENS = {
-            "net.minecraft.client.gui.GuiMainMenu",             // up to 1.13.2
+            "net.minecraft.src.GuiMainMenu",                    // 1.5.2
+            "net.minecraft.client.gui.GuiMainMenu",             // 1.6 – 1.13.2
             "net.minecraft.client.gui.screen.MainMenuScreen",   // 1.14 and newer
     };
 
