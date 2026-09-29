@@ -3,6 +3,7 @@ package org.easylauncher.mods.elfeatures.mixin.activity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.world.level.LevelProperties;
@@ -47,7 +48,10 @@ public final class MixinClientPlayNetworkHandler {
             }
 
             ServerInfo entry = client.getCurrentServerEntry();
-            ActivityJournalWriter.multiplayer(entry != null ? entry.address : null, entry != null ? entry.name : null, gamemode);
+            String address = entry != null ? entry.address : null;
+            String serverName = entry != null ? entry.name : null;
+            String defaultServerName = I18n.translate(ActivityJournalWriter.DEFAULT_SERVER_NAME_KEY);
+            ActivityJournalWriter.multiplayer(address, serverName, defaultServerName, gamemode);
         }
 
     }
@@ -76,7 +80,10 @@ public final class MixinClientPlayNetworkHandler {
             }
 
             ServerInfo entry = client.getCurrentServerEntry();
-            ActivityJournalWriter.multiplayer(entry != null ? entry.address : null, entry != null ? entry.name : null, gamemode);
+            String address = entry != null ? entry.address : null;
+            String serverName = entry != null ? entry.name : null;
+            String defaultServerName = I18n.translate(ActivityJournalWriter.DEFAULT_SERVER_NAME_KEY);
+            ActivityJournalWriter.multiplayer(address, serverName, defaultServerName, gamemode);
         }
 
     }
@@ -107,7 +114,10 @@ public final class MixinClientPlayNetworkHandler {
             }
 
             ServerInfo entry = client.getCurrentServerEntry();
-            ActivityJournalWriter.multiplayer(entry != null ? entry.address : null, entry != null ? entry.name : null, gamemode);
+            String address = entry != null ? entry.address : null;
+            String serverName = entry != null ? entry.name : null;
+            String defaultServerName = I18n.translate(ActivityJournalWriter.DEFAULT_SERVER_NAME_KEY);
+            ActivityJournalWriter.multiplayer(address, serverName, defaultServerName, gamemode);
         }
 
     }

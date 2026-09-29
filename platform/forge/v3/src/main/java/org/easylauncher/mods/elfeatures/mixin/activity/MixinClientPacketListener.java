@@ -3,6 +3,7 @@ package org.easylauncher.mods.elfeatures.mixin.activity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import net.minecraft.world.level.storage.LevelStorageSource;
@@ -44,7 +45,10 @@ public abstract class MixinClientPacketListener {
         }
 
         ServerData entry = minecraft.getCurrentServer();
-        ActivityJournalWriter.multiplayer(entry != null ? entry.ip : null, entry != null ? entry.name : null, gamemode);
+        String address = entry != null ? entry.ip : null;
+        String serverName = entry != null ? entry.name : null;
+        String defaultServerName = I18n.get(ActivityJournalWriter.DEFAULT_SERVER_NAME_KEY);
+        ActivityJournalWriter.multiplayer(address, serverName, defaultServerName, gamemode);
     }
 
 }

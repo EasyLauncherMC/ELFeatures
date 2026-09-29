@@ -15,14 +15,13 @@ import java.nio.file.StandardOpenOption;
 @CustomLog
 public final class ActivityJournalWriter {
 
-    private static final String JOURNAL_PATH = System.getProperty("elfeatures.activity.journal");
+    public static final String DEFAULT_SERVER_NAME_KEY = "selectServer.defaultName";
 
-    // nulls are left out as Gson does by default: an entry carries only what the game knew
+    private static final String JOURNAL_PATH = System.getProperty("elfeatures.activity.journal");
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
-    // a connection with no server list entry behind it, as --server makes, kept for the join it leads to
     private static String connectingHost;
     private static Integer connectingPort;
 
@@ -34,7 +33,10 @@ public final class ActivityJournalWriter {
         connectingPort = port;
     }
 
-    // the address as typed in the server list entry, or null when the join had no entry
+    public static void multiplayer(String address, String serverName, String defaultServerName, String gamemode) {
+        multiplayer(address, serverName != null && serverName.equals(defaultServerName) ? null : serverName, gamemode);
+    }
+
     public static void multiplayer(String address, String serverName, String gamemode) {
         String host = connectingHost;
         Integer port = connectingPort;
@@ -73,7 +75,6 @@ public final class ActivityJournalWriter {
         write(new Entry("singleplayer", directoryName, levelName, null, null, null, gamemode, nowMillis()));
     }
 
-    // the player is in no world: the join written last is over
     public static void idle() {
         if (!joined) return;
 
