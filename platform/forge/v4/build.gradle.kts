@@ -3,10 +3,10 @@ import elfeatures.gradle.model.ModuleSpec
 plugins {
     java
     id("elfeatures")
-    `base-platform`
-    `forge-platform`
+    id("base-platform")
+    id("forge-platform")
     id("org.spongepowered.mixin")
-    publish
+    id("publish")
 }
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec

@@ -5,6 +5,18 @@ import org.easylauncher.mods.elfeatures.shared.mixin.MixinPluginBase;
 public final class ELFeaturesMixinPlugin extends MixinPluginBase {
 
     public ELFeaturesMixinPlugin() {
+        // --- feature: journal of worlds and servers joined
+        createConstraintGroup("activity")
+                .add("ConnectScreen",                   "(,3337]")      // 1.19.4 and earlier
+                .apply();
+
+        // --- feature: quick play into a world, native since 1.20
+        createConstraintGroup("quickplay")
+                .add("Minecraft$V1",                    "(,2975]")      // 1.18.2 and earlier
+                .add("Minecraft$V2",                    "[3105,3337]")  // 1.19 - 1.19.4
+                .add("WorldOpenFlows",                  "[3105,3337]")  // 1.19 - 1.19.4
+                .apply();
+
         // --- feature: skin/cape textures from EasyX
         createConstraintGroup("textures")
                 .add("SkinManager$V1",                  "(,3465]")      // 1.20.1 and earlier

@@ -2,18 +2,23 @@ package org.easylauncher.mods.elfeatures.shared.asm.transformer;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.easylauncher.mods.elfeatures.shared.asm.TransformerService;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.MethodInsnNode;
 
-@Log4j2
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public abstract class BaseTransformer {
 
     protected final TransformerService transformerService;
+
+    @SuppressWarnings("deprecation")
+    public static MethodInsnNode methodInsn(int opcode, String owner, String name, String desc) {
+        // the constructor without the interface flag:
+        // the ASM 4.1 of 1.6-1.7.2 has no other, and every later one keeps it
+        return new MethodInsnNode(opcode, owner, name, desc);
+    }
 
     protected final boolean checkOpcodes(InsnList instructions, int start, int... opcodes) {
         if (instructions.size() <= start + opcodes.length)

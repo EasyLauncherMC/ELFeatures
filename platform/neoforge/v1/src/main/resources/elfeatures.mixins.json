@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.easylauncher.mods.elfeatures.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "activity.MixinClientPacketListener",
+    "activity.MixinMinecraft",
+    "activity.MixinMinecraftServer",
+    "multiplayer.MixinIntegratedServer",
+    "quickplay.MixinMain",
+    "textures.MixinHttpTexture",
+    "textures.MixinSkinManager$V1",
+    "textures.MixinSkinManager$V2",
+    "textures.MixinSkinManager$V3",
+    "textures.MixinSkinManager1$V1",
+    "textures.MixinSkinManager1$V2",
+    "textures.MixinSkinManager1$V3",
+    "textures.MixinSkinManager1$V4",
+    "textures.MixinSkinTextureDownloader"
+  ],
+  "plugin": "org.easylauncher.mods.elfeatures.ELFeaturesMixinPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

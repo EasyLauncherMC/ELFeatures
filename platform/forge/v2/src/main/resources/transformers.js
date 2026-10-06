@@ -10,6 +10,38 @@ var DownloadingTexturePatched = false;
 // noinspection JSUnusedGlobalSymbols
 function initializeCoreMod() {
     return {
+        // --- feature: quick play into a world and the journal of worlds and servers joined
+        'Activity_MinecraftTransformer': createMethodsTransformer(
+            'net.minecraft.client.Minecraft',
+            {
+                'func_71407_l ()V': Minecraft_runTick
+            }
+        ),
+        'Activity_NetHandlerPlayClientTransformer': createMethodsTransformer(
+            'net.minecraft.client.network.NetHandlerPlayClient',
+            {
+                'func_147282_a (Lnet/minecraft/network/play/server/SPacketJoinGame;)V': NetHandlerPlayClient_handleJoinGame
+            }
+        ),
+        'Activity_ClientPlayNetHandlerTransformer': createMethodsTransformer(
+            'net.minecraft.client.network.play.ClientPlayNetHandler',
+            {
+                'func_147282_a (Lnet/minecraft/network/play/server/SJoinGamePacket;)V': NetHandlerPlayClient_handleJoinGame
+            }
+        ),
+        'Activity_GuiConnectingTransformer': createMethodsTransformer(
+            'net.minecraft.client.gui.GuiConnecting',
+            {
+                '<init> (Lnet/minecraft/client/gui/GuiScreen;Lnet/minecraft/client/Minecraft;Ljava/lang/String;I)V': GuiConnecting_init
+            }
+        ),
+        'Activity_ConnectingScreenTransformer': createMethodsTransformer(
+            'net.minecraft.client.gui.screen.ConnectingScreen',
+            {
+                '<init> (Lnet/minecraft/client/gui/screen/Screen;Lnet/minecraft/client/Minecraft;Ljava/lang/String;I)V': GuiConnecting_init
+            }
+        ),
+
         // --- feature: fix for multiplayer on 1.16.X
         'Multiplayer_MinecraftClientTransformer': createMethodsTransformer(
             'net.minecraft.client.Minecraft',
@@ -67,6 +99,53 @@ function initializeCoreMod() {
             }
         )
     }
+}
+
+// quick play and the idle entry: ActivityHooks.onClientTick(this) at the head of every client tick.
+// the hook reaches the game by reflection on its own, so nothing here names a game member
+function Minecraft_runTick(methodNode) {
+    var node = ASMAPI.getMethodNode();
+    node.visitVarInsn(Opcodes.ALOAD, 0);
+    node.visitMethodInsn(Opcodes.INVOKESTATIC, 'org/easylauncher/mods/elfeatures/asm/ActivityHooks', 'onClientTick', '(Ljava/lang/Object;)V', false);
+    methodNode.instructions.insert(node.instructions);
+    return true;
+}
+
+// the activity journal: ActivityHooks.onJoinGame() once the join packet is handled
+function NetHandlerPlayClient_handleJoinGame(methodNode) {
+    return insertBeforeReturns(methodNode, function (node) {
+        node.visitMethodInsn(Opcodes.INVOKESTATIC, 'org/easylauncher/mods/elfeatures/asm/ActivityHooks', 'onJoinGame', '()V', false);
+    });
+}
+
+// the activity journal: ActivityJournalWriter.connecting(host, port) for a connection with a bare host and port,
+// as --server makes, where no server list entry stands behind the join it leads to
+function GuiConnecting_init(methodNode) {
+    return insertBeforeReturns(methodNode, function (node) {
+        node.visitVarInsn(Opcodes.ALOAD, 3);
+        node.visitVarInsn(Opcodes.ILOAD, 4);
+        node.visitMethodInsn(Opcodes.INVOKESTATIC, 'org/easylauncher/mods/elfeatures/activity/ActivityJournalWriter', 'connecting', '(Ljava/lang/String;I)V', false);
+    });
+}
+
+function insertBeforeReturns(methodNode, emit) {
+    var instructions = methodNode.instructions;
+    var returns = [];
+
+    // collected first: inserting while iterating would walk into the inserted instructions
+    for (var iterator = instructions.iterator(); iterator.hasNext();) {
+        var insnNode = iterator.next();
+        if (insnNode.getOpcode() === Opcodes.RETURN)
+            returns.push(insnNode);
+    }
+
+    for (var index = 0; index < returns.length; index++) {
+        var node = ASMAPI.getMethodNode();
+        emit(node);
+        instructions.insertBefore(returns[index], node.instructions);
+    }
+
+    return returns.length > 0;
 }
 
 // the enclosing method is not pinned by SRG name on purpose: its id drifts across

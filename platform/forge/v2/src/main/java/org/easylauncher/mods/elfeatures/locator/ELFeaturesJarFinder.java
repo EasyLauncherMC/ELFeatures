@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.locator;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Log4j2
+@CustomLog
 final class ELFeaturesJarFinder {
 
     // Forge 1.13.2 - 1.16.5

@@ -1,18 +1,17 @@
 package org.easylauncher.mods.elfeatures.texture.provider;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.mojang.util.UUIDTypeAdapter;
 import lombok.SneakyThrows;
+import org.easylauncher.mods.elfeatures.logging.LoggerAdapter;
 import org.easylauncher.mods.elfeatures.texture.model.TexturesData;
-import org.easylauncher.mods.elfeatures.util.LoggingFacade;
+import org.easylauncher.mods.elfeatures.util.ExpiringCache;
+import org.easylauncher.mods.elfeatures.util.UuidTypeAdapter;
 
-import java.io.InputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -23,26 +22,25 @@ import java.net.URLConnection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheLoader<K, D> {
+abstract class TexturesProviderBase<K, D extends TexturesData, P> {
 
     protected static final String EASYX_TEXTURES_URL_PATTERN = "http://textures.easyxcdn.net/users/%s.json";
     protected static final String MOJANG_TEXTURES_URL_PATTERN = "https://sessionserver.mojang.com/session/minecraft/profile/%s";
 
-    protected static final int CONNECT_TIMEOUT_MS = 5000;
-    protected static final int READ_TIMEOUT_MS = 5000;
+    protected static final int CONNECT_TIMEOUT_MS = 3000;
+    protected static final int READ_TIMEOUT_MS = 3000;
+    private static final int MAX_ATTEMPTS = 3;
 
     protected final String userAgent;
-    protected final LoggingFacade logger;
+    protected final LoggerAdapter logger;
     protected final Gson gson;
-    protected final LoadingCache<K, D> texturesCache;
+    protected final ExpiringCache<K, D> texturesCache;
 
-    TexturesProviderBase(String userAgent, LoggingFacade logger) {
+    TexturesProviderBase(String userAgent) {
         this.userAgent = userAgent;
-        this.logger = logger;
-        this.gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
-        this.texturesCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(60L, TimeUnit.SECONDS)
-                .build(this);
+        this.logger = LoggerAdapter.of(getClass());
+        this.gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UuidTypeAdapter()).create();
+        this.texturesCache = new ExpiringCache<>(60L, TimeUnit.SECONDS, this::load);
     }
 
     protected abstract K keyFromProfile(GameProfile profile);
@@ -59,48 +57,70 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
         return key != null;
     }
 
-    @Override
-    public D load(K key) {
+    private D load(K key) {
         if (!validateKey(key))
             return emptyTexturesData();
 
-        try {
-            URL url = new URI(formatTexturesUrl(key)).toURL();
-            URLConnection urlConnection = url.openConnection();
-            if (urlConnection instanceof HttpURLConnection) {
-                HttpURLConnection httpConnection = (HttpURLConnection) urlConnection;
-                httpConnection.setConnectTimeout(CONNECT_TIMEOUT_MS);
-                httpConnection.setReadTimeout(READ_TIMEOUT_MS);
-                httpConnection.setUseCaches(false);
-                httpConnection.setRequestProperty("User-Agent", userAgent);
-
-                int responseCode = httpConnection.getResponseCode();
-                if (responseCode != 200) {
-                    logger.log("Textures for '%s' not found (response code: %d)", key, responseCode);
+        // whatever comes back is cached, so a single dropped request would leave the player without a skin
+        for (int attempt = 1; ; attempt++) {
+            try {
+                return request(key);
+            } catch (IOException cause) {
+                if (attempt == MAX_ATTEMPTS) {
+                    logger.warn("Textures for '{}' not loaded: {}", key, cause);
                     return emptyTexturesData();
                 }
 
-                int contentLength = httpConnection.getContentLength();
-                if (contentLength <= 0) {
-                    logger.log("Textures for '%s' not found (invalid content length: %d)", key, contentLength);
-                    return emptyTexturesData();
-                }
-
-                try (InputStream inputStream = httpConnection.getInputStream()) {
-                    byte[] rawResponseBody = new byte[contentLength];
-                    int read = inputStream.read(rawResponseBody);
-                    if (read != contentLength) {
-                        logger.log("Textures for '%s' not found (content length/bytes read mismatch)", key);
-                        return emptyTexturesData();
-                    }
-
-                    return parseTexturesData(key, rawResponseBody);
-                }
+                logger.info(
+                        "Textures for '{}' not loaded (attempt {} of {}), retrying: {}",
+                        key, attempt, MAX_ATTEMPTS, cause
+                );
+            } catch (Exception cause) {
+                logger.warn("Textures for '{}' not loaded: {}", key, cause);
+                return emptyTexturesData();
             }
-        } catch (Exception ignored) {
+        }
+    }
+
+    private D request(K key) throws Exception {
+        byte[] rawResponseBody = fetch(formatTexturesUrl(key), key);
+        return rawResponseBody != null ? parseTexturesData(key, rawResponseBody) : emptyTexturesData();
+    }
+
+    /** The body of a 200 response, or {@code null} for any other; a server error is thrown to be retried. */
+    protected final byte[] fetch(String rawUrl, Object key) throws Exception {
+        URL url = new URI(rawUrl).toURL();
+        URLConnection urlConnection = url.openConnection();
+        if (!(urlConnection instanceof HttpURLConnection))
+            return null;
+
+        HttpURLConnection httpConnection = (HttpURLConnection) urlConnection;
+        httpConnection.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        httpConnection.setReadTimeout(READ_TIMEOUT_MS);
+        httpConnection.setUseCaches(false);
+        httpConnection.setRequestProperty("User-Agent", userAgent);
+
+        int responseCode = httpConnection.getResponseCode();
+        if (responseCode >= 500)
+            throw new IOException("Server error (response code: " + responseCode + ")");
+
+        if (responseCode != 200) {
+            logger.info("Textures for '{}' not found (response code: {})", key, responseCode);
+            return null;
         }
 
-        return emptyTexturesData();
+        int contentLength = httpConnection.getContentLength();
+        if (contentLength <= 0) {
+            logger.info("Textures for '{}' not found (invalid content length: {})", key, contentLength);
+            return null;
+        }
+
+        // a single read() hands back whatever has arrived so far, which can be less than the whole body
+        try (DataInputStream inputStream = new DataInputStream(httpConnection.getInputStream())) {
+            byte[] rawResponseBody = new byte[contentLength];
+            inputStream.readFully(rawResponseBody);
+            return rawResponseBody;
+        }
     }
 
     public Property loadTexturesProperty(GameProfile profile) {
@@ -108,43 +128,51 @@ abstract class TexturesProviderBase<K, D extends TexturesData, P> extends CacheL
     }
 
     public Property loadTexturesProperty(K key) {
-        logger.log("Requesting textures property for '%s'%n", key);
-        D loaded = texturesCache.getUnchecked(key);
+        logger.info("Requesting textures property for '{}'", key);
+        D loaded = texturesCache.get(key);
+
         String propertyValue = loaded != null ? loaded.getPropertyValue() : null;
         return propertyValue != null ? new Property("textures", propertyValue) : null;
     }
 
     // -------------- INTERNAL -----------------------------------------------------------------------------------------
 
-    // GameProfile is a record starting from authlib 7.x
-    private static MethodHandle MH_GameProfile$id;
-    private static MethodHandle MH_GameProfile$name;
-
     @SneakyThrows
     protected final UUID idOfProfile(GameProfile profile) {
-        return MH_GameProfile$id != null
-                ? (UUID) MH_GameProfile$id.invoke(profile)
+        return GameProfileAccessors.ID != null
+                ? (UUID) GameProfileAccessors.ID.invoke(profile)
                 : profile.getId();
     }
 
     @SneakyThrows
     protected final String nameOfProfile(GameProfile profile) {
-        return MH_GameProfile$name != null
-                ? (String) MH_GameProfile$name.invoke(profile)
+        return GameProfileAccessors.NAME != null
+                ? (String) GameProfileAccessors.NAME.invoke(profile)
                 : profile.getName();
     }
 
-    static {
-        try {
-            MethodHandles.Lookup lookup = MethodHandles.publicLookup().in(GameProfile.class);
-            //noinspection JavaLangInvokeHandleSignature
-            MH_GameProfile$id = lookup.findVirtual(GameProfile.class, "id", MethodType.methodType(UUID.class));
-            //noinspection JavaLangInvokeHandleSignature
-            MH_GameProfile$name = lookup.findVirtual(GameProfile.class, "name", MethodType.methodType(String.class));
-        } catch (NoSuchMethodException ignored) {
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
+    /**
+     * GameProfile is a record starting from authlib 7.x.
+     *
+     * <p>Looked up on first use rather than when a provider loads: 1.6 has no authlib, and a provider of it has to
+     * load all the same.
+     */
+    private static final class GameProfileAccessors {
+
+        private static final MethodHandle ID = findAccessorOrNull("id", UUID.class);
+        private static final MethodHandle NAME = findAccessorOrNull("name", String.class);
+
+        private static MethodHandle findAccessorOrNull(String name, Class<?> type) {
+            try {
+                MethodHandles.Lookup lookup = MethodHandles.publicLookup().in(GameProfile.class);
+                return lookup.findVirtual(GameProfile.class, name, MethodType.methodType(type));
+            } catch (NoSuchMethodException ignored) {
+                return null;
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
+            }
         }
+
     }
 
 }

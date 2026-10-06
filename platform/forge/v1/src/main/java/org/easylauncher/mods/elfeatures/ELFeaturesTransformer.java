@@ -2,10 +2,15 @@ package org.easylauncher.mods.elfeatures;
 
 import cpw.mods.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import net.minecraft.launchwrapper.IClassTransformer;
+import org.easylauncher.mods.elfeatures.asm.TransformerGuiConnecting;
 import org.easylauncher.mods.elfeatures.asm.TransformerImageBufferDownload;
 import org.easylauncher.mods.elfeatures.asm.TransformerIntegratedServer;
+import org.easylauncher.mods.elfeatures.asm.TransformerMinecraft;
+import org.easylauncher.mods.elfeatures.asm.TransformerNetClientHandler;
+import org.easylauncher.mods.elfeatures.asm.TransformerNetHandlerPlayClient;
 import org.easylauncher.mods.elfeatures.asm.TransformerSkinManager;
 import org.easylauncher.mods.elfeatures.asm.TransformerSkinManager$3;
+import org.easylauncher.mods.elfeatures.asm.TransformerThreadDownloadImageData;
 import org.easylauncher.mods.elfeatures.shared.asm.TransformerService;
 import org.easylauncher.mods.elfeatures.shared.asm.transformer.ClassTransformer;
 import org.easylauncher.mods.elfeatures.shared.asm.transformer.MethodTransformer;
@@ -19,7 +24,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ELFeaturesTransformer implements IClassTransformer {
+public class ELFeaturesTransformer implements IClassTransformer {
 
     private static final Remapper REMAPPER;
     private static final TransformerService TRANSFORMER_SERVICE;
@@ -64,10 +69,18 @@ public final class ELFeaturesTransformer implements IClassTransformer {
                         TransformerImageBufferDownload.ClassStructure::new,
                 },
                 new MethodTransformer.Instantiator[] {
+                        TransformerGuiConnecting.Init::new,
+                        TransformerGuiConnecting.InitFromServerData::new,
                         TransformerImageBufferDownload.ParseUserSkin::new,
                         TransformerIntegratedServer.Init::new,
+                        TransformerMinecraft.RunTick::new,
+                        TransformerNetClientHandler.HandleLogin::new,
+                        TransformerNetHandlerPlayClient.HandleJoinGameV1::new,
                         TransformerSkinManager.LoadSkinFromCache::new,
                         TransformerSkinManager$3.Run::new,
+                        TransformerThreadDownloadImageData.Run::new,
+                        TransformerThreadDownloadImageData.RunInner::new,
+                        TransformerThreadDownloadImageData.RunThread::new,
                 }
         );
     }

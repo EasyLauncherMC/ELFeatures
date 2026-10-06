@@ -1,6 +1,6 @@
 package org.easylauncher.mods.elfeatures.shared.asm;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.CustomLog;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +10,7 @@ import java.nio.file.StandardOpenOption;
 
 import static org.easylauncher.mods.elfeatures.shared.asm.TransformerService.DEBUG_ENABLED;
 
-@Log4j2
+@CustomLog
 public final class BytecodeWriter {
 
     private static final Path OUTPUT_DIR = Paths.get(System.getProperty("user.home")).resolve("elfeatures-transform");
@@ -32,8 +32,7 @@ public final class BytecodeWriter {
 
             Files.write(filePath, bytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException ex) {
-            log.error("Couldn't save bytecode of class '{}' (transformed: {})", className, transformed);
-            log.error(ex);
+            log.error("Couldn't save bytecode of class '{}' (transformed: {})", className, transformed, ex);
         }
 
         return bytes;

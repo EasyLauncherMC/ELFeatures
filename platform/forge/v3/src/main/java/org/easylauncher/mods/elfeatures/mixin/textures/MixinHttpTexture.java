@@ -123,8 +123,10 @@ public abstract class MixinHttpTexture {
         m_118012_(instance, x * sf, y * sf, width * sf, height * sf);
     }
 
-    @Shadow private static void m_118022_(NativeImage instance, int x, int y, int width, int height) {}
+    @Shadow(remap = false)
+    private static void m_118022_(NativeImage instance, int x, int y, int width, int height) {}
 
-    @Shadow private static void m_118012_(NativeImage instance, int x, int y, int width, int height) {}
+    @Shadow(remap = false)
+    private static void m_118012_(NativeImage instance, int x, int y, int width, int height) {}
 
 }

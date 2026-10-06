@@ -3,10 +3,10 @@ import elfeatures.gradle.model.ModuleSpec
 plugins {
     java
     id("elfeatures")
-    `base-platform`
-    `forge-platform`
+    id("base-platform")
+    id("forge-platform")
     id("org.spongepowered.mixin")
-    publish
+    id("publish")
 }
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
@@ -27,6 +27,7 @@ mixin {
     reobfSrgFile = layout.buildDirectory.file("mappings/official2srg.tsrg").get().asFile.absolutePath
     // targets that don't exist in 1.17.1 (1.20.2+ SkinManager) are only mapped here
     extraMappings(layout.buildDirectory.file("mappings/mixin.tsrg").get().asFile.absolutePath)
+    messages["ACCESSOR_TARGET_NOT_FOUND"] = "disabled"
     messages["NO_OBFDATA_FOR_METHOD"] = "warning"
     messages["NO_OBFDATA_FOR_TARGET"] = "warning"
     messages["TARGET_ELEMENT_NOT_FOUND"] = "disabled"

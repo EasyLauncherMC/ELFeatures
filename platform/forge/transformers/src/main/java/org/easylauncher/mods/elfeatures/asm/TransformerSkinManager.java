@@ -34,12 +34,11 @@ public final class TransformerSkinManager {
                     InsnList insnList = new InsnList();
 
                     // get the ELTP instance
-                    insnList.add(new MethodInsnNode(
+                    insnList.add(methodInsn(
                             INVOKESTATIC,
                             "org/easylauncher/mods/elfeatures/ELFeaturesMod",
                             "authlibEasyxTexturesProvider",
-                            "()Lorg/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider;",
-                            false
+                            "()Lorg/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider;"
                     ));
 
                     // load GameProfile
@@ -54,12 +53,11 @@ public final class TransformerSkinManager {
                     InsnList insnList = new InsnList();
 
                     // load textures via ELTP
-                    insnList.add(new MethodInsnNode(
+                    insnList.add(methodInsn(
                             INVOKEVIRTUAL,
                             "org/easylauncher/mods/elfeatures/texture/provider/AuthlibEasyxTexturesProvider",
                             "loadTexturesMap",
-                            "(Lcom/mojang/authlib/GameProfile;Ljava/util/Map;)Ljava/util/Map;",
-                            false
+                            "(Lcom/mojang/authlib/GameProfile;Ljava/util/Map;)Ljava/util/Map;"
                     ));
 
                     pendingInjections.add(() -> methodNode.instructions.insert(insnNode, insnList));

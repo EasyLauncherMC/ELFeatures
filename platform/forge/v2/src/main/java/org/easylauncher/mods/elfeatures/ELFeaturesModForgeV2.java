@@ -1,9 +1,7 @@
 package org.easylauncher.mods.elfeatures;
 
-import lombok.extern.log4j.Log4j2;
 import net.minecraftforge.fml.common.Mod;
 
-@Log4j2
 @Mod(
         value = "elfeatures",
         modid = "elfeatures",
@@ -17,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class ELFeaturesModForgeV2 extends ELFeaturesModBase {
 
     public ELFeaturesModForgeV2() {
-        super(String.format("ELFeatures/%s (Forge V2)", Constants.MOD_VERSION), log);
+        super(String.format("ELFeatures/%s (Forge V2)", Constants.MOD_VERSION));
     }
 
 }

@@ -4,12 +4,17 @@ import java.util.*
 
 plugins {
     base
+    id("elfeatures") apply false
+    id("net.fabricmc.fabric-loom") version "1.17.20" apply false
+    id("net.fabricmc.fabric-loom-remap") version "1.17.20" apply false
+    id("ploceus") version "1.17.7" apply false
 }
 
-val mod by extra(Mod(loadProperties(project)))
+val branch = providers.environmentVariable("GITHUB_REF_NAME").orNull ?: resolveBranchOrNull()
+val mod = Mod(loadProperties(project))
 
 group = "org.easylauncher.mods.elfeatures"
-version = mod.version
+version = if (branch == "main") mod.version else "${mod.version}-SNAPSHOT"
 
 // provide group, version and build-properties to all subprojects
 subprojects {
@@ -32,3 +37,9 @@ fun loadProperties(project: Project): Properties {
 
     return props
 }
+
+private fun resolveBranchOrNull(): String =
+    providers.exec {
+        commandLine("git", "rev-parse", "--abbrev-ref", "HEAD")
+        isIgnoreExitValue = true
+    }.standardOutput.asText.get().trim()

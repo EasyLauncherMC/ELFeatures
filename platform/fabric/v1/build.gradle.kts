@@ -3,19 +3,20 @@ import elfeatures.gradle.model.ModuleSpec
 plugins {
     java
     id("elfeatures")
-    `base-platform`
-    id("net.fabricmc.fabric-loom-remap") version "1.16-SNAPSHOT"
-    publish
+    id("base-platform")
+    id("net.fabricmc.fabric-loom-remap")
+    id("publish")
 }
 
 val spec: ModuleSpec = ext["spec"] as ModuleSpec
 
 loom {
     mixin {
-        defaultRefmapName = "${spec.mod.id}.refmap.json"
         useLegacyMixinAp = true
+        defaultRefmapName = "${spec.mod.id}.refmap.json"
 
         messages = mapOf(
+            "ACCESSOR_TARGET_NOT_FOUND" to "disabled",
             "NO_OBFDATA_FOR_METHOD" to "warning",
             "NO_OBFDATA_FOR_TARGET" to "warning",
             "TARGET_ELEMENT_NOT_FOUND" to "disabled"
@@ -58,9 +59,5 @@ tasks {
         from(rootProject.layout.projectDirectory.dir("resources")) {
             include("assets/**")
         }
-    }
-
-    remapJar {
-        isPreserveFileTimestamps = true
     }
 }

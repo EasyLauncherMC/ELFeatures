@@ -1,13 +1,12 @@
 package org.easylauncher.mods.elfeatures.texture.provider;
 
 import com.mojang.authlib.GameProfile;
-import org.easylauncher.mods.elfeatures.util.LoggingFacade;
 import org.easylauncher.mods.elfeatures.util.UsernameValidator;
 
 public final class AuthlibEasyxTexturesProvider extends AuthlibTexturesProviderBase<String> {
 
-    public AuthlibEasyxTexturesProvider(String userAgent, LoggingFacade logger) {
-        super(userAgent, logger);
+    public AuthlibEasyxTexturesProvider(String userAgent) {
+        super(userAgent);
     }
 
     @Override
